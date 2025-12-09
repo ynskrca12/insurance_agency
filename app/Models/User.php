@@ -2,47 +2,86 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $guarded = [];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'last_login_at' => 'datetime',
+        'password' => 'hashed',
+        'is_active' => 'boolean',
+    ];
+
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * İlişkiler
      */
-    protected function casts(): array
+    public function createdCustomers()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->hasMany(Customer::class, 'created_by');
+    }
+
+    public function createdPolicies()
+    {
+        return $this->hasMany(Policy::class, 'created_by');
+    }
+
+    public function assignedTasks()
+    {
+        return $this->hasMany(Task::class, 'assigned_to_user_id');
+    }
+
+    public function createdTasks()
+    {
+        return $this->hasMany(Task::class, 'created_by');
+    }
+
+    public function customerNotes()
+    {
+        return $this->hasMany(CustomerNote::class);
+    }
+
+    public function customerCalls()
+    {
+        return $this->hasMany(CustomerCall::class);
+    }
+
+    /**
+     * Kullanıcı admin mi?
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Kullanıcı aktif mi?
+     */
+    public function isActiveUser(): bool
+    {
+        return $this->is_active;
+    }
+
+    /**
+     * Son giriş bilgisini güncelle
+     */
+    public function updateLastLogin(): void
+    {
+        $this->update([
+            'last_login_at' => now(),
+            'last_login_ip' => request()->ip(),
+        ]);
     }
 }
