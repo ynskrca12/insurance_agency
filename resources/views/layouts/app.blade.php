@@ -157,7 +157,7 @@
 
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('policies.*') ? 'active' : '' }}"
-                               href="#">
+                               href="{{ route('policies.index') }}">
                                 <i class="bi bi-file-earmark-text"></i>
                                 Poliçeler
                             </a>

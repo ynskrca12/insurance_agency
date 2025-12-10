@@ -98,44 +98,10 @@
 
 <body>
 
-    <div class="auth-card">
+       @yield('content')
 
-        <h3 class="auth-title">Giriş Yap</h3>
-
-        <!-- Alert örnek -->
-        @if(session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
-
-            <div class="mb-3">
-                <label for="email" class="form-label">E-posta</label>
-                <input type="email" id="email" name="email" class="form-control" required autofocus>
-            </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">Şifre</label>
-                <input type="password" id="password" name="password" class="form-control" required>
-            </div>
-
-            <div class="mb-3 form-check">
-                <input type="checkbox" id="remember" class="form-check-input" name="remember">
-                <label for="remember" class="form-check-label">Beni Hatırla</label>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
-        </form>
-
-        <div class="auth-footer">
-            {{-- <a href="#">Şifremi Unuttum</a> --}}
-        </div>
-
-    </div>
-
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @stack('scripts')
 
 </body>
 </html>

@@ -7,8 +7,7 @@
     <!-- Header -->
     <div class="auth-header">
         <i class="bi bi-shield-check" style="font-size: 3rem;"></i>
-        <h3 class="mt-3 mb-0">Sigorta Yönetim Paneli</h3>
-        <p class="mb-0">Hesabınıza giriş yapın</p>
+        <h4 class="mt-2 mb-4">Sigorta Yönetim Paneli</h4>
     </div>
 
     <!-- Body -->

@@ -7,8 +7,7 @@
     <!-- Header -->
     <div class="auth-header">
         <i class="bi bi-person-plus" style="font-size: 3rem;"></i>
-        <h3 class="mt-3 mb-0">Hesap Oluştur</h3>
-        <p class="mb-0">Yeni bir hesap oluşturun</p>
+        <h4 class="mt-2 mb-4">Hesap Oluştur</h4>
     </div>
 
     <!-- Body -->

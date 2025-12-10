@@ -8,26 +8,44 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PolicyController;
 use Illuminate\Support\Facades\Route;
 
+/*
+|--------------------------------------------------------------------------
+| Public Routes (Web Sitesi - Gelecekte eklenecek)
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('welcome'); // Geçici welcome sayfası
 });
 
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [LoginController::class, 'login']);
+/*
+|--------------------------------------------------------------------------
+| Panel Auth Routes (Guest Only)
+|--------------------------------------------------------------------------
+*/
 
-    Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
-    Route::post('/register', [RegisterController::class, 'register']);
-});
+Route::prefix('panel')->group(function () {
 
-Route::post('/logout', [LogoutController::class, 'logout'])
-    ->middleware('auth')
-    ->name('logout');
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [LoginController::class, 'login']);
 
-Route::middleware('auth')->group(function () {
+        Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
+        Route::post('/register', [RegisterController::class, 'register']);
+    });
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/logout', [LogoutController::class, 'logout'])
+        ->middleware('auth')
+        ->name('logout');
 
-    Route::resource('customers', CustomerController::class);
+    Route::middleware('auth')->group(function () {
 
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        Route::resource('customers', CustomerController::class);
+
+        Route::resource('policies', PolicyController::class);
+
+
+    });
 });
