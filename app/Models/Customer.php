@@ -64,12 +64,12 @@ class Customer extends Model
         return $this->hasMany(Quotation::class);
     }
 
-    public function notes()
+    public function customerNotes()
     {
         return $this->hasMany(CustomerNote::class);
     }
 
-    public function calls()
+    public function customerCalls()
     {
         return $this->hasMany(CustomerCall::class);
     }

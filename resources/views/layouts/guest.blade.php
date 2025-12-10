@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Giriş Yap - Sigorta Yönetim Paneli</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f6f6f6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .auth-card {
+            background: #ffffff;
+            border: 1px solid #dcdcdc;
+            border-radius: 8px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .auth-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1f3c88;
+            margin-bottom: 0.4rem;
+            text-align: center;
+        }
+
+        .auth-subtitle {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 1.7rem;
+        }
+
+        .form-control {
+            border: 1px solid #dcdcdc;
+            border-radius: 10px;
+            height: 46px;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            border-color: #1f3c88;
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background: #1f3c88;
+            border: 1px solid #1f3c88;
+            height: 46px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background: #182f6d;
+            border-color: #182f6d;
+        }
+
+        .form-check-input:checked {
+            background-color: #1f3c88;
+            border-color: #1f3c88;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.2rem;
+        }
+
+        .auth-footer a {
+            color: #1f3c88;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="auth-card">
+
+        <h3 class="auth-title">Giriş Yap</h3>
+
+        <!-- Alert örnek -->
+        @if(session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
+
+            <div class="mb-3">
+                <label for="email" class="form-label">E-posta</label>
+                <input type="email" id="email" name="email" class="form-control" required autofocus>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Şifre</label>
+                <input type="password" id="password" name="password" class="form-control" required>
+            </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" id="remember" class="form-check-input" name="remember">
+                <label for="remember" class="form-check-label">Beni Hatırla</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+        </form>
+
+        <div class="auth-footer">
+            {{-- <a href="#">Şifremi Unuttum</a> --}}
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
