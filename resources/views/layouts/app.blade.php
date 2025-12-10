@@ -164,7 +164,7 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('quotations.index') }}">
                                 <i class="bi bi-file-earmark-plus"></i>
                                 Teklifler
                             </a>

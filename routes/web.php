@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\QuotationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,6 +47,13 @@ Route::prefix('panel')->group(function () {
 
         Route::resource('policies', PolicyController::class);
 
+            // Quotations (Teklifler)
+        Route::resource('quotations', QuotationController::class);
+        Route::post('quotations/{quotation}/send', [QuotationController::class, 'send'])->name('quotations.send');
+        Route::post('quotations/{quotation}/convert', [QuotationController::class, 'convert'])->name('quotations.convert');
+
 
     });
 });
+
+Route::get('/quotation/view/{token}', [QuotationController::class, 'view'])->name('quotations.view');
