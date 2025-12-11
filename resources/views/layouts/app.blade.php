@@ -185,9 +185,16 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-cash-stack"></i>
+                            <a class="nav-link {{ request()->routeIs('payments.*') ? 'active' : '' }}"
+                            href="{{ route('payments.installments') }}">
+                                <i class="bi bi-credit-card"></i>
                                 Ödemeler
+                                @php
+                                    $overdueCount = \App\Models\Installment::overdue()->count();
+                                @endphp
+                                @if($overdueCount > 0)
+                                    <span class="badge bg-danger ms-2">{{ $overdueCount }}</span>
+                                @endif
                             </a>
                         </li>
 

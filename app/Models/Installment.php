@@ -42,9 +42,32 @@ class Installment extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function reminders()
+    {
+        return $this->hasMany(PaymentReminder::class);
+    }
+
     /**
      * Scope'lar
      */
+    public function scopeOverdue($query)
+    {
+        return $query->where('due_date', '<', now())
+                    ->where('status', 'pending');
+    }
+
+    public function scopeDueToday($query)
+    {
+        return $query->whereDate('due_date', now())
+                    ->where('status', 'pending');
+    }
+
+    public function scopeUpcoming($query, $days = 30)
+    {
+        return $query->whereBetween('due_date', [now(), now()->addDays($days)])
+                    ->where('status', 'pending');
+    }
+
     public function scopePending($query)
     {
         return $query->where('status', 'pending');
@@ -53,16 +76,6 @@ class Installment extends Model
     public function scopePaid($query)
     {
         return $query->where('status', 'paid');
-    }
-
-    public function scopeOverdue($query)
-    {
-        return $query->where('status', 'overdue');
-    }
-
-    public function scopeDueToday($query)
-    {
-        return $query->where('due_date', today())->where('status', 'pending');
     }
 
     /**

@@ -9,28 +9,14 @@ class Payment extends Model
 {
     use HasFactory;
 
-    // protected $fillable = [
-    //     'customer_id',
-    //     'policy_id',
-    //     'installment_id',
-    //     'amount',
-    //     'payment_date',
-    //     'payment_type',
-    //     'receipt_number',
-    //     'notes',
-    //     'received_by',
-    // ];
-
     protected $guarded = [];
 
     protected $casts = [
-        'amount' => 'decimal:2',
-        'payment_date' => 'date',
+        'payment_date' => 'datetime',
+        'cancelled_at' => 'datetime',
     ];
 
-    /**
-     * İlişkiler
-     */
+    // İlişkiler
     public function customer()
     {
         return $this->belongsTo(Customer::class);
@@ -41,65 +27,60 @@ class Payment extends Model
         return $this->belongsTo(Policy::class);
     }
 
+    public function paymentPlan()
+    {
+        return $this->belongsTo(PaymentPlan::class);
+    }
+
     public function installment()
     {
         return $this->belongsTo(Installment::class);
     }
 
-    public function receivedBy()
+    public function createdBy()
     {
-        return $this->belongsTo(User::class, 'received_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
-    /**
-     * Scope'lar
-     */
-    public function scopeByCustomer($query, int $customerId)
+    public function cancelledBy()
     {
-        return $query->where('customer_id', $customerId);
+        return $this->belongsTo(User::class, 'cancelled_by');
     }
 
-    public function scopeByPolicy($query, int $policyId)
+    // Scope'lar
+    public function scopeCompleted($query)
     {
-        return $query->where('policy_id', $policyId);
+        return $query->where('status', 'completed');
     }
 
-    public function scopeRecent($query)
+    public function scopePending($query)
     {
-        return $query->orderBy('payment_date', 'desc');
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeFailed($query)
+    {
+        return $query->where('status', 'failed');
+    }
+
+    public function scopeCancelled($query)
+    {
+        return $query->where('status', 'cancelled');
     }
 
     public function scopeToday($query)
     {
-        return $query->where('payment_date', today());
+        return $query->whereDate('payment_date', now());
     }
 
     public function scopeThisMonth($query)
     {
         return $query->whereYear('payment_date', now()->year)
-                     ->whereMonth('payment_date', now()->month);
+                    ->whereMonth('payment_date', now()->month);
     }
 
-    /**
-     * Ödeme tipi label
-     */
-    public function getPaymentTypeLabelAttribute(): string
+    public function scopeThisYear($query)
     {
-        $labels = [
-            'cash' => 'Nakit',
-            'card' => 'Kredi Kartı',
-            'transfer' => 'Havale/EFT',
-            'check' => 'Çek',
-        ];
-
-        return $labels[$this->payment_type] ?? $this->payment_type;
-    }
-
-    /**
-     * Makbuz var mı?
-     */
-    public function hasReceipt(): bool
-    {
-        return !empty($this->receipt_number);
+        return $query->whereYear('payment_date', now()->year);
     }
 }

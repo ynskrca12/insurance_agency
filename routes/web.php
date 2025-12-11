@@ -8,6 +8,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\RenewalController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -61,6 +62,15 @@ Route::prefix('panel')->group(function () {
         Route::post('renewals/{renewal}/mark-lost', [RenewalController::class, 'markAsLost'])->name('renewals.markAsLost');
         Route::post('renewals/{renewal}/send-reminder', [RenewalController::class, 'sendReminder'])->name('renewals.sendReminder');
         Route::post('renewals/bulk-send-reminders', [RenewalController::class, 'bulkSendReminders'])->name('renewals.bulkSendReminders');
+
+        // Payments
+        Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
+        Route::get('payments/installments', [PaymentController::class, 'installments'])->name('payments.installments');
+        Route::get('payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
+        Route::post('payments', [PaymentController::class, 'store'])->name('payments.store');
+        Route::post('payments/{payment}/cancel', [PaymentController::class, 'cancel'])->name('payments.cancel');
+        Route::post('payments/installments/{installment}/send-reminder', [PaymentController::class, 'sendReminder'])->name('payments.sendReminder');
+        Route::post('payments/bulk-send-reminders', [PaymentController::class, 'bulkSendReminders'])->name('payments.bulkSendReminders');
 
 
     });
