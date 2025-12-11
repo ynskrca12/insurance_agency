@@ -227,7 +227,6 @@
     }
 
     .empty-state i {
-        font-size: 5rem;
         color: #d0d0d0;
         margin-bottom: 1.5rem;
     }

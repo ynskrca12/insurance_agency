@@ -171,9 +171,16 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link {{ request()->routeIs('renewals.*') ? 'active' : '' }}"
+                            href="{{ route('renewals.index') }}">
                                 <i class="bi bi-arrow-repeat"></i>
                                 Yenilemeler
+                                @php
+                                    $criticalCount = \App\Models\PolicyRenewal::critical()->count();
+                                @endphp
+                                @if($criticalCount > 0)
+                                    <span class="badge bg-danger ms-2">{{ $criticalCount }}</span>
+                                @endif
                             </a>
                         </li>
 

@@ -14,7 +14,10 @@ return new class extends Migration
             $table->foreignId('policy_id')->constrained('policies')->cascadeOnDelete();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
 
-            // Yenileme Durumu
+            $table->date('renewal_date'); // Poliçe bitiş tarihi
+
+            $table->enum('priority', ['low', 'normal', 'high', 'critical'])->default('normal');
+
             $table->enum('status', [
                 'pending',            // Bekliyor
                 'contacted',          // Görüşüldü
@@ -22,26 +25,36 @@ return new class extends Migration
                 'approved',           // Onaylandı
                 'rejected',           // Reddedildi
                 'lost_to_competitor', // Rakibe gitti
-                'renewed'             // Yenilendi
+                'renewed',            // Yenilendi
+                'lost'                // Kaybedildi
             ])->default('pending');
 
             $table->timestamp('contacted_at')->nullable();
             $table->foreignId('contacted_by')->nullable()->constrained('users')->nullOnDelete();
             $table->date('next_contact_date')->nullable();
 
+            $table->text('contact_notes')->nullable();
+
             $table->text('notes')->nullable();
             $table->text('rejection_reason')->nullable();
             $table->string('competitor_name')->nullable();
 
-            // Yeni Poliçe
+            $table->enum('lost_reason', ['price', 'service', 'competitor', 'customer_decision', 'other'])->nullable();
+
             $table->foreignId('new_policy_id')->nullable()
                   ->constrained('policies')->nullOnDelete();
+
+            $table->timestamp('renewed_at')->nullable();
+
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
 
             $table->timestamps();
 
             $table->index('policy_id');
             $table->index('customer_id');
+            $table->index('renewal_date');
             $table->index('status');
+            $table->index('priority');
             $table->index('next_contact_date');
         });
     }

@@ -301,7 +301,6 @@
     }
 
     .empty-state i {
-        font-size: 4rem;
         color: #d0d0d0;
         margin-bottom: 1rem;
     }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class PolicyRenewal extends Model
 {
@@ -12,26 +13,32 @@ class PolicyRenewal extends Model
     // protected $fillable = [
     //     'policy_id',
     //     'customer_id',
+    //     'renewal_date',
     //     'status',
+    //     'priority',
     //     'contacted_at',
     //     'contacted_by',
     //     'next_contact_date',
+    //     'contact_notes',
     //     'notes',
     //     'rejection_reason',
     //     'competitor_name',
+    //     'lost_reason',
     //     'new_policy_id',
+    //     'renewed_at',
+    //     'created_by',
     // ];
 
     protected $guarded = [];
 
     protected $casts = [
+        'renewal_date' => 'date',
         'contacted_at' => 'datetime',
         'next_contact_date' => 'date',
+        'renewed_at' => 'datetime',
     ];
 
-    /**
-     * İlişkiler
-     */
+    // İlişkiler
     public function policy()
     {
         return $this->belongsTo(Policy::class);
@@ -52,9 +59,17 @@ class PolicyRenewal extends Model
         return $this->belongsTo(Policy::class, 'new_policy_id');
     }
 
-    /**
-     * Scope'lar
-     */
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function reminders()
+    {
+        return $this->hasMany(RenewalReminder::class, 'policy_renewal_id');
+    }
+
+    // Scope'lar
     public function scopePending($query)
     {
         return $query->where('status', 'pending');
@@ -62,94 +77,77 @@ class PolicyRenewal extends Model
 
     public function scopeContacted($query)
     {
-        return $query->where('status', 'contacted');
+        return $query->whereIn('status', ['contacted', 'quotation_sent', 'approved']);
     }
 
-    public function scopeApproved($query)
+    public function scopeRenewed($query)
     {
-        return $query->where('status', 'approved');
+        return $query->where('status', 'renewed');
     }
 
-    public function scopeRejected($query)
+    public function scopeLost($query)
     {
-        return $query->where('status', 'rejected');
+        return $query->whereIn('status', ['rejected', 'lost_to_competitor', 'lost']);
     }
 
-    /**
-     * Beklemede mi?
-     */
-    public function isPending(): bool
+    public function scopeCritical($query)
     {
-        return $this->status === 'pending';
+        return $query->whereBetween('renewal_date', [now(), now()->addDays(7)])
+                    ->whereNotIn('status', ['renewed', 'rejected', 'lost_to_competitor', 'lost']);
     }
 
-    /**
-     * Yenilendi mi?
-     */
-    public function isRenewed(): bool
+    public function scopeUpcoming($query)
     {
-        return $this->status === 'renewed';
+        return $query->whereBetween('renewal_date', [now(), now()->addDays(30)])
+                    ->whereNotIn('status', ['renewed', 'rejected', 'lost_to_competitor', 'lost']);
     }
 
-    /**
-     * İletişime geç olarak işaretle
-     */
-    public function markAsContacted(int $userId, ?string $notes = null): void
+    public function scopeToday($query)
     {
-        $this->update([
-            'status' => 'contacted',
-            'contacted_at' => now(),
-            'contacted_by' => $userId,
-            'notes' => $notes,
-        ]);
+        return $query->whereDate('renewal_date', now())
+                    ->whereNotIn('status', ['renewed', 'rejected', 'lost_to_competitor', 'lost']);
     }
 
-    /**
-     * Onaylandı olarak işaretle
-     */
-    public function markAsApproved(): void
+    public function scopeOverdue($query)
     {
-        $this->update(['status' => 'approved']);
+        return $query->where('renewal_date', '<', now())
+                    ->whereNotIn('status', ['renewed', 'rejected', 'lost_to_competitor', 'lost']);
     }
 
-    /**
-     * Reddedildi olarak işaretle
-     */
-    public function markAsRejected(string $reason, ?string $competitorName = null): void
+    // Accessor'lar
+    public function getDaysUntilRenewalAttribute()
     {
-        $this->update([
-            'status' => 'rejected',
-            'rejection_reason' => $reason,
-            'competitor_name' => $competitorName,
-        ]);
+        return (int) now()->diffInDays($this->renewal_date, false);
     }
 
-    /**
-     * Yenilendi olarak işaretle
-     */
-    public function markAsRenewed(int $newPolicyId): void
+    public function getIsCriticalAttribute()
     {
-        $this->update([
-            'status' => 'renewed',
-            'new_policy_id' => $newPolicyId,
-        ]);
+        $days = $this->days_until_renewal;
+        return $days >= 0 && $days <= 7;
     }
 
-    /**
-     * Durum label
-     */
-    public function getStatusLabelAttribute(): string
+    public function getIsOverdueAttribute()
     {
-        $labels = [
-            'pending' => 'Bekliyor',
-            'contacted' => 'Görüşüldü',
-            'quotation_sent' => 'Teklif Verildi',
-            'approved' => 'Onaylandı',
-            'rejected' => 'Reddedildi',
-            'lost_to_competitor' => 'Rakibe Gitti',
-            'renewed' => 'Yenilendi',
-        ];
+        return $this->days_until_renewal < 0;
+    }
 
-        return $labels[$this->status] ?? $this->status;
+    // Yardımcı Metodlar
+    public function updatePriority()
+    {
+        $daysLeft = $this->days_until_renewal;
+
+        if ($daysLeft < 0) {
+            $this->priority = 'critical';
+        } elseif ($daysLeft <= 7) {
+            $this->priority = 'critical';
+        } elseif ($daysLeft <= 30) {
+            $this->priority = 'high';
+        } elseif ($daysLeft <= 60) {
+            $this->priority = 'normal';
+        } else {
+            $this->priority = 'low';
+        }
+
+        $this->save();
     }
 }

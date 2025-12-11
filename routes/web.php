@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\RenewalController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -51,6 +52,15 @@ Route::prefix('panel')->group(function () {
         Route::resource('quotations', QuotationController::class);
         Route::post('quotations/{quotation}/send', [QuotationController::class, 'send'])->name('quotations.send');
         Route::post('quotations/{quotation}/convert', [QuotationController::class, 'convert'])->name('quotations.convert');
+
+        Route::get('renewals', [RenewalController::class, 'index'])->name('renewals.index');
+        Route::get('renewals/calendar', [RenewalController::class, 'calendar'])->name('renewals.calendar');
+        Route::get('renewals/{renewal}', [RenewalController::class, 'show'])->name('renewals.show');
+        Route::post('renewals/{renewal}/contact', [RenewalController::class, 'contact'])->name('renewals.contact');
+        Route::post('renewals/{renewal}/mark-renewed', [RenewalController::class, 'markAsRenewed'])->name('renewals.markAsRenewed');
+        Route::post('renewals/{renewal}/mark-lost', [RenewalController::class, 'markAsLost'])->name('renewals.markAsLost');
+        Route::post('renewals/{renewal}/send-reminder', [RenewalController::class, 'sendReminder'])->name('renewals.sendReminder');
+        Route::post('renewals/bulk-send-reminders', [RenewalController::class, 'bulkSendReminders'])->name('renewals.bulkSendReminders');
 
 
     });

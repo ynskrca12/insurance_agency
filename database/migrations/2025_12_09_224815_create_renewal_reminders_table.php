@@ -13,6 +13,7 @@ return new class extends Migration
 
             $table->foreignId('policy_id')->constrained('policies')->cascadeOnDelete();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
+            $table->foreignId('policy_renewal_id')->nullable()->constrained('policy_renewals')->cascadeOnDelete();
 
             // Hatırlatma Tipi
             $table->enum('reminder_type', [

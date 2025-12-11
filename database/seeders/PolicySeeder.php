@@ -6,6 +6,7 @@ use App\Models\Policy;
 use App\Models\Customer;
 use App\Models\InsuranceCompany;
 use App\Models\User;
+use App\Models\PolicyRenewal;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
 
@@ -216,6 +217,20 @@ class PolicySeeder extends Seeder
 
         foreach ($policies as $policy) {
             Policy::create($policy);
+        }
+
+        foreach (Policy::all() as $policy) {
+            // Sadece aktif ve süresi yaklaşan poliçeler için
+            if ($policy->status === 'active' || $policy->status === 'expiring_soon' || $policy->status === 'critical') {
+                PolicyRenewal::create([
+                    'policy_id' => $policy->id,
+                    'customer_id' => $policy->customer_id,
+                    'renewal_date' => $policy->end_date,
+                    'status' => 'pending',
+                    'priority' => $policy->days_until_expiry <= 7 ? 'critical' : ($policy->days_until_expiry <= 30 ? 'high' : 'normal'),
+                    'created_by' => $userId,
+                ]);
+            }
         }
     }
 }

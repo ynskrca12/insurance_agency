@@ -42,6 +42,11 @@ class RenewalReminder extends Model
         return $this->belongsTo(Customer::class);
     }
 
+    public function policyRenewal()
+    {
+        return $this->belongsTo(PolicyRenewal::class, 'policy_renewal_id');
+    }
+
     /**
      * Scope'lar
      */
