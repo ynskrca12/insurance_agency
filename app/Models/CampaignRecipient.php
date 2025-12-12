@@ -5,28 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CampaignLog extends Model
+class CampaignRecipient extends Model
 {
     use HasFactory;
-
-    public $timestamps = false;
 
     protected $fillable = [
         'campaign_id',
         'customer_id',
+        'contact_type',
+        'contact_value',
         'status',
-        'message_content',
-        'error_message',
         'sent_at',
+        'delivered_at',
+        'error_message',
     ];
 
     protected $casts = [
         'sent_at' => 'datetime',
+        'delivered_at' => 'datetime',
     ];
 
-    /**
-     * İlişkiler
-     */
+    // İlişkiler
     public function campaign()
     {
         return $this->belongsTo(Campaign::class);
@@ -37,19 +36,19 @@ class CampaignLog extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    /**
-     * Başarılı mı?
-     */
-    public function isSuccess(): bool
+    // Scope'lar
+    public function scopePending($query)
     {
-        return $this->status === 'sent';
+        return $query->where('status', 'pending');
     }
 
-    /**
-     * Başarısız mı?
-     */
-    public function isFailed(): bool
+    public function scopeSent($query)
     {
-        return $this->status === 'failed';
+        return $query->where('status', 'sent');
+    }
+
+    public function scopeFailed($query)
+    {
+        return $query->where('status', 'failed');
     }
 }

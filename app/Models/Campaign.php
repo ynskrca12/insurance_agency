@@ -9,24 +9,22 @@ class Campaign extends Model
 {
     use HasFactory;
 
-    // protected $fillable = [
-    //     'name',
-    //     'description',
-    //     'type',
-    //     'template_id',
-    //     'target_filter',
-    //     'scheduled_at',
-    //     'status',
-    //     'target_count',
-    //     'sent_count',
-    //     'success_count',
-    //     'fail_count',
-    //     'started_at',
-    //     'completed_at',
-    //     'created_by',
-    // ];
-
-    protected $guarded = [];
+    protected $fillable = [
+        'name',
+        'type',
+        'subject',
+        'message',
+        'target_type',
+        'target_filter',
+        'status',
+        'scheduled_at',
+        'started_at',
+        'completed_at',
+        'total_recipients',
+        'sent_count',
+        'failed_count',
+        'created_by',
+    ];
 
     protected $casts = [
         'target_filter' => 'array',
@@ -35,27 +33,18 @@ class Campaign extends Model
         'completed_at' => 'datetime',
     ];
 
-    /**
-     * İlişkiler
-     */
-    public function template()
-    {
-        return $this->belongsTo(MessageTemplate::class, 'template_id');
-    }
-
+    // ✅ İLİŞKİLER
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function logs()
+    public function recipients()
     {
-        return $this->hasMany(CampaignLog::class);
+        return $this->hasMany(CampaignRecipient::class);
     }
 
-    /**
-     * Scope'lar
-     */
+    // Scope'lar
     public function scopeDraft($query)
     {
         return $query->where('status', 'draft');
@@ -66,80 +55,38 @@ class Campaign extends Model
         return $query->where('status', 'scheduled');
     }
 
-    public function scopeCompleted($query)
+    public function scopeSent($query)
     {
-        return $query->where('status', 'completed');
+        return $query->where('status', 'sent');
     }
 
-    /**
-     * Başarı oranı
-     */
-    public function getSuccessRateAttribute(): float
+    public function scopeFailed($query)
     {
-        if ($this->sent_count === 0) {
+        return $query->where('status', 'failed');
+    }
+
+    // Accessor'lar
+    public function getSuccessRateAttribute()
+    {
+        if ($this->total_recipients == 0) {
             return 0;
         }
-
-        return round(($this->success_count / $this->sent_count) * 100, 2);
+        return ($this->sent_count / $this->total_recipients) * 100;
     }
 
-    /**
-     * Taslak mı?
-     */
+    // Yardımcı metodlar
     public function isDraft(): bool
     {
         return $this->status === 'draft';
     }
 
-    /**
-     * Gönderiliyor mu?
-     */
     public function isSending(): bool
     {
         return $this->status === 'sending';
     }
 
-    /**
-     * Tamamlandı mı?
-     */
-    public function isCompleted(): bool
+    public function isSent(): bool
     {
-        return $this->status === 'completed';
-    }
-
-    /**
-     * Kampanyayı başlat
-     */
-    public function start(): void
-    {
-        $this->update([
-            'status' => 'sending',
-            'started_at' => now(),
-        ]);
-    }
-
-    /**
-     * Kampanyayı tamamla
-     */
-    public function complete(): void
-    {
-        $this->update([
-            'status' => 'completed',
-            'completed_at' => now(),
-        ]);
-    }
-
-    /**
-     * Gönderim sayacını artır
-     */
-    public function incrementSent(bool $success = true): void
-    {
-        $this->increment('sent_count');
-
-        if ($success) {
-            $this->increment('success_count');
-        } else {
-            $this->increment('fail_count');
-        }
+        return $this->status === 'sent';
     }
 }

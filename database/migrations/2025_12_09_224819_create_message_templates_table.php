@@ -11,33 +11,19 @@ return new class extends Migration
         Schema::create('message_templates', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name')->comment('Şablon adı');
-            $table->enum('type', ['sms', 'email', 'whatsapp']);
-
-            // Email için
+            $table->string('name');
+            $table->enum('type', ['sms', 'email', 'whatsapp'])->default('sms');
             $table->string('subject')->nullable();
-
             $table->text('content');
-
-            $table->json('available_variables')->nullable();
-
-            $table->enum('category', [
-                'renewal',        // Yenileme
-                'payment',        // Ödeme
-                'welcome',        // Hoşgeldin
-                'campaign',       // Kampanya
-                'custom'          // Özel
-            ])->default('custom');
-
+            $table->json('variables')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->boolean('is_default')->default(false);
 
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
 
             $table->timestamps();
 
+            // İNDEXLER
             $table->index('type');
-            $table->index('category');
             $table->index('is_active');
         });
     }

@@ -215,9 +215,16 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link {{ request()->routeIs('campaigns.*') ? 'active' : '' }}"
+                            href="{{ route('campaigns.index') }}">
                                 <i class="bi bi-megaphone"></i>
                                 Kampanyalar
+                                @php
+                                    $draftCampaigns = \App\Models\Campaign::where('status', 'draft')->count();
+                                @endphp
+                                @if($draftCampaigns > 0)
+                                    <span class="badge bg-warning ms-2">{{ $draftCampaigns }}</span>
+                                @endif
                             </a>
                         </li>
 

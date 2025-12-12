@@ -11,6 +11,7 @@ use App\Http\Controllers\RenewalController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\CampaignController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -94,7 +95,7 @@ Route::prefix('panel')->group(function () {
             return response()->json($policies);
         })->name('customers.policies');
 
-            // Reports (Raporlar)
+            // Reports
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
         Route::get('reports/commission', [ReportController::class, 'commission'])->name('reports.commission');
@@ -102,6 +103,21 @@ Route::prefix('panel')->group(function () {
         Route::get('reports/renewals', [ReportController::class, 'renewals'])->name('reports.renewals');
         Route::get('reports/payments', [ReportController::class, 'payments'])->name('reports.payments');
         Route::post('reports/export', [ReportController::class, 'export'])->name('reports.export');
+
+        // Campaigns
+        Route::get('campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
+        Route::get('campaigns/create', [CampaignController::class, 'create'])->name('campaigns.create');
+        Route::post('campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
+        Route::get('campaigns/{campaign}', [CampaignController::class, 'show'])->name('campaigns.show');
+        Route::delete('campaigns/{campaign}', [CampaignController::class, 'destroy'])->name('campaigns.destroy');
+        Route::post('campaigns/{campaign}/send', [CampaignController::class, 'send'])->name('campaigns.send');
+        Route::post('campaigns/{campaign}/test', [CampaignController::class, 'test'])->name('campaigns.test');
+        Route::post('campaigns/preview-recipients', [CampaignController::class, 'previewRecipients'])->name('campaigns.previewRecipients');
+
+        // Message Templates
+        Route::get('campaigns/templates/list', [CampaignController::class, 'templates'])->name('campaigns.templates');
+        Route::post('campaigns/templates', [CampaignController::class, 'storeTemplate'])->name('campaigns.storeTemplate');
+        Route::delete('campaigns/templates/{template}', [CampaignController::class, 'destroyTemplate'])->name('campaigns.destroyTemplate');
 
 
     });

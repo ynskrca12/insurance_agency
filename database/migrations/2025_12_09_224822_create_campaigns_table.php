@@ -11,37 +11,37 @@ return new class extends Migration
         Schema::create('campaigns', function (Blueprint $table) {
             $table->id();
 
+            // TEMEL BİLGİLER
             $table->string('name');
-            $table->text('description')->nullable();
+            $table->enum('type', ['sms', 'email', 'whatsapp'])->default('sms');
+            $table->string('subject')->nullable();
+            $table->text('message');
 
-            $table->enum('type', ['sms', 'email', 'whatsapp']);
-            $table->foreignId('template_id')->nullable()->constrained('message_templates')->nullOnDelete();
-
+            // HEDEF KİTLE
+            $table->enum('target_type', ['all', 'active_customers', 'policy_type', 'city', 'custom'])->default('all');
             $table->json('target_filter')->nullable();
 
+            // DURUM
+            $table->enum('status', ['draft', 'scheduled', 'sending', 'sent', 'failed'])->default('draft');
+
+            // TARİHLER
             $table->timestamp('scheduled_at')->nullable();
-            $table->enum('status', [
-                'draft',
-                'scheduled',
-                'sending',
-                'completed',
-                'failed',
-                'cancelled'
-            ])->default('draft');
-
-            $table->integer('target_count')->default(0);
-            $table->integer('sent_count')->default(0);
-            $table->integer('success_count')->default(0);
-            $table->integer('fail_count')->default(0);
-
             $table->timestamp('started_at')->nullable();
             $table->timestamp('completed_at')->nullable();
 
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            // İSTATİSTİKLER
+            $table->integer('total_recipients')->default(0);
+            $table->integer('sent_count')->default(0);
+            $table->integer('failed_count')->default(0);
+
+            // OLUŞTURAN
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
 
             $table->timestamps();
 
+            // İNDEXLER
             $table->index('status');
+            $table->index('type');
             $table->index('scheduled_at');
         });
     }
