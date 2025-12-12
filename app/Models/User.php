@@ -74,6 +74,16 @@ class User extends Authenticatable
         return $this->is_active;
     }
 
+    public function isManager(): bool
+    {
+        return $this->role === 'manager';
+    }
+
+    public function isAgent(): bool
+    {
+        return $this->role === 'agent';
+    }
+
     /**
      * Son giriş bilgisini güncelle
      */
@@ -83,5 +93,36 @@ class User extends Authenticatable
             'last_login_at' => now(),
             'last_login_ip' => request()->ip(),
         ]);
+    }
+
+
+    // Accessor'lar
+    // public function getAvatarUrlAttribute()
+    // {
+    //     if ($this->avatar) {
+    //         return Storage::url($this->avatar);
+    //     }
+    //     return asset('images/default-avatar.png');
+    // }
+
+    public function getRoleLabelAttribute()
+    {
+        $labels = [
+            'admin' => 'Yönetici',
+            'manager' => 'Müdür',
+            'agent' => 'Acente',
+        ];
+
+        return $labels[$this->role] ?? $this->role;
+    }
+
+    public function getStatusLabelAttribute()
+    {
+        return $this->is_active ? 'Aktif' : 'Pasif';
+    }
+
+    public function getStatusColorAttribute()
+    {
+        return $this->is_active ? 'success' : 'secondary';
     }
 }

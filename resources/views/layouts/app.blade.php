@@ -252,11 +252,38 @@
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
+                        <!-- Settings Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle {{ request()->routeIs('settings.*') ? 'active' : '' }}"
+                            href="#"
+                            id="settingsDropdown"
+                            role="button"
+                            data-bs-toggle="dropdown">
                                 <i class="bi bi-gear"></i>
                                 Ayarlar
                             </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('settings.index') }}">
+                                        <i class="bi bi-building me-2"></i>Genel Ayarlar
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('settings.users') }}">
+                                        <i class="bi bi-people me-2"></i>Kullanıcılar
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('settings.profile') }}">
+                                        <i class="bi bi-person me-2"></i>Profil
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('settings.security') }}">
+                                        <i class="bi bi-shield-check me-2"></i>Güvenlik
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>

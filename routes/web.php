@@ -13,6 +13,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\InsuranceCompanyController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -124,6 +125,32 @@ Route::prefix('panel')->group(function () {
         // Insurance Companies (Sigorta Şirketleri)
         Route::resource('insurance-companies', InsuranceCompanyController::class);
         Route::post('insurance-companies/{insuranceCompany}/toggle-status', [InsuranceCompanyController::class, 'toggleStatus'])->name('insurance-companies.toggleStatus');
+
+        // Settings (Ayarlar)
+        Route::prefix('settings')->group(function () {
+            // Genel Ayarlar
+            Route::get('/', [SettingsController::class, 'index'])->name('settings.index');
+            Route::post('/general', [SettingsController::class, 'updateGeneral'])->name('settings.updateGeneral');
+
+            // Kullanıcı Yönetimi
+            Route::get('/users', [SettingsController::class, 'users'])->name('settings.users');
+            Route::post('/users', [SettingsController::class, 'storeUser'])->name('settings.storeUser');
+            Route::put('/users/{user}', [SettingsController::class, 'updateUser'])->name('settings.updateUser');
+            Route::delete('/users/{user}', [SettingsController::class, 'destroyUser'])->name('settings.destroyUser');
+
+            // Profil Ayarları
+            Route::get('/profile', [SettingsController::class, 'profile'])->name('settings.profile');
+            Route::post('/profile', [SettingsController::class, 'updateProfile'])->name('settings.updateProfile');
+            Route::post('/profile/password', [SettingsController::class, 'updatePassword'])->name('settings.updatePassword');
+
+            // Güvenlik
+            Route::get('/security', [SettingsController::class, 'security'])->name('settings.security');
+            Route::post('/security', [SettingsController::class, 'updateSecurity'])->name('settings.updateSecurity');
+
+            // Hızlı İşlemler
+            Route::post('/clear-cache', [SettingsController::class, 'clearCache'])->name('settings.clearCache');
+            Route::post('/backup', [SettingsController::class, 'backup'])->name('settings.backup');
+        });
 
     });
 });
