@@ -10,6 +10,7 @@ use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\RenewalController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -92,6 +93,15 @@ Route::prefix('panel')->group(function () {
                 ->get(['id', 'policy_number']);
             return response()->json($policies);
         })->name('customers.policies');
+
+            // Reports (Raporlar)
+        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
+        Route::get('reports/commission', [ReportController::class, 'commission'])->name('reports.commission');
+        Route::get('reports/customers', [ReportController::class, 'customers'])->name('reports.customers');
+        Route::get('reports/renewals', [ReportController::class, 'renewals'])->name('reports.renewals');
+        Route::get('reports/payments', [ReportController::class, 'payments'])->name('reports.payments');
+        Route::post('reports/export', [ReportController::class, 'export'])->name('reports.export');
 
 
     });
