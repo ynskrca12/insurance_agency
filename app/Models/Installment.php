@@ -9,18 +9,6 @@ class Installment extends Model
 {
     use HasFactory;
 
-    // protected $fillable = [
-    //     'payment_plan_id',
-    //     'installment_number',
-    //     'amount',
-    //     'due_date',
-    //     'paid_date',
-    //     'payment_method',
-    //     'receipt_number',
-    //     'status',
-    //     'notes',
-    // ];
-
     protected $guarded = [];
 
     protected $casts = [
@@ -37,9 +25,16 @@ class Installment extends Model
         return $this->belongsTo(PaymentPlan::class);
     }
 
+    // ✅ ÇOĞUL - Tüm ödemeler (Eğer kısmi ödeme varsa)
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    // ✅ TEKİL - Son/Ana ödeme (Controller için)
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class, 'payment_id');
     }
 
     public function reminders()
@@ -106,13 +101,13 @@ class Installment extends Model
     /**
      * Ödendi olarak işaretle
      */
-    public function markAsPaid(string $paymentMethod, ?string $receiptNumber = null): void
+    public function markAsPaid($paymentId, $paidDate, $paymentMethod)
     {
         $this->update([
             'status' => 'paid',
-            'paid_date' => today(),
+            'paid_date' => $paidDate,
+            'payment_id' => $paymentId,
             'payment_method' => $paymentMethod,
-            'receipt_number' => $receiptNumber,
         ]);
     }
 

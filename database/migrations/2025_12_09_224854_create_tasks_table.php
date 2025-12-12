@@ -11,53 +11,35 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
 
+            // TEMEL BİLGİLER
             $table->string('title');
             $table->text('description')->nullable();
+            $table->enum('category', ['call', 'meeting', 'follow_up', 'document', 'renewal', 'payment', 'quotation', 'other'])->default('other');
+            $table->enum('priority', ['low', 'normal', 'high', 'urgent'])->default('normal');
+            $table->enum('status', ['pending', 'in_progress', 'completed', 'cancelled'])->default('pending');
 
-            $table->enum('task_type', [
-                'call',
-                'follow_up',
-                'renewal',
-                'quotation_prepare',
-                'document_collect',
-                'payment_collect',
-                'other'
-            ]);
+            // İLİŞKİLER
+            $table->foreignId('assigned_to')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('assigned_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('customer_id')->nullable()->constrained('customers')->nullOnDelete();
+            $table->foreignId('policy_id')->nullable()->constrained('policies')->nullOnDelete();
 
-            // Polymorphic İlişki
-            $table->nullableMorphs('related');
-
-            $table->foreignId('assigned_to_user_id')->nullable()->constrained('users')->nullOnDelete();
-
-            $table->date('due_date');
-            $table->time('due_time')->nullable();
-
-            $table->enum('priority', [
-                'low',
-                'normal',
-                'high',
-                'urgent'
-            ])->default('normal');
-
-            $table->enum('status', [
-                'pending',
-                'in_progress',
-                'completed',
-                'cancelled'
-            ])->default('pending');
-
+            // TARİHLER
+            $table->datetime('due_date');
+            $table->datetime('reminder_date')->nullable();
             $table->timestamp('completed_at')->nullable();
-            $table->text('result_notes')->nullable();
 
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            // NOTLAR
+            $table->text('notes')->nullable();
 
             $table->timestamps();
 
-            $table->index('assigned_to_user_id');
-            $table->index('due_date');
+            // İNDEXLER
             $table->index('status');
             $table->index('priority');
-            $table->index(['due_date', 'status']);
+            $table->index('category');
+            $table->index('assigned_to');
+            $table->index('due_date');
         });
     }
 

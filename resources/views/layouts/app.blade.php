@@ -199,9 +199,18 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-check-square"></i>
+                            <a class="nav-link {{ request()->routeIs('tasks.*') ? 'active' : '' }}"
+                            href="{{ route('tasks.index') }}">
+                                <i class="bi bi-check2-square"></i>
                                 Görevler
+                                @php
+                                    $myOpenTasks = \App\Models\Task::where('assigned_to', auth()->id())
+                                        ->whereNotIn('status', ['completed', 'cancelled'])
+                                        ->count();
+                                @endphp
+                                @if($myOpenTasks > 0)
+                                    <span class="badge bg-warning ms-2">{{ $myOpenTasks }}</span>
+                                @endif
                             </a>
                         </li>
 

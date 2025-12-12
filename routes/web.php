@@ -9,6 +9,7 @@ use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\RenewalController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,7 +50,7 @@ Route::prefix('panel')->group(function () {
 
         Route::resource('policies', PolicyController::class);
 
-            // Quotations (Teklifler)
+        // Quotations (Teklifler)
         Route::resource('quotations', QuotationController::class);
         Route::post('quotations/{quotation}/send', [QuotationController::class, 'send'])->name('quotations.send');
         Route::post('quotations/{quotation}/convert', [QuotationController::class, 'convert'])->name('quotations.convert');
@@ -71,6 +72,26 @@ Route::prefix('panel')->group(function () {
         Route::post('payments/{payment}/cancel', [PaymentController::class, 'cancel'])->name('payments.cancel');
         Route::post('payments/installments/{installment}/send-reminder', [PaymentController::class, 'sendReminder'])->name('payments.sendReminder');
         Route::post('payments/bulk-send-reminders', [PaymentController::class, 'bulkSendReminders'])->name('payments.bulkSendReminders');
+
+        // Tasks (Görevler)
+        Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index');
+        Route::get('tasks/kanban', [TaskController::class, 'kanban'])->name('tasks.kanban');
+        Route::get('tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+        Route::post('tasks', [TaskController::class, 'store'])->name('tasks.store');
+        Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
+        Route::get('tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
+        Route::put('tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
+        Route::delete('tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+        Route::post('tasks/{task}/update-status', [TaskController::class, 'updateStatus'])->name('tasks.updateStatus');
+        Route::post('tasks/{task}/add-comment', [TaskController::class, 'addComment'])->name('tasks.addComment');
+
+        // Customer Policies (AJAX için)
+        Route::get('customers/{customer}/policies', function($customerId) {
+            $policies = \App\Models\Policy::where('customer_id', $customerId)
+                ->where('status', 'active')
+                ->get(['id', 'policy_number']);
+            return response()->json($policies);
+        })->name('customers.policies');
 
 
     });

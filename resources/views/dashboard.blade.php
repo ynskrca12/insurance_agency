@@ -462,6 +462,59 @@
         </div>
     </div>
 
+    <!-- Görev Özeti -->
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Açık Görevlerim</small>
+                        <h4 class="mb-0 text-primary">{{ $taskStats['my_open_tasks'] }}</h4>
+                    </div>
+                    <div class="text-primary" style="font-size: 2rem;">
+                        <i class="bi bi-check2-square"></i>
+                    </div>
+                </div>
+                <a href="{{ route('tasks.index', ['assigned_to' => 'me']) }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Gecikmiş Görevler</small>
+                        <h4 class="mb-0 text-danger">{{ $taskStats['overdue_tasks'] }}</h4>
+                    </div>
+                    <div class="text-danger" style="font-size: 2rem;">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <a href="{{ route('tasks.index', ['assigned_to' => 'me', 'date_filter' => 'overdue']) }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Bugün Yapılacak</small>
+                        <h4 class="mb-0 text-warning">{{ $taskStats['due_today'] }}</h4>
+                    </div>
+                    <div class="text-warning" style="font-size: 2rem;">
+                        <i class="bi bi-calendar3"></i>
+                    </div>
+                </div>
+                <a href="{{ route('tasks.index', ['assigned_to' => 'me', 'date_filter' => 'today']) }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+</div>
     <!-- Hızlı Aksiyonlar -->
     <div class="row g-4 mt-2">
         <div class="col-12">

@@ -61,13 +61,21 @@ class DashboardController extends Controller
         ];
 
 
+        $taskStats = [
+            'my_open_tasks' => Task::where('assigned_to', auth()->id())
+                ->whereNotIn('status', ['completed', 'cancelled'])
+                ->count(),
+            'overdue_tasks' => Task::overdue()->where('assigned_to', auth()->id())->count(),
+            'due_today' => Task::dueToday()->where('assigned_to', auth()->id())->count(),
+        ];
 
         return view('dashboard', compact(
             'stats',
             'recentCustomers',
             'expiringPolicies',
             'todayTasks',
-            'paymentStats'
+            'paymentStats',
+            'taskStats'
         ));
     }
 
