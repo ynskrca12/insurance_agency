@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class InsuranceCompany extends Model
 {
@@ -31,6 +32,7 @@ class InsuranceCompany extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'display_order' => 'integer',
         'default_commission_kasko' => 'decimal:2',
         'default_commission_trafik' => 'decimal:2',
         'default_commission_konut' => 'decimal:2',
@@ -40,41 +42,72 @@ class InsuranceCompany extends Model
         'default_commission_tss' => 'decimal:2',
     ];
 
-    /**
-     * İlişkiler
-     */
+    // İlişkiler
     public function policies()
     {
         return $this->hasMany(Policy::class);
     }
 
-    public function quotationItems()
+    public function quotations()
     {
-        return $this->hasMany(QuotationItem::class);
+        return $this->hasMany(Quotation::class);
     }
 
-    /**
-     * Aktif şirketler
-     */
+    // Scope'lar
     public function scopeActive($query)
     {
-        return $query->where('is_active', true)->orderBy('display_order');
+        return $query->where('is_active', true);
     }
 
-    /**
-     * Poliçe türüne göre komisyon oranı
-     */
-    public function getCommissionRate(string $policyType): float
+    public function scopeInactive($query)
     {
-        $field = "default_commission_{$policyType}";
+        return $query->where('is_active', false);
+    }
+
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('display_order')->orderBy('name');
+    }
+
+    // Accessor'lar
+    public function getLogoUrlAttribute()
+    {
+        if ($this->logo) {
+            return Storage::url($this->logo);
+        }
+        return asset('images/default-company-logo.png');
+    }
+
+    public function getStatusLabelAttribute()
+    {
+        return $this->is_active ? 'Aktif' : 'Pasif';
+    }
+
+    public function getStatusColorAttribute()
+    {
+        return $this->is_active ? 'success' : 'secondary';
+    }
+
+    // Komisyon oranı getir
+    public function getCommissionRate($policyType)
+    {
+        $field = 'default_commission_' . $policyType;
         return $this->$field ?? 0;
     }
 
-    /**
-     * Logo URL
-     */
-    public function getLogoUrlAttribute(): ?string
+    // Yardımcı metodlar
+    public function isActive(): bool
     {
-        return $this->logo ? asset('storage/' . $this->logo) : null;
+        return $this->is_active;
+    }
+
+    public function activate(): bool
+    {
+        return $this->update(['is_active' => true]);
+    }
+
+    public function deactivate(): bool
+    {
+        return $this->update(['is_active' => false]);
     }
 }

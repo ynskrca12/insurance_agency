@@ -12,6 +12,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\CampaignController;
+use App\Http\Controllers\InsuranceCompanyController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -119,6 +120,10 @@ Route::prefix('panel')->group(function () {
         Route::post('campaigns/templates', [CampaignController::class, 'storeTemplate'])->name('campaigns.storeTemplate');
         Route::delete('campaigns/templates/{template}', [CampaignController::class, 'destroyTemplate'])->name('campaigns.destroyTemplate');
 
+
+        // Insurance Companies (Sigorta Şirketleri)
+        Route::resource('insurance-companies', InsuranceCompanyController::class);
+        Route::post('insurance-companies/{insuranceCompany}/toggle-status', [InsuranceCompanyController::class, 'toggleStatus'])->name('insurance-companies.toggleStatus');
 
     });
 });

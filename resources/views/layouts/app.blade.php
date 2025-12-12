@@ -239,9 +239,16 @@
                         <hr>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link {{ request()->routeIs('insurance-companies.*') ? 'active' : '' }}"
+                            href="{{ route('insurance-companies.index') }}">
                                 <i class="bi bi-building"></i>
                                 Sigorta Şirketleri
+                                @php
+                                    $activeCompanies = \App\Models\InsuranceCompany::where('is_active', true)->count();
+                                @endphp
+                                @if($activeCompanies > 0)
+                                    <span class="badge bg-success ms-2">{{ $activeCompanies }}</span>
+                                @endif
                             </a>
                         </li>
 
