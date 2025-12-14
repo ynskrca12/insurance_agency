@@ -5,8 +5,7 @@
 @section('content')
 
 <style>
-    /* Kurumsal sade görünüm */
-
+    /* Mevcut stilleriniz aynen kalacak */
     .page-header h1 {
         font-size: 1.4rem;
         font-weight: 600;
@@ -30,7 +29,7 @@
     }
 
     .main-card .card-body {
-        padding: 0;
+        padding: 1.5rem;
     }
 
     .form-select,
@@ -81,13 +80,6 @@
         font-size: 0.9rem;
     }
 
-    .status-badge {
-        padding: 6px 10px;
-        font-size: 0.75rem;
-        border-radius: 6px;
-        font-weight: 500;
-    }
-
     .action-btn {
         border: 1px solid #dcdcdc;
         background: #ffffff;
@@ -108,13 +100,97 @@
         background-color: #fafafa;
     }
 
+    /* DataTables butonları özelleştirme */
+    .dt-buttons {
+        margin-bottom: 1rem;
+    }
+
+    .dt-buttons .btn {
+        margin-right: 0.5rem;
+    }
+</style>
+
+<style>
+
+    .dataTables_length {
+        float: left;
+        padding: 10px 0;
+    }
+
+    .dataTables_length select {
+        border: 1px solid #dcdcdc;
+        border-radius: 6px;
+        padding: 5px 10px;
+        margin: 0 5px;
+    }
+
+    .dataTables_filter {
+        float: right;
+        padding: 10px 0;
+    }
+
+    .dataTables_filter input {
+        border: 1px solid #dcdcdc;
+        border-radius: 6px;
+        padding: 5px 10px;
+        margin-left: 5px;
+    }
+
+    .dataTables_info {
+        padding: 10px 0;
+    }
+
+    .dataTables_paginate {
+        padding: 10px 0;
+        float: right;
+    }
+
+    .dataTables_paginate .paginate_button {
+        padding: 0px 2px;
+        margin: 0 2px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .dataTables_paginate .paginate_button.current {
+        background: #1f3c88 !important;
+        color: white !important;
+        border-color: #1f3c88 !important;
+    }
+
+    .dataTables_paginate .paginate_button:hover:not(.current) {
+        background: #f1f1f1;
+    }
+
+    .dt-buttons {
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+
+    .dt-buttons .btn {
+        margin-right: 0.5rem;
+    }
+
+    .dataTables_processing {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 200px;
+        margin-left: -100px;
+        margin-top: -26px;
+        text-align: center;
+        padding: 1rem;
+        background: white;
+        border: 1px solid #dcdcdc;
+        border-radius: 6px;
+    }
 </style>
 
 <!-- Header -->
 <div class="d-flex justify-content-between align-items-center mb-4 page-header">
     <div>
         <h1><i class="bi bi-people me-2"></i>Müşteriler</h1>
-        <p>Toplam: {{ $customers->total() }} müşteri</p>
+        <p id="customerCount">Toplam: {{ $customers->count() }} müşteri</p>
     </div>
     <a href="{{ route('customers.create') }}" class="btn btn-primary">
         <i class="bi bi-plus-circle me-2"></i>Yeni Müşteri
@@ -124,60 +200,54 @@
 <!-- Filtreler -->
 <div class="filter-card card mb-4">
     <div class="card-body">
-        <form method="GET" action="{{ route('customers.index') }}" id="filterForm">
-            <div class="row g-3 align-items-end">
-
-                <div class="col-md-4">
-                    <label class="form-label">Arama</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control" name="search"
-                               placeholder="Ad, telefon, e-posta veya TC..."
-                               value="{{ request('search') }}">
-                    </div>
-                </div>
-
-                <div class="col-md-2">
-                    <label class="form-label">Durum</label>
-                    <select name="status" class="form-select">
-                        <option value="">Tümü</option>
-                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktif</option>
-                        <option value="potential" {{ request('status') === 'potential' ? 'selected' : '' }}>Potansiyel</option>
-                        <option value="passive" {{ request('status') === 'passive' ? 'selected' : '' }}>Pasif</option>
-                        <option value="lost" {{ request('status') === 'lost' ? 'selected' : '' }}>Kayıp</option>
-                    </select>
-                </div>
-
-                <div class="col-md-2">
-                    <label class="form-label">Şehir</label>
-                    <select name="city" class="form-select">
-                        <option value="">Tümü</option>
-                        @foreach($cities as $city)
-                            <option value="{{ $city }}" {{ request('city') === $city ? 'selected' : '' }}>{{ $city }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-primary me-2">
-                        <i class="bi bi-funnel me-1"></i>Filtrele
-                    </button>
-                    <a href="{{ route('customers.index') }}" class="btn btn-secondary">
-                        <i class="bi bi-x-circle me-1"></i>Temizle
-                    </a>
-                </div>
-
+        <div class="row g-3 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label">Durum</label>
+                <select id="filterStatus" class="form-select">
+                    <option value="">Tümü</option>
+                    <option value="Aktif">Aktif</option>
+                    <option value="Potansiyel">Potansiyel</option>
+                    <option value="Pasif">Pasif</option>
+                    <option value="Kayıp">Kayıp</option>
+                </select>
             </div>
-        </form>
+
+            <div class="col-md-2">
+                <label class="form-label">Şehir</label>
+                <select id="filterCity" class="form-select">
+                    <option value="">Tümü</option>
+                    @foreach($cities as $city)
+                        <option value="{{ $city }}">{{ $city }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Başlangıç Tarihi</label>
+                <input type="date" id="filterDateFrom" class="form-control">
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Bitiş Tarihi</label>
+                <input type="date" id="filterDateTo" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+                <button type="button" class="btn btn-secondary" onclick="clearFilters()">
+                    <i class="bi bi-x-circle me-1"></i>Temizle
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Tablo -->
 <div class="main-card card">
-    <div class="table-responsive">
-        <table class="table table-hover mb-0">
+    <div class="card-body">
+        <table id="customersTable" class="table table-hover">
             <thead>
                 <tr>
+                    <th width="50">#</th>
                     <th>Müşteri Adı</th>
                     <th>İletişim</th>
                     <th>Şehir</th>
@@ -188,28 +258,24 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($customers as $customer)
+                @foreach($customers as $customer)
                 <tr>
+                    <td>{{ $loop->iteration }}</td>
+
                     <td>
                         <strong>{{ $customer->name }}</strong>
-                        @if($customer->isVIP())
+                        @if($customer->policies_count >= 3)
                             <span class="badge bg-warning text-dark ms-1">VIP</span>
                         @endif
                     </td>
-
                     <td>
                         <div><i class="bi bi-telephone me-1"></i>{{ $customer->phone }}</div>
                         @if($customer->email)
                             <small class="text-muted"><i class="bi bi-envelope me-1"></i>{{ $customer->email }}</small>
                         @endif
                     </td>
-
                     <td>{{ $customer->city ?? '-' }}</td>
-
-                    <td>
-                        <span class="badge bg-info">{{ $customer->total_policies }}</span>
-                    </td>
-
+                    <td><span class="badge bg-info">{{ $customer->policies_count }}</span></td>
                     <td>
                         @php
                             $map = [
@@ -219,55 +285,30 @@
                                 'lost' => ['danger','Kayıp'],
                             ];
                         @endphp
-
                         <span class="badge bg-{{ $map[$customer->status][0] }}">
                             {{ $map[$customer->status][1] }}
                         </span>
                     </td>
-
-                    <td>
-                        <small>{{ $customer->created_at->format('d.m.Y') }}</small>
+                    <td data-sort="{{ $customer->created_at->format('Y-m-d') }}">
+                        {{ $customer->created_at->format('d.m.Y') }}
                     </td>
-
                     <td>
                         <a href="{{ route('customers.show', $customer) }}" class="action-btn" title="Detay">
                             <i class="bi bi-eye"></i>
                         </a>
-
                         <a href="{{ route('customers.edit', $customer) }}" class="action-btn" title="Düzenle">
                             <i class="bi bi-pencil"></i>
                         </a>
-
-                        <button class="action-btn"
-                                onclick="deleteCustomer({{ $customer->id }})"
-                                title="Sil">
+                        <button class="action-btn" onclick="deleteCustomer({{ $customer->id }})" title="Sil">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>
                 </tr>
-                @empty
-
-                <tr>
-                    <td colspan="7" class="text-center py-4 text-muted">
-                        <i class="bi bi-inbox" style="font-size: 3rem;"></i>
-                        <p class="mt-2 mb-1">Henüz müşteri bulunmuyor.</p>
-                        <a href="{{ route('customers.create') }}" class="btn btn-primary btn-sm mt-2">
-                            <i class="bi bi-plus-circle me-1"></i> İlk Müşteriyi Ekle
-                        </a>
-                    </td>
-                </tr>
-
-                @endforelse
+                @endforeach
             </tbody>
         </table>
     </div>
 </div>
-
-@if($customers->hasPages())
-<div class="mt-3">
-    {{ $customers->links() }}
-</div>
-@endif
 
 <!-- Delete Form -->
 <form id="deleteForm" method="POST" style="display:none">
@@ -279,28 +320,98 @@
 
 @push('scripts')
 <script>
-function deleteCustomer(id) {
-    if (!confirm('Bu müşteriyi silmek istediğinize emin misiniz?')) return;
+$(document).ready(function() {
 
-    const form = document.getElementById('deleteForm');
-    form.action = '/customers/' + id;
-    form.submit();
+    const table = initDataTable('#customersTable', {
+        // order: [[6, 'desc']],
+        pageLength: 10,
+        columnDefs: [
+            { orderable: false, targets: [7] },
+            // {
+            //     targets: 6,
+            //     render: function(data, type, row) {
+            //         if (type === 'sort') {
+            //             // Sıralama için Y-m-d formatını kullan
+            //             const parts = data.split('.');
+            //             if (parts.length === 3) {
+            //                 return parts[2] + '-' + parts[1] + '-' + parts[0];
+            //             }
+            //         }
+            //         return data;
+            //     }
+            // }
+        ]
+    });
+
+    $('#filterStatus, #filterCity, #filterDateFrom, #filterDateTo').on('change', function() {
+        const status = $('#filterStatus').val();
+        const city = $('#filterCity').val();
+        const dateFrom = $('#filterDateFrom').val();
+        const dateTo = $('#filterDateTo').val();
+
+        $.fn.dataTable.ext.search = [];
+
+        if (status) {
+            table.column(5).search(status);
+        } else {
+            table.column(5).search('');
+        }
+
+        if (city) {
+            table.column(3).search(city);
+        } else {
+            table.column(3).search('');
+        }
+
+        if (dateFrom || dateTo) {
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    const dateStr = data[6]; // Tarih sütunu
+                    if (!dateStr || dateStr === '-') return true;
+
+                    // Tarihi parse et (d.m.Y formatından)
+                    const dateParts = dateStr.split('.');
+                    if (dateParts.length !== 3) return true;
+
+                    const rowDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+                    const startDate = dateFrom ? new Date(dateFrom) : null;
+                    const endDate = dateTo ? new Date(dateTo) : null;
+
+                    if (startDate && rowDate < startDate) return false;
+                    if (endDate && rowDate > endDate) return false;
+
+                    return true;
+                }
+            );
+        }
+
+        table.draw();
+    });
+
+    table.on('draw', function() {
+        const info = table.page.info();
+        $('#customerCount').text(`Gösterilen: ${info.recordsDisplay} / ${info.recordsTotal} müşteri`);
+    });
+
+    const info = table.page.info();
+    $('#customerCount').text(`Gösterilen: ${info.recordsDisplay} / ${info.recordsTotal} müşteri`);
+});
+
+function clearFilters() {
+    $('#filterStatus, #filterCity, #filterDateFrom, #filterDateTo').val('');
+
+    // Tüm custom filtreleri temizle
+    $.fn.dataTable.ext.search = [];
+
+    const table = $('#customersTable').DataTable();
+    table.search('').columns().search('').draw();
 }
 
-$(function() {
-    let timeout;
-    $('input[name="search"]').on('input', function() {
-        clearTimeout(timeout);
-        const val = $(this).val();
-
-        if (val.length >= 3 || val.length === 0) {
-            timeout = setTimeout(() => $('#filterForm').submit(), 400);
-        }
-    });
-
-    $('select[name="status"], select[name="city"]').on('change', function() {
-        $('#filterForm').submit();
-    });
-});
+function deleteCustomer(id) {
+    if (!confirm('Bu müşteriyi silmek istediğinize emin misiniz?')) return;
+    const form = document.getElementById('deleteForm');
+    form.action = '/panel/customers/' + id;
+    form.submit();
+}
 </script>
 @endpush

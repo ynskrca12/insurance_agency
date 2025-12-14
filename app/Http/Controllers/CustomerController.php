@@ -12,16 +12,16 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Customer::with('createdBy');
+        $query = Customer::withCount('policies')->orderby('created_at', 'desc');
 
         // Arama
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('id_number', 'like', "%{$search}%");
+                ->orWhere('phone', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('id_number', 'like', "%{$search}%");
             });
         }
 
@@ -35,13 +35,7 @@ class CustomerController extends Controller
             $query->where('city', $request->city);
         }
 
-        // Sıralama
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
-
-        // Sayfalama
-        $customers = $query->paginate(15)->withQueryString();
+        $customers = $query->get();
 
         // Şehirler (filtre için)
         $cities = Customer::distinct()->pluck('city')->filter()->sort()->values();

@@ -536,7 +536,7 @@
                                 <i class="bi bi-inbox"></i>
                                 <h6 class="text-muted mb-2">Henüz Poliçe Bulunmuyor</h6>
                                 <p class="text-muted small mb-3">Bu müşteriye ait henüz bir poliçe kaydı eklenmemiş.</p>
-                                <a href="#" class="btn btn-primary btn-sm action-btn">
+                                <a href="{{ route('policies.create') }}" class="btn btn-primary btn-sm action-btn">
                                     <i class="bi bi-plus-circle me-2"></i>Yeni Poliçe Ekle
                                 </a>
                             </div>
