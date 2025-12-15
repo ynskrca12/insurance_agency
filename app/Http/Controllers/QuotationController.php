@@ -18,7 +18,7 @@ class QuotationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Quotation::with(['customer', 'items.insuranceCompany', 'createdBy']);
+        $query = Quotation::with(['customer', 'items.insuranceCompany']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -50,11 +50,7 @@ class QuotationController extends Controller
             }
         }
 
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
-
-        $quotations = $query->paginate(20)->withQueryString();
+        $quotations = $query->get();
 
         $stats = [
             'total' => Quotation::count(),

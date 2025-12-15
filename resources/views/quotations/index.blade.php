@@ -70,23 +70,6 @@
         box-shadow: 0 0 0 3px rgba(153, 153, 153, 0.1);
     }
 
-    .input-group-text {
-        border: 1px solid #dcdcdc;
-        border-right: none;
-        background: #fafafa;
-        color: #6c757d;
-        border-radius: 8px 0 0 8px;
-    }
-
-    .input-group .form-control {
-        border-left: none;
-        border-radius: 0 8px 8px 0;
-    }
-
-    .input-group .form-control:focus {
-        border-left: none;
-    }
-
     .action-btn {
         border-radius: 8px;
         padding: 0.625rem 1.5rem;
@@ -111,38 +94,8 @@
         overflow: hidden;
     }
 
-    .table-modern {
-        margin-bottom: 0;
-    }
-
-    .table-modern thead {
-        background: #fafafa;
-        border-bottom: 2px solid #e8e8e8;
-    }
-
-    .table-modern thead th {
-        border: none;
-        color: #495057;
-        font-weight: 600;
-        font-size: 0.8125rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 1rem 1.25rem;
-        white-space: nowrap;
-    }
-
-    .table-modern tbody td {
-        padding: 1rem 1.25rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #f5f5f5;
-    }
-
-    .table-modern tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-    .table-modern tbody tr:hover {
-        background: #fafafa;
+    .table-card .card-body {
+        padding: 1.5rem;
     }
 
     .quotation-number {
@@ -221,54 +174,26 @@
         color: #ffffff;
     }
 
-    .empty-state {
-        padding: 4rem 2rem;
-        text-align: center;
+    /* DataTables */
+    .dataTables_length, .dataTables_filter {
+        padding: 1rem 1.25rem;
     }
 
-    .empty-state i {
-        color: #d0d0d0;
-        margin-bottom: 1.5rem;
+    .dataTables_info, .dataTables_paginate {
+        padding: 1rem 1.25rem;
     }
 
-    .empty-state h5 {
-        color: #6c757d;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
+    .btn-secondary {
+        border: 1px solid #dcdcdc;
+        background: #f8f8f8;
+        color: #333;
     }
 
-    .empty-state p {
-        color: #9ca3af;
-        margin-bottom: 1.5rem;
+    .btn-secondary:hover {
+        background: #e7e7e7;
     }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .fade-in-row {
-        animation: fadeIn 0.4s ease forwards;
-    }
-
-    @media (max-width: 768px) {
-        .action-buttons {
-            flex-wrap: wrap;
-        }
-
-        .table-modern {
-            font-size: 0.875rem;
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-        }
+    .dt-buttons .btn {
+        margin-right: 0.5rem;
     }
 </style>
 @endpush
@@ -282,7 +207,9 @@
                 <h1 class="h3 mb-1 fw-bold text-dark">
                     <i class="bi bi-file-earmark-text me-2"></i>Teklifler
                 </h1>
-                <p class="text-muted mb-0 small">Toplam {{ $quotations->total() }} teklif bulundu</p>
+                <p class="text-muted mb-0 small" id="quotationCount">
+                    Toplam <strong>{{ $quotations->count() }}</strong> teklif bulundu
+                </p>
             </div>
             <a href="{{ route('quotations.create') }}" class="btn btn-primary action-btn">
                 <i class="bi bi-plus-circle me-2"></i>Yeni Teklif Oluştur
@@ -327,91 +254,66 @@
     <!-- Filtreler -->
     <div class="filter-card card">
         <div class="card-body">
-            <form method="GET" action="{{ route('quotations.index') }}" id="filterForm">
-                <div class="row g-3 align-items-end">
-                    <!-- Arama -->
-                    <div class="col-lg-3 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Arama</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text"
-                                   class="form-control"
-                                   name="search"
-                                   placeholder="Teklif no, müşteri ara..."
-                                   value="{{ request('search') }}">
-                        </div>
-                    </div>
-
-                    <!-- Durum -->
-                    <div class="col-lg-2 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Durum</label>
-                        <select name="status" class="form-select">
-                            <option value="">Tümü</option>
-                            <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Taslak</option>
-                            <option value="sent" {{ request('status') === 'sent' ? 'selected' : '' }}>Gönderildi</option>
-                            <option value="viewed" {{ request('status') === 'viewed' ? 'selected' : '' }}>Görüntülendi</option>
-                            <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Onaylandı</option>
-                            <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Reddedildi</option>
-                            <option value="converted" {{ request('status') === 'converted' ? 'selected' : '' }}>Dönüştürüldü</option>
-                            <option value="expired" {{ request('status') === 'expired' ? 'selected' : '' }}>Süresi Doldu</option>
-                        </select>
-                    </div>
-
-                    <!-- Tür -->
-                    <div class="col-lg-2 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Teklif Türü</label>
-                        <select name="quotation_type" class="form-select">
-                            <option value="">Tümü</option>
-                            <option value="kasko" {{ request('quotation_type') === 'kasko' ? 'selected' : '' }}>Kasko</option>
-                            <option value="trafik" {{ request('quotation_type') === 'trafik' ? 'selected' : '' }}>Trafik</option>
-                            <option value="konut" {{ request('quotation_type') === 'konut' ? 'selected' : '' }}>Konut</option>
-                            <option value="dask" {{ request('quotation_type') === 'dask' ? 'selected' : '' }}>DASK</option>
-                            <option value="saglik" {{ request('quotation_type') === 'saglik' ? 'selected' : '' }}>Sağlık</option>
-                            <option value="hayat" {{ request('quotation_type') === 'hayat' ? 'selected' : '' }}>Hayat</option>
-                            <option value="tss" {{ request('quotation_type') === 'tss' ? 'selected' : '' }}>TSS</option>
-                        </select>
-                    </div>
-
-                    <!-- Geçerlilik -->
-                    <div class="col-lg-2 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Geçerlilik</label>
-                        <select name="date_filter" class="form-select">
-                            <option value="">Tümü</option>
-                            <option value="valid" {{ request('date_filter') === 'valid' ? 'selected' : '' }}>Geçerli</option>
-                            <option value="expired" {{ request('date_filter') === 'expired' ? 'selected' : '' }}>Süresi Dolmuş</option>
-                        </select>
-                    </div>
-
-                    <!-- Sıralama -->
-                    <div class="col-lg-2 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Sıralama</label>
-                        <select name="sort" class="form-select">
-                            <option value="newest" {{ request('sort') === 'newest' ? 'selected' : '' }}>En Yeni</option>
-                            <option value="oldest" {{ request('sort') === 'oldest' ? 'selected' : '' }}>En Eski</option>
-                            <option value="price_low" {{ request('sort') === 'price_low' ? 'selected' : '' }}>Fiyat (Düşük-Yüksek)</option>
-                            <option value="price_high" {{ request('sort') === 'price_high' ? 'selected' : '' }}>Fiyat (Yüksek-Düşük)</option>
-                        </select>
-                    </div>
-
-                    <!-- Filtrele Butonu -->
-                    <div class="col-lg-1 col-md-12">
-                        <button type="submit" class="btn btn-primary action-btn w-100">
-                            <i class="bi bi-funnel"></i>
-                        </button>
-                    </div>
+            <div class="row g-3 align-items-end">
+                <!-- Durum -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Durum</label>
+                    <select id="filterStatus" class="form-select">
+                        <option value="">Tümü</option>
+                        <option value="Taslak">Taslak</option>
+                        <option value="Gönderildi">Gönderildi</option>
+                        <option value="Görüntülendi">Görüntülendi</option>
+                        <option value="Onaylandı">Onaylandı</option>
+                        <option value="Reddedildi">Reddedildi</option>
+                        <option value="Dönüştürüldü">Dönüştürüldü</option>
+                        <option value="Süresi Doldu">Süresi Doldu</option>
+                    </select>
                 </div>
-            </form>
+
+                <!-- Tür -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Teklif Türü</label>
+                    <select id="filterQuotationType" class="form-select">
+                        <option value="">Tümü</option>
+                        <option value="Kasko">Kasko</option>
+                        <option value="Trafik">Trafik</option>
+                        <option value="Konut">Konut</option>
+                        <option value="Dask">DASK</option>
+                        <option value="Saglik">Sağlık</option>
+                        <option value="Hayat">Hayat</option>
+                        <option value="Tss">TSS</option>
+                    </select>
+                </div>
+
+                <!-- Başlangıç Tarihi -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Başlangıç Tarihi</label>
+                    <input type="date" id="filterDateFrom" class="form-control">
+                </div>
+
+                <!-- Bitiş Tarihi -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Bitiş Tarihi</label>
+                    <input type="date" id="filterDateTo" class="form-control">
+                </div>
+
+                <!-- Temizle Butonu -->
+                <div class="col-lg-1 col-md-12">
+                    <button type="button" class="btn btn-secondary action-btn w-100" onclick="clearFilters()">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Tablo -->
     <div class="table-card card">
-        <div class="table-responsive">
-            <table class="table table-modern">
+        <div class="card-body">
+            <table class="table table-hover" id="quotationsTable">
                 <thead>
                     <tr>
+                        <th width="50">#</th>
                         <th>Teklif No</th>
                         <th>Müşteri</th>
                         <th>Tür</th>
@@ -420,12 +322,13 @@
                         <th>Geçerlilik</th>
                         <th>Görüntülenme</th>
                         <th>Durum</th>
-                        <th class="text-end">İşlemler</th>
+                        <th width="150">İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($quotations as $quotation)
-                    <tr class="fade-in-row">
+                    @foreach($quotations as $index => $quotation)
+                    <tr>
+                        <td></td> <!-- Boş, DataTables dolduracak -->
                         <td>
                             <span class="quotation-number">{{ $quotation->quotation_number }}</span>
                         </td>
@@ -445,14 +348,14 @@
                             <strong>{{ $quotation->items->count() }}</strong>
                             <small class="text-muted">şirket</small>
                         </td>
-                        <td>
+                        <td data-order="{{ $quotation->lowest_price_item ? $quotation->lowest_price_item->premium_amount : 0 }}">
                             @if($quotation->lowest_price_item)
                                 <strong class="text-success">{{ number_format($quotation->lowest_price_item->premium_amount, 2) }} ₺</strong>
                             @else
                                 <span class="text-muted">-</span>
                             @endif
                         </td>
-                        <td>
+                        <td data-sort="{{ $quotation->valid_until->format('Y-m-d') }}">
                             <div class="fw-semibold">{{ $quotation->valid_until->format('d.m.Y') }}</div>
                             @if($quotation->isValid())
                                 <small class="text-success">
@@ -485,7 +388,7 @@
                                 {{ $config['label'] }}
                             </span>
                         </td>
-                        <td class="text-end">
+                        <td>
                             <div class="action-buttons">
                                 <a href="{{ route('quotations.show', $quotation) }}"
                                    class="btn-icon btn-view"
@@ -516,37 +419,11 @@
                             </div>
                         </td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="9">
-                            <div class="empty-state">
-                                <i class="bi bi-inbox"></i>
-                                <h5>Teklif Bulunamadı</h5>
-                                <p class="mb-3">
-                                    @if(request()->hasAny(['search', 'status', 'quotation_type', 'date_filter']))
-                                        Arama kriterlerinize uygun teklif bulunamadı.
-                                    @else
-                                        Henüz hiç teklif oluşturulmamış.
-                                    @endif
-                                </p>
-                                <a href="{{ route('quotations.create') }}" class="btn btn-primary action-btn">
-                                    <i class="bi bi-plus-circle me-2"></i>İlk Teklifi Oluştur
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
     </div>
-
-    <!-- Pagination -->
-    @if($quotations->hasPages())
-    <div class="d-flex justify-content-center mt-4">
-        {{ $quotations->links() }}
-    </div>
-    @endif
 </div>
 
 <!-- Delete Form -->
@@ -558,26 +435,98 @@
 
 @push('scripts')
 <script>
+$(document).ready(function() {
+    // ✅ DataTable başlat
+    const table = initDataTable('#quotationsTable', {
+        order: [[6, 'desc']], // Geçerlilik tarihine göre sırala
+        pageLength: 10,
+        columnDefs: [
+            { orderable: false, searchable: false, targets: 0 }, // Sıra numarası
+            { orderable: false, targets: [9] }, // İşlemler
+            { targets: 5, type: 'num' }, // En düşük fiyat
+            { targets: 6, type: 'date' } // Geçerlilik tarihi
+        ]
+    });
+
+    // ✅ Filtreler
+    $('#filterStatus, #filterQuotationType, #filterDateFrom, #filterDateTo').on('change', function() {
+        const status = $('#filterStatus').val();
+        const quotationType = $('#filterQuotationType').val();
+        const dateFrom = $('#filterDateFrom').val();
+        const dateTo = $('#filterDateTo').val();
+
+        // Tüm custom filtreleri temizle
+        $.fn.dataTable.ext.search = [];
+
+        // Durum filtresi
+        if (status) {
+            table.column(8).search(status);
+        } else {
+            table.column(8).search('');
+        }
+
+        // Tür filtresi
+        if (quotationType) {
+            table.column(3).search(quotationType);
+        } else {
+            table.column(3).search('');
+        }
+
+        // Tarih filtresi (geçerlilik tarihi)
+        if (dateFrom || dateTo) {
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    const dateStr = data[6]; // Geçerlilik sütunu
+                    if (!dateStr || dateStr === '-') return true;
+
+                    // Tarihi parse et
+                    const dateParts = dateStr.match(/\d{2}\.\d{2}\.\d{4}/);
+                    if (!dateParts) return true;
+
+                    const parts = dateParts[0].split('.');
+                    const rowDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    const startDate = dateFrom ? new Date(dateFrom) : null;
+                    const endDate = dateTo ? new Date(dateTo) : null;
+
+                    if (startDate && rowDate < startDate) return false;
+                    if (endDate && rowDate > endDate) return false;
+
+                    return true;
+                }
+            );
+        }
+
+        table.draw();
+    });
+
+    // Sayfa değişince toplam sayıyı güncelle
+    table.on('draw', function() {
+        const info = table.page.info();
+        $('#quotationCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> teklif`);
+    });
+
+    // İlk yüklemede toplam sayıyı güncelle
+    const info = table.page.info();
+    $('#quotationCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> teklif`);
+});
+
+function clearFilters() {
+    $('#filterStatus, #filterQuotationType, #filterDateFrom, #filterDateTo').val('');
+    $.fn.dataTable.ext.search = [];
+    const table = $('#quotationsTable').DataTable();
+    table.search('').columns().search('').draw();
+}
+
 function deleteQuotation(quotationId) {
     if (confirm('⚠️ Bu teklifi silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!')) {
         const form = document.getElementById('deleteForm');
         form.action = '/panel/quotations/' + quotationId;
-
-        // Loading overlay
-        $('body').append(`
-            <div class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                 style="background: rgba(0,0,0,0.5); z-index: 9999;">
-                <div class="spinner-border text-light" style="width: 3rem; height: 3rem;"></div>
-            </div>
-        `);
-
         form.submit();
     }
 }
 
 function copyShareLink(url) {
     navigator.clipboard.writeText(url).then(function() {
-        // Modern toast notification
         const toast = `
             <div class="alert alert-success alert-dismissible fade show" role="alert"
                  style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
@@ -595,40 +544,5 @@ function copyShareLink(url) {
         prompt('Linki manuel olarak kopyalayın:', url);
     });
 }
-
-$(document).ready(function() {
-    // Filtre değişimi otomatik gönderim
-    $('select[name="status"], select[name="quotation_type"], select[name="date_filter"], select[name="sort"]')
-        .on('change', function() {
-            $('#filterForm').submit();
-        });
-
-    // Arama input debounce
-    let searchTimeout;
-    $('input[name="search"]').on('input', function() {
-        clearTimeout(searchTimeout);
-        const value = $(this).val();
-
-        if (value.length >= 3 || value.length === 0) {
-            searchTimeout = setTimeout(function() {
-                $('#filterForm').submit();
-            }, 600);
-        }
-    });
-
-    // Satır animasyonları
-    let delay = 0;
-    $('.fade-in-row').each(function() {
-        $(this).css({
-            'animation-delay': delay + 's',
-            'opacity': '0'
-        });
-        delay += 0.05;
-    });
-
-    setTimeout(function() {
-        $('.fade-in-row').css('opacity', '1');
-    }, 50);
-});
 </script>
 @endpush

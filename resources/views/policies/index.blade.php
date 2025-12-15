@@ -76,35 +76,6 @@
         box-shadow: 0 0 0 3px rgba(153, 153, 153, 0.1);
     }
 
-    .table-modern {
-        margin-bottom: 0;
-    }
-
-    .table-modern thead {
-        background: #fafafa;
-        border-bottom: 2px solid #e8e8e8;
-    }
-
-    .table-modern thead th {
-        border: none;
-        color: #495057;
-        font-weight: 600;
-        font-size: 0.8125rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 1rem 1.25rem;
-    }
-
-    .table-modern tbody td {
-        padding: 1rem 1.25rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #f5f5f5;
-    }
-
-    .table-modern tbody tr:hover {
-        background: #f8f9fa;
-    }
-
     .badge-modern {
         padding: 0.375rem 0.75rem;
         font-weight: 500;
@@ -178,7 +149,7 @@
     .btn-secondary:hover {
         background: #e7e7e7;
     }
-        .dataTables_paginate .paginate_button {
+    .dataTables_paginate .paginate_button {
         padding: 0px 2px;
         margin: 0 2px;
         border-radius: 6px;
@@ -360,8 +331,8 @@
                 </thead>
                 <tbody>
                         @foreach($policies as $index => $policy)
-    <tr>
-        <td></td>
+                        <tr>
+                            <td></td>
                             <td>
                                 <strong class="text-primary">{{ $policy->policy_number }}</strong>
                             </td>
