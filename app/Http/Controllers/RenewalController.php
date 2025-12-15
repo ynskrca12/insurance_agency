@@ -17,7 +17,13 @@ class RenewalController extends Controller
      */
     public function index(Request $request)
     {
-        $query = PolicyRenewal::with(['policy.customer', 'policy.insuranceCompany', 'newPolicy']);
+        $query = PolicyRenewal::whereHas('policy.customer')->with([
+            'newPolicy',
+            'policy.customer',
+            'policy.insuranceCompany',
+            'policy'
+        ]);
+
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -57,19 +63,17 @@ class RenewalController extends Controller
             }
         }
 
-        $sortBy = $request->get('sort_by', 'renewal_date');
-        $sortOrder = $request->get('sort_order', 'asc');
-        $query->orderBy($sortBy, $sortOrder);
-
-        $renewals = $query->paginate(20)->withQueryString();
+        $query->orderBy('renewal_date', 'asc');
+        $renewals = $query->get();
 
         $stats = [
-            'total' => PolicyRenewal::count(),
-            'pending' => PolicyRenewal::pending()->count(),
-            'contacted' => PolicyRenewal::contacted()->count(),
-            'renewed' => PolicyRenewal::renewed()->count(),
-            'critical' => PolicyRenewal::critical()->count(),
-            'lost' => PolicyRenewal::lost()->count(),
+            'total' => PolicyRenewal::whereHas('policy')->count(),
+            'pending' => PolicyRenewal::whereHas('policy')->pending()->count(),
+            'contacted' => PolicyRenewal::whereHas('policy')->contacted()->count(),
+            'renewed' => PolicyRenewal::whereHas('policy')->renewed()->count(),
+            'critical' => PolicyRenewal::whereHas('policy')->critical()->count(),
+            'lost' => PolicyRenewal::whereHas('policy')->lost()->count(),
+
         ];
 
         return view('renewals.index', compact('renewals', 'stats'));
