@@ -5,7 +5,6 @@
 @section('content')
 
 <style>
-    /* Mevcut stilleriniz aynen kalacak */
     .page-header h1 {
         font-size: 1.4rem;
         font-weight: 600;
@@ -323,23 +322,9 @@
 $(document).ready(function() {
 
     const table = initDataTable('#customersTable', {
-        // order: [[6, 'desc']],
         pageLength: 10,
         columnDefs: [
             { orderable: false, targets: [7] },
-            // {
-            //     targets: 6,
-            //     render: function(data, type, row) {
-            //         if (type === 'sort') {
-            //             // Sıralama için Y-m-d formatını kullan
-            //             const parts = data.split('.');
-            //             if (parts.length === 3) {
-            //                 return parts[2] + '-' + parts[1] + '-' + parts[0];
-            //             }
-            //         }
-            //         return data;
-            //     }
-            // }
         ]
     });
 

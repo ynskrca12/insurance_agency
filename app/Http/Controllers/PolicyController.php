@@ -17,7 +17,7 @@ class PolicyController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Policy::with(['customer', 'insuranceCompany', 'createdBy']);
+        $query = Policy::with(['customer', 'insuranceCompany', 'createdBy'])->orderBy('created_at', 'desc');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -57,13 +57,11 @@ class PolicyController extends Controller
             }
         }
 
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
+        $policies = $query->get();
 
-        $policies = $query->paginate(20)->withQueryString();
-
-        $insuranceCompanies = InsuranceCompany::active()->get();
+        $insuranceCompanies = InsuranceCompany::where('is_active', true)
+            ->orderBy('name')
+            ->get();
 
         $stats = $this->getPolicyStats();
 

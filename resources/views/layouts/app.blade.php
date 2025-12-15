@@ -451,10 +451,20 @@
                 stateSave: true,
             };
 
-            return $(tableId).DataTable({
-                ...defaultOptions,
-                ...options
-            });
+                const table = $(tableId).DataTable({
+                    ...defaultOptions,
+                    ...options
+                });
+
+                // ✅ Otomatik sıra numarası ekle
+                table.on('order.dt search.dt draw.dt', function () {
+                    let i = 1;
+                    table.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+                        this.data(i++);
+                    });
+                }).draw();
+
+              return table;
         }
     </script>
 

@@ -76,23 +76,6 @@
         box-shadow: 0 0 0 3px rgba(153, 153, 153, 0.1);
     }
 
-    .input-group-text {
-        background: #fafafa;
-        border: 1px solid #dcdcdc;
-        border-right: none;
-        border-radius: 8px 0 0 8px;
-        color: #6c757d;
-    }
-
-    .input-group .form-control {
-        border-left: none;
-        border-radius: 0 8px 8px 0;
-    }
-
-    .input-group .form-control:focus {
-        border-left: 1px solid #999;
-    }
-
     .table-modern {
         margin-bottom: 0;
     }
@@ -116,14 +99,6 @@
         padding: 1rem 1.25rem;
         vertical-align: middle;
         border-bottom: 1px solid #f5f5f5;
-    }
-
-    .table-modern tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-    .table-modern tbody tr {
-        transition: all 0.2s ease;
     }
 
     .table-modern tbody tr:hover {
@@ -170,16 +145,6 @@
         border-color: #b0b0b0;
     }
 
-    .empty-state {
-        padding: 4rem 2rem;
-        text-align: center;
-    }
-
-    .empty-state i {
-        color: #d0d0d0;
-        margin-bottom: 1.5rem;
-    }
-
     .customer-link {
         color: #212529;
         text-decoration: none;
@@ -191,28 +156,52 @@
         color: #0d6efd;
     }
 
-    .pagination {
-        margin-top: 1.5rem;
+    .dataTables_length, .dataTables_filter {
+        padding: 1rem 1.25rem;
     }
 
-    @media (max-width: 768px) {
-        .stat-card .card-body {
-            padding: 1rem;
-        }
+    .dataTables_info, .dataTables_paginate {
+        padding: 1rem 1.25rem;
+    }
+    .dt-buttons {
+        margin-bottom: 1rem;
+    }
+    .dt-buttons .btn {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+    }
+    .btn-secondary {
+        border: 1px solid #dcdcdc;
+        background: #f8f8f8;
+        color: #333;
+    }
+    .btn-secondary:hover {
+        background: #e7e7e7;
+    }
+        .dataTables_paginate .paginate_button {
+        padding: 0px 2px;
+        margin: 0 2px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
 
-        .stat-value {
-            font-size: 1.5rem;
-        }
+    .dataTables_paginate .paginate_button.current {
+        background: #1f3c88 !important;
+        color: white !important;
+        border-color: #1f3c88 !important;
+    }
 
-        .filter-card .card-body {
-            padding: 1rem;
-        }
-
-        .table-modern thead th,
-        .table-modern tbody td {
-            padding: 0.75rem;
-            font-size: 0.875rem;
-        }
+    .dataTables_paginate .paginate_button:hover:not(.current) {
+        background: #f1f1f1;
+    }
+    .filter-card,
+    .main-card {
+        background: #ffffff;
+        border: 1px solid #dcdcdc;
+        border-radius: 8px;
+    }
+    .main-card .card-body {
+        padding: 1.5rem;
     }
 </style>
 @endpush
@@ -226,8 +215,8 @@
                 <h1 class="h3 mb-1 fw-bold text-dark">
                     <i class="bi bi-file-earmark-text me-2"></i>Poliçe Yönetimi
                 </h1>
-                <p class="text-muted mb-0 small">
-                    Toplam <strong>{{ number_format($policies->total()) }}</strong> poliçe listeleniyor
+                <p class="text-muted mb-0 small" id="policyCount">
+                    Toplam <strong>{{ number_format($policies->count()) }}</strong> poliçe listeleniyor
                 </p>
             </div>
             <a href="{{ route('policies.create') }}" class="btn btn-primary action-btn">
@@ -287,229 +276,180 @@
     <!-- Filtreler -->
     <div class="filter-card card">
         <div class="card-body">
-            <form method="GET" action="{{ route('policies.index') }}" id="filterForm">
-                <div class="row g-3">
-                    <!-- Arama -->
-                    <div class="col-lg-3 col-md-6">
-                        <label class="form-label small text-muted mb-1">Arama</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text"
-                                   class="form-control"
-                                   name="search"
-                                   placeholder="Poliçe no, plaka, müşteri..."
-                                   value="{{ request('search') }}">
-                        </div>
-                    </div>
-
-                    <!-- Poliçe Türü -->
-                    <div class="col-lg-2 col-md-6">
-                        <label class="form-label small text-muted mb-1">Poliçe Türü</label>
-                        <select name="policy_type" class="form-select">
-                            <option value="">Tüm Türler</option>
-                            <option value="kasko" {{ request('policy_type') === 'kasko' ? 'selected' : '' }}>Kasko</option>
-                            <option value="trafik" {{ request('policy_type') === 'trafik' ? 'selected' : '' }}>Trafik</option>
-                            <option value="konut" {{ request('policy_type') === 'konut' ? 'selected' : '' }}>Konut</option>
-                            <option value="dask" {{ request('policy_type') === 'dask' ? 'selected' : '' }}>DASK</option>
-                            <option value="saglik" {{ request('policy_type') === 'saglik' ? 'selected' : '' }}>Sağlık</option>
-                            <option value="hayat" {{ request('policy_type') === 'hayat' ? 'selected' : '' }}>Hayat</option>
-                            <option value="tss" {{ request('policy_type') === 'tss' ? 'selected' : '' }}>TSS</option>
-                        </select>
-                    </div>
-
-                    <!-- Durum -->
-                    <div class="col-lg-2 col-md-6">
-                        <label class="form-label small text-muted mb-1">Durum</label>
-                        <select name="status" class="form-select">
-                            <option value="">Tüm Durumlar</option>
-                            <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktif</option>
-                            <option value="expiring_soon" {{ request('status') === 'expiring_soon' ? 'selected' : '' }}>Yaklaşan</option>
-                            <option value="critical" {{ request('status') === 'critical' ? 'selected' : '' }}>Kritik</option>
-                            <option value="expired" {{ request('status') === 'expired' ? 'selected' : '' }}>Süresi Dolmuş</option>
-                            <option value="renewed" {{ request('status') === 'renewed' ? 'selected' : '' }}>Yenilendi</option>
-                            <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>İptal</option>
-                        </select>
-                    </div>
-
-                    <!-- Sigorta Şirketi -->
-                    <div class="col-lg-2 col-md-6">
-                        <label class="form-label small text-muted mb-1">Sigorta Şirketi</label>
-                        <select name="insurance_company_id" class="form-select">
-                            <option value="">Tüm Şirketler</option>
-                            @foreach($insuranceCompanies as $company)
-                            <option value="{{ $company->id }}" {{ request('insurance_company_id') == $company->id ? 'selected' : '' }}>
-                                {{ $company->name }}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <!-- Tarih Filtresi -->
-                    <div class="col-lg-2 col-md-6">
-                        <label class="form-label small text-muted mb-1">Bitiş Tarihi</label>
-                        <select name="date_filter" class="form-select">
-                            <option value="">Tüm Tarihler</option>
-                            <option value="expiring_30" {{ request('date_filter') === 'expiring_30' ? 'selected' : '' }}>30 Gün İçinde</option>
-                            <option value="expiring_7" {{ request('date_filter') === 'expiring_7' ? 'selected' : '' }}>7 Gün İçinde</option>
-                            <option value="expired" {{ request('date_filter') === 'expired' ? 'selected' : '' }}>Süresi Dolmuş</option>
-                        </select>
-                    </div>
-
-                    <!-- Filtre Butonu -->
-                    <div class="col-lg-1 col-md-6">
-                        <label class="form-label small text-muted mb-1 d-none d-md-block">&nbsp;</label>
-                        <button type="submit" class="btn btn-primary w-100 action-btn">
-                            <i class="bi bi-funnel"></i>
-                        </button>
-                    </div>
+            <div class="row g-3">
+                <!-- Poliçe Türü -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small text-muted mb-1">Poliçe Türü</label>
+                    <select id="filterPolicyType" class="form-select">
+                        <option value="">Tüm Türler</option>
+                        <option value="Kasko">Kasko</option>
+                        <option value="Trafik">Trafik</option>
+                        <option value="Konut">Konut</option>
+                        <option value="DASK">DASK</option>
+                        <option value="Sağlık">Sağlık</option>
+                        <option value="Hayat">Hayat</option>
+                        <option value="TSS">TSS</option>
+                    </select>
                 </div>
-            </form>
+
+                <!-- Durum -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small text-muted mb-1">Durum</label>
+                    <select id="filterStatus" class="form-select">
+                        <option value="">Tüm Durumlar</option>
+                        <option value="Aktif">Aktif</option>
+                        <option value="Yaklaşan">Yaklaşan</option>
+                        <option value="Kritik">Kritik</option>
+                        <option value="Dolmuş">Dolmuş</option>
+                        <option value="Yenilendi">Yenilendi</option>
+                        <option value="İptal">İptal</option>
+                    </select>
+                </div>
+
+                <!-- Sigorta Şirketi -->
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small text-muted mb-1">Sigorta Şirketi</label>
+                    <select id="filterCompany" class="form-select">
+                        <option value="">Tüm Şirketler</option>
+                        @foreach($insuranceCompanies as $company)
+                        <option value="{{ $company->code }}">{{ $company->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Başlangıç Tarihi -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small text-muted mb-1">Başlangıç Tarihi</label>
+                    <input type="date" id="filterDateFrom" class="form-control">
+                </div>
+
+                <!-- Bitiş Tarihi -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small text-muted mb-1">Bitiş Tarihi</label>
+                    <input type="date" id="filterDateTo" class="form-control">
+                </div>
+
+                <!-- Temizle Butonu -->
+                <div class="col-lg-1 col-md-6">
+                    <label class="form-label small text-muted mb-1 d-none d-md-block">&nbsp;</label>
+                    <button type="button" class="btn btn-secondary w-100 action-btn" onclick="clearFilters()">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Tablo -->
-    <div class="table-card card">
-        <div class="card-body p-0">
-            @if($policies->isEmpty())
-                <div class="empty-state">
-                    <i class="bi bi-inbox"></i>
-                    <h5 class="text-muted mb-2">Poliçe Bulunamadı</h5>
-                    <p class="text-muted mb-4">
-                        @if(request()->hasAny(['search', 'policy_type', 'status', 'insurance_company_id', 'date_filter']))
-                            Arama kriterlerinize uygun poliçe bulunamadı. Filtreleri değiştirip tekrar deneyin.
-                        @else
-                            Henüz hiç poliçe eklenmemiş. Yeni bir poliçe ekleyerek başlayın.
-                        @endif
-                    </p>
-                    <div class="d-flex gap-2 justify-content-center">
-                        @if(request()->hasAny(['search', 'policy_type', 'status', 'insurance_company_id', 'date_filter']))
-                            <a href="{{ route('policies.index') }}" class="btn btn-light action-btn">
-                                <i class="bi bi-x-circle me-2"></i>Filtreleri Temizle
-                            </a>
-                        @endif
-                        <a href="{{ route('policies.create') }}" class="btn btn-primary action-btn">
-                            <i class="bi bi-plus-circle me-2"></i>İlk Poliçeyi Ekle
-                        </a>
-                    </div>
-                </div>
-            @else
-                <div class="table-responsive">
-                    <table class="table table-modern">
-                        <thead>
-                            <tr>
-                                <th>Poliçe No</th>
-                                <th>Müşteri</th>
-                                <th>Tür</th>
-                                <th>Şirket</th>
-                                <th>Araç/Adres</th>
-                                <th>Bitiş Tarihi</th>
-                                <th>Prim Tutarı</th>
-                                <th>Durum</th>
-                                <th class="text-center">İşlemler</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($policies as $policy)
-                            <tr>
-                                <td>
-                                    <strong class="text-primary">{{ $policy->policy_number }}</strong>
-                                </td>
-                                <td>
-                                    <a href="{{ route('customers.show', $policy->customer) }}" class="customer-link">
-                                        {{ $policy->customer->name }}
+    <div class="main-card card">
+        <div class="card-body">
+            <table id="policiesTable" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th width="50">#</th>
+                            <th>Poliçe No</th>
+                            <th>Müşteri</th>
+                            <th>Tür</th>
+                            <th>Şirket</th>
+                            <th>Araç/Adres</th>
+                            <th>Bitiş Tarihi</th>
+                            <th>Prim Tutarı</th>
+                            <th>Durum</th>
+                            <th width="150">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        @foreach($policies as $index => $policy)
+    <tr>
+        <td></td>
+                            <td>
+                                <strong class="text-primary">{{ $policy->policy_number }}</strong>
+                            </td>
+                            <td>
+                                <a href="{{ route('customers.show', $policy->customer) }}" class="customer-link">
+                                    {{ $policy->customer->name }}
+                                </a>
+                                <br>
+                                <small class="text-muted">{{ $policy->customer->phone }}</small>
+                            </td>
+                            <td>
+                                <span class="badge badge-modern bg-info">
+                                    {{ $policy->policy_type_label }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-muted">{{ $policy->insuranceCompany->code }}</span>
+                            </td>
+                            <td>
+                                @if($policy->isVehiclePolicy())
+                                    <strong>{{ $policy->vehicle_plate }}</strong><br>
+                                    <small class="text-muted">{{ $policy->vehicle_brand }} {{ $policy->vehicle_model }}</small>
+                                @elseif($policy->isPropertyPolicy())
+                                    <small class="text-muted">{{ Str::limit($policy->property_address, 30) }}</small>
+                                @else
+                                    <small class="text-muted">-</small>
+                                @endif
+                            </td>
+                            <td data-sort="{{ $policy->end_date->format('Y-m-d') }}">
+                                <strong>{{ $policy->end_date->format('d.m.Y') }}</strong>
+                                <br>
+                                @php
+                                    $daysLeft = $policy->days_until_expiry;
+                                @endphp
+                                @if($daysLeft > 0)
+                                    <small class="text-muted">{{ $daysLeft }} gün kaldı</small>
+                                @elseif($daysLeft === 0)
+                                    <small class="text-danger fw-semibold">Bugün bitiyor!</small>
+                                @else
+                                    <small class="text-danger">{{ abs($daysLeft) }} gün önce</small>
+                                @endif
+                            </td>
+                            <td data-order="{{ $policy->premium_amount }}">
+                                <strong>{{ number_format($policy->premium_amount, 2) }} ₺</strong>
+                            </td>
+                            <td>
+                                @php
+                                    $statusConfig = [
+                                        'active' => ['color' => 'success', 'label' => 'Aktif', 'icon' => 'check-circle-fill'],
+                                        'expiring_soon' => ['color' => 'warning', 'label' => 'Yaklaşan', 'icon' => 'clock-fill'],
+                                        'critical' => ['color' => 'danger', 'label' => 'Kritik', 'icon' => 'exclamation-triangle-fill'],
+                                        'expired' => ['color' => 'secondary', 'label' => 'Dolmuş', 'icon' => 'x-circle-fill'],
+                                        'renewed' => ['color' => 'info', 'label' => 'Yenilendi', 'icon' => 'arrow-repeat'],
+                                        'cancelled' => ['color' => 'dark', 'label' => 'İptal', 'icon' => 'slash-circle-fill'],
+                                    ];
+                                    $config = $statusConfig[$policy->status] ?? ['color' => 'secondary', 'label' => $policy->status, 'icon' => 'circle-fill'];
+                                @endphp
+                                <span class="badge badge-modern bg-{{ $config['color'] }}">
+                                    <i class="bi bi-{{ $config['icon'] }}"></i>
+                                    {{ $config['label'] }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-1">
+                                    <a href="{{ route('policies.show', $policy) }}"
+                                       class="btn btn-light btn-icon"
+                                       title="Detayları Görüntüle">
+                                        <i class="bi bi-eye"></i>
                                     </a>
-                                    <br>
-                                    <small class="text-muted">{{ $policy->customer->phone }}</small>
-                                </td>
-                                <td>
-                                    <span class="badge badge-modern bg-info">
-                                        {{ $policy->policy_type_label }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="text-muted">{{ $policy->insuranceCompany->code }}</span>
-                                </td>
-                                <td>
-                                    @if($policy->isVehiclePolicy())
-                                        <strong>{{ $policy->vehicle_plate }}</strong><br>
-                                        <small class="text-muted">{{ $policy->vehicle_brand }} {{ $policy->vehicle_model }}</small>
-                                    @elseif($policy->isPropertyPolicy())
-                                        <small class="text-muted">{{ Str::limit($policy->property_address, 30) }}</small>
-                                    @else
-                                        <small class="text-muted">-</small>
-                                    @endif
-                                </td>
-                                <td>
-                                    <strong>{{ $policy->end_date->format('d.m.Y') }}</strong>
-                                    <br>
-                                    @php
-                                        $daysLeft = $policy->days_until_expiry;
-                                    @endphp
-                                    @if($daysLeft > 0)
-                                        <small class="text-muted">{{ $daysLeft }} gün kaldı</small>
-                                    @elseif($daysLeft === 0)
-                                        <small class="text-danger fw-semibold">Bugün bitiyor!</small>
-                                    @else
-                                        <small class="text-danger">{{ abs($daysLeft) }} gün önce</small>
-                                    @endif
-                                </td>
-                                <td>
-                                    <strong>{{ number_format($policy->premium_amount, 2) }} ₺</strong>
-                                </td>
-                                <td>
-                                    @php
-                                        $statusConfig = [
-                                            'active' => ['color' => 'success', 'label' => 'Aktif', 'icon' => 'check-circle-fill'],
-                                            'expiring_soon' => ['color' => 'warning', 'label' => 'Yaklaşan', 'icon' => 'clock-fill'],
-                                            'critical' => ['color' => 'danger', 'label' => 'Kritik', 'icon' => 'exclamation-triangle-fill'],
-                                            'expired' => ['color' => 'secondary', 'label' => 'Dolmuş', 'icon' => 'x-circle-fill'],
-                                            'renewed' => ['color' => 'info', 'label' => 'Yenilendi', 'icon' => 'arrow-repeat'],
-                                            'cancelled' => ['color' => 'dark', 'label' => 'İptal', 'icon' => 'slash-circle-fill'],
-                                        ];
-                                        $config = $statusConfig[$policy->status] ?? ['color' => 'secondary', 'label' => $policy->status, 'icon' => 'circle-fill'];
-                                    @endphp
-                                    <span class="badge badge-modern bg-{{ $config['color'] }}">
-                                        <i class="bi bi-{{ $config['icon'] }}"></i>
-                                        {{ $config['label'] }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center gap-1">
-                                        <a href="{{ route('policies.show', $policy) }}"
-                                           class="btn btn-light btn-icon"
-                                           title="Detayları Görüntüle">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a href="{{ route('policies.edit', $policy) }}"
-                                           class="btn btn-light btn-icon"
-                                           title="Düzenle">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <button type="button"
-                                                class="btn btn-light btn-icon text-danger"
-                                                onclick="deletePolicy({{ $policy->id }})"
-                                                title="Sil">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
+                                    <a href="{{ route('policies.edit', $policy) }}"
+                                       class="btn btn-light btn-icon"
+                                       title="Düzenle">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button"
+                                            class="btn btn-light btn-icon text-danger"
+                                            onclick="deletePolicy({{ $policy->id }})"
+                                            title="Sil">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+            </table>
         </div>
     </div>
-
-    <!-- Pagination -->
-    @if($policies->hasPages())
-    <div class="d-flex justify-content-center">
-        {{ $policies->links() }}
-    </div>
-    @endif
 </div>
 
 <!-- Delete Form -->
@@ -521,68 +461,101 @@
 
 @push('scripts')
 <script>
+$(document).ready(function() {
+
+    const table = initDataTable('#policiesTable', {
+        pageLength: 10,
+        columnDefs: [
+            { orderable: false, targets: [9] },
+        ]
+    });
+
+    // Filtreler
+    $('#filterPolicyType, #filterStatus, #filterCompany, #filterDateFrom, #filterDateTo').on('change', function() {
+        const policyType = $('#filterPolicyType').val();
+        const status = $('#filterStatus').val();
+        const company = $('#filterCompany').val();
+        const dateFrom = $('#filterDateFrom').val();
+        const dateTo = $('#filterDateTo').val();
+
+        // Tüm custom filtreleri temizle
+        $.fn.dataTable.ext.search = [];
+
+        // Poliçe türü filtresi
+        if (policyType) {
+            table.column(3).search(policyType);
+        } else {
+            table.column(3).search('');
+        }
+
+        // Durum filtresi
+        if (status) {
+            table.column(8).search(status);
+        } else {
+            table.column(8).search('');
+        }
+
+        // Şirket filtresi
+        if (company) {
+            table.column(4).search(company);
+        } else {
+            table.column(4).search('');
+        }
+
+        // Tarih filtresi
+        if (dateFrom || dateTo) {
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    const dateStr = data[6]; // Tarih sütunu
+                    if (!dateStr || dateStr === '-') return true;
+
+                    // İlk satırdaki tarihi parse et
+                    const dateParts = dateStr.split('<br>')[0].trim().match(/\d{2}\.\d{2}\.\d{4}/);
+                    if (!dateParts) return true;
+
+                    const parts = dateParts[0].split('.');
+                    const rowDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    const startDate = dateFrom ? new Date(dateFrom) : null;
+                    const endDate = dateTo ? new Date(dateTo) : null;
+
+                    if (startDate && rowDate < startDate) return false;
+                    if (endDate && rowDate > endDate) return false;
+
+                    return true;
+                }
+            );
+        }
+
+        table.draw();
+    });
+
+    // Sayfa değişince toplam sayıyı güncelle
+    table.on('draw', function() {
+        const info = table.page.info();
+        $('#policyCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> poliçe`);
+    });
+
+    // İlk yüklemede toplam sayıyı güncelle
+    const info = table.page.info();
+    $('#policyCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> poliçe`);
+});
+
+function clearFilters() {
+    $('#filterPolicyType, #filterStatus, #filterCompany, #filterDateFrom, #filterDateTo').val('');
+
+    // Tüm custom filtreleri temizle
+    $.fn.dataTable.ext.search = [];
+
+    const table = $('#policiesTable').DataTable();
+    table.search('').columns().search('').draw();
+}
+
 function deletePolicy(policyId) {
-    if (confirm('⚠️ DİKKAT!\n\nBu poliçeyi silmek istediğinizden emin misiniz?\n\n• Bu işlem geri alınamaz\n• Yenilenmiş poliçeler silinemez\n\nDevam etmek istiyor musunuz?')) {
+    if (confirm(' DİKKAT!\n\nBu poliçeyi silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!')) {
         const form = document.getElementById('deleteForm');
-        form.action = '/policies/' + policyId;
-
-        // Loading overlay
-        $('body').append(`
-            <div class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                 style="background: rgba(0,0,0,0.5); z-index: 9999;">
-                <div class="spinner-border text-light" style="width: 3rem; height: 3rem;"></div>
-            </div>
-        `);
-
+        form.action = '/panel/policies/' + policyId;
         form.submit();
     }
 }
-
-$(document).ready(function() {
-    // Select değişimi otomatik form gönderimi
-    $('select[name="policy_type"], select[name="status"], select[name="insurance_company_id"], select[name="date_filter"]')
-        .on('change', function() {
-            $('#filterForm').submit();
-        });
-
-    // Arama input debounce (3+ karakter veya boş)
-    let searchTimeout;
-    $('input[name="search"]').on('input', function() {
-        clearTimeout(searchTimeout);
-        const value = $(this).val().trim();
-
-        if (value.length >= 3 || value.length === 0) {
-            searchTimeout = setTimeout(function() {
-                $('#filterForm').submit();
-            }, 600);
-        }
-    });
-
-    // Arama inputuna enter tuşu
-    $('input[name="search"]').on('keypress', function(e) {
-        if (e.which === 13) {
-            e.preventDefault();
-            $('#filterForm').submit();
-        }
-    });
-
-    // İstatistik kartları animasyonu
-    $('.stat-card').each(function(index) {
-        $(this).css('opacity', '0');
-        setTimeout(() => {
-            $(this).animate({opacity: 1}, 400);
-        }, index * 80);
-    });
-
-    // Tablo satırları fade-in animasyonu
-    $('.table-modern tbody tr').each(function(index) {
-        if (index < 10) { // İlk 10 satır için
-            $(this).css('opacity', '0');
-            setTimeout(() => {
-                $(this).animate({opacity: 1}, 300);
-            }, index * 50);
-        }
-    });
-});
 </script>
 @endpush
