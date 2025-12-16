@@ -17,17 +17,22 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Task::with(['assignedTo', 'assignedBy', 'customer', 'policy']);
+        $query = Task::with([
+            'assignedTo',
+            'assignedBy',
+            'customer',
+            'policy'
+        ]);
 
         // Arama
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhereHas('customer', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  });
+                ->orWhere('description', 'like', "%{$search}%")
+                ->orWhereHas('customer', function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
             });
         }
 
@@ -63,7 +68,7 @@ class TaskController extends Controller
                     break;
                 case 'overdue':
                     $query->where('due_date', '<', now())
-                          ->whereNotIn('status', ['completed', 'cancelled']);
+                        ->whereNotIn('status', ['completed', 'cancelled']);
                     break;
                 case 'this_week':
                     $query->whereBetween('due_date', [now()->startOfWeek(), now()->endOfWeek()]);
@@ -79,24 +84,25 @@ class TaskController extends Controller
         $sortOrder = $request->get('sort_order', 'asc');
         $query->orderBy($sortBy, $sortOrder);
 
-        $tasks = $query->paginate(20)->withQueryString();
+        $tasks = $query->get();
 
-        // İstatistikler
         $stats = [
             'total' => Task::count(),
             'pending' => Task::where('status', 'pending')->count(),
             'in_progress' => Task::where('status', 'in_progress')->count(),
             'completed' => Task::where('status', 'completed')->count(),
-            'overdue' => Task::overdue()->count(),
-            'my_tasks' => Task::where('assigned_to', auth()->id())->whereNotIn('status', ['completed', 'cancelled'])->count(),
+            'overdue' => Task::where('due_date', '<', now())
+                ->whereNotIn('status', ['completed', 'cancelled'])
+                ->count(),
+            'my_tasks' => Task::where('assigned_to', auth()->id())
+                ->whereNotIn('status', ['completed', 'cancelled'])
+                ->count(),
         ];
 
-        // Kullanıcılar (Atama için)
         $users = User::orderBy('name')->get();
 
         return view('tasks.index', compact('tasks', 'stats', 'users'));
     }
-
     /**
      * Kanban görünümü
      */
