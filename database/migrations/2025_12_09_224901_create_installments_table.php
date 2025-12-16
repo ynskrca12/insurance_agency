@@ -20,9 +20,11 @@ return new class extends Migration
             $table->date('paid_date')->nullable();
             $table->enum('payment_method', [
                 'cash',
-                'card',
+                'credit_card',
                 'transfer',
-                'check'
+                'check',
+                'bank_transfer',
+                'pos'
             ])->nullable();
 
             $table->string('receipt_number')->nullable();

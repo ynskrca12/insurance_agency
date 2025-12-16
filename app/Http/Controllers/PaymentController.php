@@ -18,30 +18,39 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Payment::with(['customer', 'policy', 'installment.paymentPlan']);
+        $query = Payment::with([
+            'customer',
+            'policy',
+            'installment.paymentPlan',
+            'createdBy'
+        ]);
 
+        // Arama
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('payment_reference', 'like', "%{$search}%")
-                  ->orWhereHas('customer', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%")
+                ->orWhereHas('customer', function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
                         ->orWhere('phone', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('policy', function($q) use ($search) {
-                      $q->where('policy_number', 'like', "%{$search}%");
-                  });
+                })
+                ->orWhereHas('policy', function($q) use ($search) {
+                    $q->where('policy_number', 'like', "%{$search}%");
+                });
             });
         }
 
+        // Durum filtresi
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
+        // Ödeme yöntemi filtresi
         if ($request->filled('payment_method')) {
             $query->where('payment_method', $request->payment_method);
         }
 
+        // Tarih filtresi
         if ($request->filled('date_from')) {
             $query->whereDate('payment_date', '>=', $request->date_from);
         }
@@ -53,13 +62,13 @@ class PaymentController extends Controller
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        $payments = $query->paginate(20)->withQueryString();
+        $payments = $query->get();
 
         $stats = [
             'total' => Payment::sum('amount'),
-            'completed' => Payment::completed()->sum('amount'),
-            'pending' => Payment::pending()->sum('amount'),
-            'failed' => Payment::failed()->sum('amount'),
+            'completed' => Payment::where('status', 'completed')->sum('amount'),
+            'pending' => Payment::where('status', 'pending')->sum('amount'),
+            'failed' => Payment::where('status', 'failed')->sum('amount'),
             'count' => Payment::count(),
         ];
 
@@ -71,23 +80,30 @@ class PaymentController extends Controller
      */
     public function installments(Request $request)
     {
-        $query = Installment::with(['paymentPlan.policy.customer', 'payment']);
+        $query = Installment::with([
+            'paymentPlan.policy.customer',
+            'paymentPlan.policy',
+            'payment'
+        ]);
 
+        // Arama
         if ($request->filled('search')) {
             $search = $request->search;
             $query->whereHas('paymentPlan.policy', function($q) use ($search) {
                 $q->where('policy_number', 'like', "%{$search}%")
-                  ->orWhereHas('customer', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%")
+                ->orWhereHas('customer', function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
                         ->orWhere('phone', 'like', "%{$search}%");
-                  });
+                });
             });
         }
 
+        // Durum filtresi
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
+        // Tarih filtresi
         if ($request->filled('date_filter')) {
             switch ($request->date_filter) {
                 case 'due_today':
@@ -95,24 +111,25 @@ class PaymentController extends Controller
                     break;
                 case 'overdue':
                     $query->where('due_date', '<', now())
-                          ->where('status', 'pending');
+                        ->where('status', 'pending');
                     break;
                 case 'upcoming_7':
                     $query->whereBetween('due_date', [now(), now()->addDays(7)])
-                          ->where('status', 'pending');
+                        ->where('status', 'pending');
                     break;
                 case 'upcoming_30':
                     $query->whereBetween('due_date', [now(), now()->addDays(30)])
-                          ->where('status', 'pending');
+                        ->where('status', 'pending');
                     break;
             }
         }
 
+        // Sıralama
         $sortBy = $request->get('sort_by', 'due_date');
         $sortOrder = $request->get('sort_order', 'asc');
         $query->orderBy($sortBy, $sortOrder);
 
-        $installments = $query->paginate(20)->withQueryString();
+        $installments = $query->get();
 
         $stats = [
             'total_pending' => Installment::pending()->sum('amount'),

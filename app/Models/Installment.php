@@ -25,13 +25,13 @@ class Installment extends Model
         return $this->belongsTo(PaymentPlan::class);
     }
 
-    // ✅ ÇOĞUL - Tüm ödemeler (Eğer kısmi ödeme varsa)
+    //  ÇOĞUL - Tüm ödemeler (Eğer kısmi ödeme varsa)
     public function payments()
     {
         return $this->hasMany(Payment::class);
     }
 
-    // ✅ TEKİL - Son/Ana ödeme (Controller için)
+    //  TEKİL - Son/Ana ödeme (Controller için)
     public function payment()
     {
         return $this->belongsTo(Payment::class, 'payment_id');
@@ -106,7 +106,6 @@ class Installment extends Model
         $this->update([
             'status' => 'paid',
             'paid_date' => $paidDate,
-            'payment_id' => $paymentId,
             'payment_method' => $paymentMethod,
         ]);
     }

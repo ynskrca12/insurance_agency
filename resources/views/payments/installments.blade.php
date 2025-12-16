@@ -76,23 +76,6 @@
         box-shadow: 0 0 0 3px rgba(153, 153, 153, 0.1);
     }
 
-    .input-group-text {
-        border: 1px solid #dcdcdc;
-        border-right: none;
-        background: #fafafa;
-        color: #6c757d;
-        border-radius: 8px 0 0 8px;
-    }
-
-    .input-group .form-control {
-        border-left: none;
-        border-radius: 0 8px 8px 0;
-    }
-
-    .input-group .form-control:focus {
-        border-left: none;
-    }
-
     .action-btn {
         border-radius: 8px;
         padding: 0.625rem 1.5rem;
@@ -118,52 +101,22 @@
         overflow: hidden;
     }
 
-    .table-modern {
-        margin-bottom: 0;
-    }
-
-    .table-modern thead {
-        background: #fafafa;
-        border-bottom: 2px solid #e8e8e8;
-    }
-
-    .table-modern thead th {
-        border: none;
-        color: #495057;
-        font-weight: 600;
-        font-size: 0.8125rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 1rem 1.25rem;
-        white-space: nowrap;
-    }
-
-    .table-modern tbody td {
-        padding: 1rem 1.25rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #f5f5f5;
-    }
-
-    .table-modern tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-    .table-modern tbody tr:hover {
-        background: #fafafa;
+    .table-card .card-body {
+        padding: 1.5rem;
     }
 
     .table-modern tbody tr.row-overdue {
-        background: #fff5f5;
+        background: #fff5f5 !important;
         border-left: 3px solid #dc3545;
     }
 
     .table-modern tbody tr.row-due-today {
-        background: #fffbf0;
+        background: #fffbf0 !important;
         border-left: 3px solid #ffc107;
     }
 
     .table-modern tbody tr.row-critical {
-        background: #fff9f0;
+        background: #fff9f0 !important;
         border-left: 3px solid #ff9800;
     }
 
@@ -268,50 +221,8 @@
 
     .action-buttons {
         display: flex;
+        justify-content: end;
         gap: 0.25rem;
-    }
-
-    .empty-state {
-        padding: 4rem 2rem;
-        text-align: center;
-    }
-
-    .empty-state i {
-        font-size: 5rem;
-        color: #d0d0d0;
-        margin-bottom: 1.5rem;
-    }
-
-    .empty-state h5 {
-        color: #6c757d;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
-    }
-
-    .empty-state p {
-        color: #9ca3af;
-        margin-bottom: 0;
-    }
-
-    .modal-modern .modal-content {
-        border: none;
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    .modal-modern .modal-header {
-        border: none;
-        padding: 1.25rem 1.5rem;
-    }
-
-    .modal-modern .modal-body {
-        padding: 1.5rem;
-    }
-
-    .modal-modern .modal-footer {
-        background: #fafafa;
-        border-top: 1px solid #e9ecef;
-        padding: 1rem 1.5rem;
     }
 
     .form-label {
@@ -350,33 +261,53 @@
         font-weight: 600;
     }
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    /* DataTables */
+    .dataTables_length, .dataTables_filter {
+        padding: 1rem 1.25rem;
     }
 
-    .fade-in-row {
-        animation: fadeIn 0.4s ease forwards;
+    .dataTables_info, .dataTables_paginate {
+        padding: 1rem 1.25rem;
     }
 
-    @media (max-width: 768px) {
-        .table-modern {
-            font-size: 0.875rem;
-        }
+    .dt-buttons {
+        margin-bottom: 1rem;
+    }
 
-        .stat-value {
-            font-size: 1.5rem;
-        }
+    .dt-buttons .btn {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+    }
 
-        .action-buttons {
-            flex-wrap: wrap;
-        }
+    .btn-secondary {
+        border: 1px solid #dcdcdc;
+        background: #f8f8f8;
+        color: #333;
+    }
+
+    .btn-secondary:hover {
+        background: #e7e7e7;
+    }
+
+    .modal-modern .modal-content {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .modal-modern .modal-header {
+        border: none;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .modal-modern .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-modern .modal-footer {
+        background: #fafafa;
+        border-top: 1px solid #e9ecef;
+        padding: 1rem 1.5rem;
     }
 </style>
 @endpush
@@ -390,7 +321,9 @@
                 <h1 class="h3 mb-1 fw-bold text-dark">
                     <i class="bi bi-calendar3 me-2"></i>Taksit Planları
                 </h1>
-                <p class="text-muted mb-0 small">Toplam {{ $installments->total() }} taksit kaydı bulundu</p>
+                <p class="text-muted mb-0 small" id="installmentCount">
+                    Toplam <strong>{{ $installments->count() }}</strong> taksit kaydı bulundu
+                </p>
             </div>
             <div class="d-flex gap-2">
                 <button type="button" class="btn btn-success action-btn" data-bs-toggle="modal" data-bs-target="#bulkReminderModal">
@@ -435,63 +368,59 @@
     <!-- Filtreler -->
     <div class="filter-card card">
         <div class="card-body">
-            <form method="GET" action="{{ route('payments.installments') }}" id="filterForm">
-                <div class="row g-3 align-items-end">
-                    <!-- Arama -->
-                    <div class="col-lg-4 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Arama</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text"
-                                   class="form-control"
-                                   name="search"
-                                   placeholder="Müşteri, poliçe ara..."
-                                   value="{{ request('search') }}">
-                        </div>
-                    </div>
-
-                    <!-- Durum -->
-                    <div class="col-lg-2 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Durum</label>
-                        <select name="status" class="form-select">
-                            <option value="">Tümü</option>
-                            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Bekliyor</option>
-                            <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Ödendi</option>
-                            <option value="overdue" {{ request('status') === 'overdue' ? 'selected' : '' }}>Gecikmiş</option>
-                        </select>
-                    </div>
-
-                    <!-- Tarih Filtresi -->
-                    <div class="col-lg-4 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Vade Durumu</label>
-                        <select name="date_filter" class="form-select">
-                            <option value="">Tüm Tarihler</option>
-                            <option value="due_today" {{ request('date_filter') === 'due_today' ? 'selected' : '' }}>Bugün Vadesi Dolan</option>
-                            <option value="overdue" {{ request('date_filter') === 'overdue' ? 'selected' : '' }}>Gecikmiş</option>
-                            <option value="upcoming_7" {{ request('date_filter') === 'upcoming_7' ? 'selected' : '' }}>7 Gün İçinde</option>
-                            <option value="upcoming_30" {{ request('date_filter') === 'upcoming_30' ? 'selected' : '' }}>30 Gün İçinde</option>
-                        </select>
-                    </div>
-
-                    <!-- Filtrele Butonu -->
-                    <div class="col-lg-2 col-md-12">
-                        <button type="submit" class="btn btn-primary action-btn w-100">
-                            <i class="bi bi-funnel me-2"></i>Filtrele
-                        </button>
-                    </div>
+            <div class="row g-3 align-items-end">
+                <!-- Durum -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Durum</label>
+                    <select id="filterStatus" class="form-select">
+                        <option value="">Tümü</option>
+                        <option value="Bekliyor">Bekliyor</option>
+                        <option value="Ödendi">Ödendi</option>
+                        <option value="Gecikmiş">Gecikmiş</option>
+                    </select>
                 </div>
-            </form>
+
+                <!-- Vade Durumu -->
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Vade Durumu</label>
+                    <select id="filterDateFilter" class="form-select">
+                        <option value="">Tüm Tarihler</option>
+                        <option value="due_today">Bugün Vadesi Dolan</option>
+                        <option value="overdue">Gecikmiş</option>
+                        <option value="upcoming_7">7 Gün İçinde</option>
+                        <option value="upcoming_30">30 Gün İçinde</option>
+                    </select>
+                </div>
+
+                <!-- Başlangıç Tarihi -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Başlangıç Vade Tarihi</label>
+                    <input type="date" id="filterDateFrom" class="form-control">
+                </div>
+
+                <!-- Bitiş Tarihi -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Bitiş Vade Tarihi</label>
+                    <input type="date" id="filterDateTo" class="form-control">
+                </div>
+
+                <!-- Temizle Butonu -->
+                <div class="col-lg-1 col-md-12">
+                    <button type="button" class="btn btn-secondary action-btn w-100" onclick="clearFilters()">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Tablo -->
     <div class="table-card card">
-        <div class="table-responsive">
-            <table class="table table-modern">
+        <div class="card-body">
+            <table class="table table-hover" id="installmentsTable">
                 <thead>
                     <tr>
+                        <th width="50">#</th>
                         <th>Müşteri</th>
                         <th>Poliçe</th>
                         <th>Taksit</th>
@@ -499,13 +428,13 @@
                         <th>Kalan Süre</th>
                         <th>Tutar</th>
                         <th>Durum</th>
-                        <th class="text-end">İşlemler</th>
+                        <th width="150" class="text-end">İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($installments as $installment)
+                    @foreach($installments as $index => $installment)
                     @php
-                        $daysUntilDue = now()->diffInDays($installment->due_date, false);
+                        $daysUntilDue = now()->startOfDay()->diffInDays($installment->due_date->startOfDay(), false);
                         $isOverdue = $daysUntilDue < 0;
                         $isDueToday = $daysUntilDue === 0;
                         $isCritical = $daysUntilDue > 0 && $daysUntilDue <= 7;
@@ -515,7 +444,8 @@
                         elseif ($isDueToday) $rowClass = 'row-due-today';
                         elseif ($isCritical) $rowClass = 'row-critical';
                     @endphp
-                    <tr class="fade-in-row {{ $rowClass }}">
+                    <tr class="{{ $rowClass }}" data-days="{{ $daysUntilDue }}" data-date-filter="">
+                        <td></td>
                         <td>
                             <a href="{{ route('customers.show', $installment->paymentPlan->customer) }}" class="customer-link">
                                 {{ $installment->paymentPlan->customer->name }}
@@ -533,10 +463,10 @@
                                 {{ $installment->installment_number }}/{{ $installment->paymentPlan->installment_count }}
                             </span>
                         </td>
-                        <td>
+                        <td data-sort="{{ $installment->due_date->format('Y-m-d') }}">
                             <div class="fw-semibold">{{ $installment->due_date->format('d.m.Y') }}</div>
                         </td>
-                        <td>
+                        <td data-order="{{ $daysUntilDue }}">
                             @if($isOverdue)
                                 <span class="days-badge overdue">
                                     <i class="bi bi-exclamation-triangle-fill"></i>
@@ -556,7 +486,7 @@
                                 <span class="text-muted small">{{ $daysUntilDue }} gün</span>
                             @endif
                         </td>
-                        <td>
+                        <td data-order="{{ $installment->amount }}">
                             <span class="amount-value">{{ number_format($installment->amount, 2) }} ₺</span>
                         </td>
                         <td>
@@ -602,34 +532,11 @@
                             </div>
                         </td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="8">
-                            <div class="empty-state">
-                                <i class="bi bi-inbox"></i>
-                                <h5>Taksit Bulunamadı</h5>
-                                <p>
-                                    @if(request()->hasAny(['search', 'status', 'date_filter']))
-                                        Arama kriterlerinize uygun taksit bulunamadı.
-                                    @else
-                                        Henüz hiç taksit kaydı bulunmuyor.
-                                    @endif
-                                </p>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
     </div>
-
-    <!-- Pagination -->
-    @if($installments->hasPages())
-    <div class="d-flex justify-content-center mt-4">
-        {{ $installments->links() }}
-    </div>
-    @endif
 </div>
 
 <!-- Ödeme Kaydet Modal -->
@@ -777,24 +684,107 @@ function setInstallmentData(id, customer, policy, installmentNo, amount) {
 }
 
 $(document).ready(function() {
-    // Filtre değişimi otomatik gönderim
-    $('select[name="status"], select[name="date_filter"]')
-        .on('change', function() {
-            $('#filterForm').submit();
-        });
+    // ✅ DataTable başlat
+    const table = initDataTable('#installmentsTable', {
+        order: [[5, 'asc']], // Kalan süreye göre sırala
+        pageLength: 25,
+        columnDefs: [
+            { orderable: false, searchable: false, targets: 0 }, // Sıra numarası
+            { orderable: false, targets: [8] }, // İşlemler
+            { targets: 4, type: 'date' }, // Vade tarihi
+            { targets: 5, type: 'num' }, // Kalan süre
+            { targets: 6, type: 'num' } // Tutar
+        ],
+        createdRow: function(row, data, dataIndex) {
+            // Satır sınıflarını koru
+            const tr = $(row);
+            const daysLeft = parseInt(tr.attr('data-days'));
 
-    // Arama input debounce
-    let searchTimeout;
-    $('input[name="search"]').on('input', function() {
-        clearTimeout(searchTimeout);
-        const value = $(this).val();
-
-        if (value.length >= 3 || value.length === 0) {
-            searchTimeout = setTimeout(function() {
-                $('#filterForm').submit();
-            }, 600);
+            if (daysLeft < 0) {
+                tr.addClass('row-overdue');
+            } else if (daysLeft === 0) {
+                tr.addClass('row-due-today');
+            } else if (daysLeft > 0 && daysLeft <= 7) {
+                tr.addClass('row-critical');
+            }
         }
     });
+
+    // ✅ Filtreler
+    $('#filterStatus, #filterDateFilter, #filterDateFrom, #filterDateTo').on('change', function() {
+        const status = $('#filterStatus').val();
+        const dateFilter = $('#filterDateFilter').val();
+        const dateFrom = $('#filterDateFrom').val();
+        const dateTo = $('#filterDateTo').val();
+
+        // Tüm custom filtreleri temizle
+        $.fn.dataTable.ext.search = [];
+
+        // Durum filtresi
+        if (status) {
+            table.column(7).search(status);
+        } else {
+            table.column(7).search('');
+        }
+
+        // Vade durumu filtresi
+        if (dateFilter) {
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    const row = table.row(dataIndex).node();
+                    const daysLeft = parseInt($(row).attr('data-days'));
+
+                    switch(dateFilter) {
+                        case 'due_today':
+                            return daysLeft === 0;
+                        case 'overdue':
+                            return daysLeft < 0;
+                        case 'upcoming_7':
+                            return daysLeft > 0 && daysLeft <= 7;
+                        case 'upcoming_30':
+                            return daysLeft > 0 && daysLeft <= 30;
+                        default:
+                            return true;
+                    }
+                }
+            );
+        }
+
+        // Tarih aralığı filtresi
+        if (dateFrom || dateTo) {
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    const dateStr = data[4]; // Vade tarihi sütunu
+                    if (!dateStr || dateStr === '-') return true;
+
+                    const dateParts = dateStr.match(/\d{2}\.\d{2}\.\d{4}/);
+                    if (!dateParts) return true;
+
+                    const parts = dateParts[0].split('.');
+                    const rowDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    const startDate = dateFrom ? new Date(dateFrom) : null;
+                    const endDate = dateTo ? new Date(dateTo) : null;
+
+                    if (startDate && rowDate < startDate) return false;
+                    if (endDate && rowDate > endDate) return false;
+
+                    return true;
+                }
+            );
+        }
+
+        table.draw();
+    });
+
+    // Sayfa değişince toplam sayıyı güncelle
+    table.on('draw', function() {
+        const info = table.page.info();
+        $('#installmentCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> taksit`);
+    });
+
+    // İlk yüklemede toplam sayıyı güncelle
+    const info = table.page.info();
+    $('#installmentCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> taksit`);
 
     // Form submit animasyonu
     $('#paymentForm, #bulkReminderForm').on('submit', function() {
@@ -802,20 +792,13 @@ $(document).ready(function() {
         submitBtn.prop('disabled', true)
                  .html('<span class="spinner-border spinner-border-sm me-2"></span>İşleniyor...');
     });
-
-    // Satır animasyonları
-    let delay = 0;
-    $('.fade-in-row').each(function() {
-        $(this).css({
-            'animation-delay': delay + 's',
-            'opacity': '0'
-        });
-        delay += 0.05;
-    });
-
-    setTimeout(function() {
-        $('.fade-in-row').css('opacity', '1');
-    }, 50);
 });
+
+function clearFilters() {
+    $('#filterStatus, #filterDateFilter, #filterDateFrom, #filterDateTo').val('');
+    $.fn.dataTable.ext.search = [];
+    const table = $('#installmentsTable').DataTable();
+    table.search('').columns().search('').draw();
+}
 </script>
 @endpush

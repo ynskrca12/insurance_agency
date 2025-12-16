@@ -4,19 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema; // ✅ Bunu ekle
 
 class PaymentPlan extends Model
 {
     use HasFactory;
-
-    // protected $fillable = [
-    //     'policy_id',
-    //     'customer_id',
-    //     'total_amount',
-    //     'installment_count',
-    //     'payment_type',
-    //     'plan_details',
-    // ];
 
     protected $guarded = [];
 
@@ -101,6 +93,80 @@ class PaymentPlan extends Model
     public function hasOverdueInstallments(): bool
     {
         return $this->installments()->where('status', 'overdue')->exists();
+    }
+
+    /**
+     * ✅ Ödeme durumunu güncelle
+     */
+    public function updatePaymentStatus(): void
+    {
+        $totalInstallments = $this->installments()->count();
+        $paidInstallments = $this->installments()->where('status', 'paid')->count();
+        $overdueInstallments = $this->installments()->overdue()->count();
+
+        // Durum belirleme
+        if ($paidInstallments === $totalInstallments) {
+            $status = 'completed'; // Tüm taksitler ödendi
+        } elseif ($paidInstallments > 0) {
+            $status = 'partial'; // Kısmen ödendi
+        } elseif ($overdueInstallments > 0) {
+            $status = 'overdue'; // Gecikmiş
+        } else {
+            $status = 'pending'; // Bekliyor
+        }
+
+        // ✅ Schema facade kullan
+        if (Schema::hasColumn('payment_plans', 'status')) {
+            $this->update(['status' => $status]);
+        }
+
+        // Ödeme istatistiklerini güncelle
+        $updateData = [];
+
+        if (Schema::hasColumn('payment_plans', 'paid_amount')) {
+            $updateData['paid_amount'] = $this->paid_amount;
+        }
+
+        if (Schema::hasColumn('payment_plans', 'remaining_amount')) {
+            $updateData['remaining_amount'] = $this->remaining_amount;
+        }
+
+        if (!empty($updateData)) {
+            $this->update($updateData);
+        }
+    }
+
+    /**
+     * ✅ Ödeme istatistiklerini güncelle (Basit versiyon)
+     */
+    public function updatePaymentStats(): void
+    {
+        // İstatistikleri hesapla
+        $paidAmount = $this->installments()->where('status', 'paid')->sum('amount');
+        $remainingAmount = $this->total_amount - $paidAmount;
+
+        // Sadece istatistik sütunları varsa güncelle
+        $updateData = [];
+
+        if (Schema::hasColumn('payment_plans', 'paid_amount')) {
+            $updateData['paid_amount'] = $paidAmount;
+        }
+
+        if (Schema::hasColumn('payment_plans', 'remaining_amount')) {
+            $updateData['remaining_amount'] = $remainingAmount;
+        }
+
+        if (!empty($updateData)) {
+            $this->update($updateData);
+        }
+
+        // Policy durumunu da güncelle (tüm taksitler ödendiyse)
+        if ($this->isFullyPaid() && $this->policy) {
+            // Poliçenin payment_status'unu güncelle (varsa)
+            if (Schema::hasColumn('policies', 'payment_status')) {
+                $this->policy->update(['payment_status' => 'paid']);
+            }
+        }
     }
 
     /**

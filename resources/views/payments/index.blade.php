@@ -70,23 +70,6 @@
         box-shadow: 0 0 0 3px rgba(153, 153, 153, 0.1);
     }
 
-    .input-group-text {
-        border: 1px solid #dcdcdc;
-        border-right: none;
-        background: #fafafa;
-        color: #6c757d;
-        border-radius: 8px 0 0 8px;
-    }
-
-    .input-group .form-control {
-        border-left: none;
-        border-radius: 0 8px 8px 0;
-    }
-
-    .input-group .form-control:focus {
-        border-left: none;
-    }
-
     .action-btn {
         border-radius: 8px;
         padding: 0.625rem 1.5rem;
@@ -111,38 +94,8 @@
         overflow: hidden;
     }
 
-    .table-modern {
-        margin-bottom: 0;
-    }
-
-    .table-modern thead {
-        background: #fafafa;
-        border-bottom: 2px solid #e8e8e8;
-    }
-
-    .table-modern thead th {
-        border: none;
-        color: #495057;
-        font-weight: 600;
-        font-size: 0.8125rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 1rem 1.25rem;
-        white-space: nowrap;
-    }
-
-    .table-modern tbody td {
-        padding: 1rem 1.25rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #f5f5f5;
-    }
-
-    .table-modern tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-    .table-modern tbody tr:hover {
-        background: #fafafa;
+    .table-card .card-body {
+        padding: 1.5rem;
     }
 
     .payment-ref {
@@ -233,55 +186,32 @@
         gap: 0.25rem;
     }
 
-    .empty-state {
-        padding: 4rem 2rem;
-        text-align: center;
+    /* DataTables */
+    .dataTables_length, .dataTables_filter {
+        padding: 1rem 1.25rem;
     }
 
-    .empty-state i {
-        font-size: 5rem;
-        color: #d0d0d0;
-        margin-bottom: 1.5rem;
+    .dataTables_info, .dataTables_paginate {
+        padding: 1rem 1.25rem;
     }
 
-    .empty-state h5 {
-        color: #6c757d;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
+    .dt-buttons {
+        margin-bottom: 1rem;
     }
 
-    .empty-state p {
-        color: #9ca3af;
-        margin-bottom: 0;
+    .dt-buttons .btn {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
     }
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .btn-secondary {
+        border: 1px solid #dcdcdc;
+        background: #f8f8f8;
+        color: #333;
     }
 
-    .fade-in-row {
-        animation: fadeIn 0.4s ease forwards;
-    }
-
-    @media (max-width: 768px) {
-        .table-modern {
-            font-size: 0.875rem;
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-        }
-
-        .action-buttons {
-            flex-wrap: wrap;
-        }
+    .btn-secondary:hover {
+        background: #e7e7e7;
     }
 </style>
 @endpush
@@ -295,7 +225,9 @@
                 <h1 class="h3 mb-1 fw-bold text-dark">
                     <i class="bi bi-credit-card me-2"></i>Ödemeler
                 </h1>
-                <p class="text-muted mb-0 small">Toplam {{ $payments->total() }} ödeme kaydı bulundu</p>
+                <p class="text-muted mb-0 small" id="paymentCount">
+                    Toplam <strong>{{ $payments->count() }}</strong> ödeme kaydı bulundu
+                </p>
             </div>
             <a href="{{ route('payments.installments') }}" class="btn btn-primary action-btn">
                 <i class="bi bi-calendar3 me-2"></i>Taksit Planları
@@ -334,83 +266,61 @@
     <!-- Filtreler -->
     <div class="filter-card card">
         <div class="card-body">
-            <form method="GET" action="{{ route('payments.index') }}" id="filterForm">
-                <div class="row g-3 align-items-end">
-                    <!-- Arama -->
-                    <div class="col-lg-3 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Arama</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text"
-                                   class="form-control"
-                                   name="search"
-                                   placeholder="Müşteri, poliçe ara..."
-                                   value="{{ request('search') }}">
-                        </div>
-                    </div>
-
-                    <!-- Durum -->
-                    <div class="col-lg-2 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Durum</label>
-                        <select name="status" class="form-select">
-                            <option value="">Tümü</option>
-                            <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Tamamlandı</option>
-                            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Bekliyor</option>
-                            <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Başarısız</option>
-                            <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>İptal</option>
-                        </select>
-                    </div>
-
-                    <!-- Ödeme Yöntemi -->
-                    <div class="col-lg-2 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Yöntem</label>
-                        <select name="payment_method" class="form-select">
-                            <option value="">Tümü</option>
-                            <option value="cash" {{ request('payment_method') === 'cash' ? 'selected' : '' }}>Nakit</option>
-                            <option value="credit_card" {{ request('payment_method') === 'credit_card' ? 'selected' : '' }}>Kredi Kartı</option>
-                            <option value="bank_transfer" {{ request('payment_method') === 'bank_transfer' ? 'selected' : '' }}>Havale/EFT</option>
-                            <option value="check" {{ request('payment_method') === 'check' ? 'selected' : '' }}>Çek</option>
-                            <option value="pos" {{ request('payment_method') === 'pos' ? 'selected' : '' }}>POS</option>
-                        </select>
-                    </div>
-
-                    <!-- Tarih Başlangıç -->
-                    <div class="col-lg-2 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Başlangıç</label>
-                        <input type="date"
-                               class="form-control"
-                               name="date_from"
-                               value="{{ request('date_from') }}">
-                    </div>
-
-                    <!-- Tarih Bitiş -->
-                    <div class="col-lg-2 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Bitiş</label>
-                        <input type="date"
-                               class="form-control"
-                               name="date_to"
-                               value="{{ request('date_to') }}">
-                    </div>
-
-                    <!-- Filtrele Butonu -->
-                    <div class="col-lg-1 col-md-12">
-                        <button type="submit" class="btn btn-primary action-btn w-100">
-                            <i class="bi bi-funnel"></i>
-                        </button>
-                    </div>
+            <div class="row g-3 align-items-end">
+                <!-- Durum -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Durum</label>
+                    <select id="filterStatus" class="form-select">
+                        <option value="">Tümü</option>
+                        <option value="Tamamlandı">Tamamlandı</option>
+                        <option value="Bekliyor">Bekliyor</option>
+                        <option value="Başarısız">Başarısız</option>
+                        <option value="İptal">İptal</option>
+                    </select>
                 </div>
-            </form>
+
+                <!-- Ödeme Yöntemi -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Yöntem</label>
+                    <select id="filterPaymentMethod" class="form-select">
+                        <option value="">Tümü</option>
+                        <option value="Nakit">Nakit</option>
+                        <option value="Kredi Kartı">Kredi Kartı</option>
+                        <option value="Havale/EFT">Havale/EFT</option>
+                        <option value="Çek">Çek</option>
+                        <option value="POS">POS</option>
+                    </select>
+                </div>
+
+                <!-- Başlangıç Tarihi -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Başlangıç</label>
+                    <input type="date" id="filterDateFrom" class="form-control">
+                </div>
+
+                <!-- Bitiş Tarihi -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Bitiş</label>
+                    <input type="date" id="filterDateTo" class="form-control">
+                </div>
+
+                <!-- Temizle Butonu -->
+                <div class="col-lg-1 col-md-12">
+                    <button type="button" class="btn btn-secondary action-btn w-100" onclick="clearFilters()">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Tablo -->
     <div class="table-card card">
-        <div class="table-responsive">
-            <table class="table table-modern">
+        <div class="card-body">
+            <table class="table table-hover" id="paymentsTable">
                 <thead>
                     <tr>
+                        <th width="50">#</th>
                         <th>Tarih</th>
                         <th>Referans No</th>
                         <th>Müşteri</th>
@@ -419,13 +329,14 @@
                         <th>Tutar</th>
                         <th>Yöntem</th>
                         <th>Durum</th>
-                        <th class="text-end">İşlemler</th>
+                        <th width="100" class="text-end">İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($payments as $payment)
-                    <tr class="fade-in-row">
-                        <td>
+                    @foreach($payments as $index => $payment)
+                    <tr>
+                        <td></td>
+                        <td data-sort="{{ $payment->payment_date->format('Y-m-d H:i:s') }}">
                             <div class="fw-semibold">{{ $payment->payment_date->format('d.m.Y') }}</div>
                             <small class="text-muted">{{ $payment->payment_date->format('H:i') }}</small>
                         </td>
@@ -461,7 +372,7 @@
                                 <span class="text-muted small">Tek Ödeme</span>
                             @endif
                         </td>
-                        <td>
+                        <td data-order="{{ $payment->amount }}">
                             <span class="amount-value">{{ number_format($payment->amount, 2) }} ₺</span>
                         </td>
                         <td>
@@ -521,34 +432,11 @@
                             </div>
                         </td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="9">
-                            <div class="empty-state">
-                                <i class="bi bi-inbox"></i>
-                                <h5>Ödeme Bulunamadı</h5>
-                                <p>
-                                    @if(request()->hasAny(['search', 'status', 'payment_method', 'date_from', 'date_to']))
-                                        Arama kriterlerinize uygun ödeme bulunamadı.
-                                    @else
-                                        Henüz hiç ödeme kaydı bulunmuyor.
-                                    @endif
-                                </p>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
     </div>
-
-    <!-- Pagination -->
-    @if($payments->hasPages())
-    <div class="d-flex justify-content-center mt-4">
-        {{ $payments->links() }}
-    </div>
-    @endif
 </div>
 @endsection
 
@@ -556,54 +444,91 @@
 <script>
 function confirmCancel(button) {
     if (confirm('⚠️ Bu ödemeyi iptal etmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!')) {
-        // Loading state
         button.disabled = true;
         button.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-
-        // Submit form
         button.closest('form').submit();
     }
 }
 
 $(document).ready(function() {
-    // Filtre değişimi otomatik gönderim
-    $('select[name="status"], select[name="payment_method"]')
-        .on('change', function() {
-            $('#filterForm').submit();
-        });
+    // ✅ DataTable başlat
+    const table = initDataTable('#paymentsTable', {
+        order: [[1, 'desc']], // Tarihe göre sırala (en yeni önce)
+        pageLength: 25,
+        columnDefs: [
+            { orderable: false, searchable: false, targets: 0 }, // Sıra numarası
+            { orderable: false, targets: [9] }, // İşlemler
+            { targets: 1, type: 'date' }, // Tarih
+            { targets: 6, type: 'num' } // Tutar
+        ]
+    });
 
-    // Tarih değişimi otomatik gönderim
-    $('input[name="date_from"], input[name="date_to"]')
-        .on('change', function() {
-            $('#filterForm').submit();
-        });
+    // ✅ Filtreler
+    $('#filterStatus, #filterPaymentMethod, #filterDateFrom, #filterDateTo').on('change', function() {
+        const status = $('#filterStatus').val();
+        const paymentMethod = $('#filterPaymentMethod').val();
+        const dateFrom = $('#filterDateFrom').val();
+        const dateTo = $('#filterDateTo').val();
 
-    // Arama input debounce
-    let searchTimeout;
-    $('input[name="search"]').on('input', function() {
-        clearTimeout(searchTimeout);
-        const value = $(this).val();
+        // Tüm custom filtreleri temizle
+        $.fn.dataTable.ext.search = [];
 
-        if (value.length >= 3 || value.length === 0) {
-            searchTimeout = setTimeout(function() {
-                $('#filterForm').submit();
-            }, 600);
+        // Durum filtresi
+        if (status) {
+            table.column(8).search(status);
+        } else {
+            table.column(8).search('');
         }
+
+        // Ödeme yöntemi filtresi
+        if (paymentMethod) {
+            table.column(7).search(paymentMethod);
+        } else {
+            table.column(7).search('');
+        }
+
+        // Tarih aralığı filtresi
+        if (dateFrom || dateTo) {
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    const dateStr = data[1]; // Tarih sütunu
+                    if (!dateStr || dateStr === '-') return true;
+
+                    const dateParts = dateStr.match(/\d{2}\.\d{2}\.\d{4}/);
+                    if (!dateParts) return true;
+
+                    const parts = dateParts[0].split('.');
+                    const rowDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    const startDate = dateFrom ? new Date(dateFrom) : null;
+                    const endDate = dateTo ? new Date(dateTo) : null;
+
+                    if (startDate && rowDate < startDate) return false;
+                    if (endDate && rowDate > endDate) return false;
+
+                    return true;
+                }
+            );
+        }
+
+        table.draw();
     });
 
-    // Satır animasyonları
-    let delay = 0;
-    $('.fade-in-row').each(function() {
-        $(this).css({
-            'animation-delay': delay + 's',
-            'opacity': '0'
-        });
-        delay += 0.05;
+    // Sayfa değişince toplam sayıyı güncelle
+    table.on('draw', function() {
+        const info = table.page.info();
+        $('#paymentCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> ödeme`);
     });
 
-    setTimeout(function() {
-        $('.fade-in-row').css('opacity', '1');
-    }, 50);
+    // İlk yüklemede toplam sayıyı güncelle
+    const info = table.page.info();
+    $('#paymentCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> ödeme`);
 });
+
+function clearFilters() {
+    $('#filterStatus, #filterPaymentMethod, #filterDateFrom, #filterDateTo').val('');
+    $.fn.dataTable.ext.search = [];
+    const table = $('#paymentsTable').DataTable();
+    table.search('').columns().search('').draw();
+}
 </script>
 @endpush
