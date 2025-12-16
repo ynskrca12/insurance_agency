@@ -120,7 +120,7 @@
         </p>
     </div>
     <div>
-        <a href="{{ route('renewals.calendar') }}" class="btn btn-info">
+        <a href="{{ route('renewals.calendar') }}" class="btn btn-info text-white">
             <i class="bi bi-calendar3 me-2"></i>Takvim Görünümü
         </a>
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#bulkReminderModal">

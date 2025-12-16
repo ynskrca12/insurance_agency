@@ -18,6 +18,7 @@ class CampaignController extends Controller
      */
     public function index(Request $request)
     {
+        // ✅ İlişkileri yükle
         $query = Campaign::with(['createdBy']);
 
         // Arama
@@ -25,7 +26,7 @@ class CampaignController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('subject', 'like', "%{$search}%");
+                ->orWhere('subject', 'like', "%{$search}%");
             });
         }
 
@@ -44,7 +45,8 @@ class CampaignController extends Controller
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        $campaigns = $query->paginate(20)->withQueryString();
+        // ✅ PAGINATION KALDIRILDI - DataTables için tüm veriyi al
+        $campaigns = $query->get();
 
         // İstatistikler
         $stats = [

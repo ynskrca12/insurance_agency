@@ -70,23 +70,6 @@
         box-shadow: 0 0 0 3px rgba(153, 153, 153, 0.1);
     }
 
-    .input-group-text {
-        border: 1px solid #dcdcdc;
-        border-right: none;
-        background: #fafafa;
-        color: #6c757d;
-        border-radius: 8px 0 0 8px;
-    }
-
-    .input-group .form-control {
-        border-left: none;
-        border-radius: 0 8px 8px 0;
-    }
-
-    .input-group .form-control:focus {
-        border-left: none;
-    }
-
     .action-btn {
         border-radius: 8px;
         padding: 0.625rem 1.5rem;
@@ -115,44 +98,15 @@
         overflow: hidden;
     }
 
-    .table-modern {
-        margin-bottom: 0;
-    }
-
-    .table-modern thead {
-        background: #fafafa;
-        border-bottom: 2px solid #e8e8e8;
-    }
-
-    .table-modern thead th {
-        border: none;
-        color: #495057;
-        font-weight: 600;
-        font-size: 0.8125rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 1rem 1.25rem;
-        white-space: nowrap;
-    }
-
-    .table-modern tbody td {
-        padding: 1rem 1.25rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #f5f5f5;
-    }
-
-    .table-modern tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-    .table-modern tbody tr:hover {
-        background: #fafafa;
+    .table-card .card-body {
+        padding: 1.5rem;
     }
 
     .campaign-title {
         color: #212529;
         text-decoration: none;
         font-weight: 600;
+        font-size: 0.9375rem;
         transition: color 0.2s ease;
     }
 
@@ -170,26 +124,31 @@
         display: inline-flex;
         align-items: center;
         gap: 0.375rem;
-        padding: 0.25rem 0.625rem;
+        padding: 0.375rem 0.75rem;
         background: #f8f9fa;
         border-radius: 6px;
         font-size: 0.8125rem;
+        font-weight: 500;
+        border: 1px solid #dee2e6;
     }
 
     .recipient-badge {
+        display: inline-flex;
+        align-items: center;
         padding: 0.375rem 0.75rem;
         font-weight: 600;
         border-radius: 6px;
-        font-size: 0.8125rem;
-        background: #e9ecef;
-        color: #495057;
-        border: 1px solid #dee2e6;
+        font-size: 0.875rem;
+        background: #e7f3ff;
+        color: #0066cc;
+        border: 1px solid #b3d9ff;
     }
 
     .sent-count {
         color: #28a745;
         font-size: 0.8125rem;
-        margin-top: 0.25rem;
+        margin-top: 0.375rem;
+        font-weight: 500;
     }
 
     .badge-modern {
@@ -197,6 +156,11 @@
         font-weight: 500;
         border-radius: 6px;
         font-size: 0.8125rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.25rem;
     }
 
     .btn-icon {
@@ -236,60 +200,32 @@
         color: #ffffff;
     }
 
-    .action-buttons {
-        display: flex;
-        gap: 0.25rem;
+    /* DataTables */
+    .dataTables_length, .dataTables_filter {
+        padding: 1rem 1.25rem;
     }
 
-    .empty-state {
-        padding: 4rem 2rem;
-        text-align: center;
+    .dataTables_info, .dataTables_paginate {
+        padding: 1rem 1.25rem;
     }
 
-    .empty-state i {
-        font-size: 5rem;
-        color: #d0d0d0;
-        margin-bottom: 1.5rem;
+    .dt-buttons {
+        margin-bottom: 1rem;
     }
 
-    .empty-state h5 {
-        color: #6c757d;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
+    .dt-buttons .btn {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
     }
 
-    .empty-state p {
-        color: #9ca3af;
-        margin-bottom: 1.5rem;
+    .btn-secondary {
+        border: 1px solid #dcdcdc;
+        background: #f8f8f8;
+        color: #333;
     }
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .fade-in-row {
-        animation: fadeIn 0.4s ease forwards;
-    }
-
-    @media (max-width: 768px) {
-        .table-modern {
-            font-size: 0.875rem;
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-        }
-
-        .action-buttons {
-            flex-wrap: wrap;
-        }
+    .btn-secondary:hover {
+        background: #e7e7e7;
     }
 </style>
 @endpush
@@ -303,10 +239,12 @@
                 <h1 class="h3 mb-1 fw-bold text-dark">
                     <i class="bi bi-megaphone me-2"></i>Kampanyalar
                 </h1>
-                <p class="text-muted mb-0 small">Toplam {{ $campaigns->total() }} kampanya kaydı bulundu</p>
+                <p class="text-muted mb-0 small" id="campaignCount">
+                    Toplam <strong>{{ $campaigns->count() }}</strong> kampanya kaydı bulundu
+                </p>
             </div>
             <div class="d-flex gap-2">
-                <a href="{{ route('campaigns.templates') }}" class="btn btn-info action-btn">
+                <a href="{{ route('campaigns.templates') }}" class="btn btn-info action-btn text-white">
                     <i class="bi bi-file-earmark-text me-2"></i>Şablonlar
                 </a>
                 <a href="{{ route('campaigns.create') }}" class="btn btn-primary action-btn">
@@ -347,76 +285,73 @@
     <!-- Filtreler -->
     <div class="filter-card card">
         <div class="card-body">
-            <form method="GET" action="{{ route('campaigns.index') }}" id="filterForm">
-                <div class="row g-3 align-items-end">
-                    <!-- Arama -->
-                    <div class="col-lg-4 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Arama</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text"
-                                   class="form-control"
-                                   name="search"
-                                   placeholder="Kampanya ara..."
-                                   value="{{ request('search') }}">
-                        </div>
-                    </div>
-
-                    <!-- Durum -->
-                    <div class="col-lg-3 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Durum</label>
-                        <select name="status" class="form-select">
-                            <option value="">Tümü</option>
-                            <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Taslak</option>
-                            <option value="scheduled" {{ request('status') === 'scheduled' ? 'selected' : '' }}>Zamanlanmış</option>
-                            <option value="sending" {{ request('status') === 'sending' ? 'selected' : '' }}>Gönderiliyor</option>
-                            <option value="sent" {{ request('status') === 'sent' ? 'selected' : '' }}>Gönderildi</option>
-                            <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Başarısız</option>
-                        </select>
-                    </div>
-
-                    <!-- Tip -->
-                    <div class="col-lg-3 col-md-6">
-                        <label class="form-label small fw-semibold text-muted mb-2">Kampanya Tipi</label>
-                        <select name="type" class="form-select">
-                            <option value="">Tümü</option>
-                            <option value="sms" {{ request('type') === 'sms' ? 'selected' : '' }}>SMS</option>
-                            <option value="email" {{ request('type') === 'email' ? 'selected' : '' }}>E-posta</option>
-                            <option value="whatsapp" {{ request('type') === 'whatsapp' ? 'selected' : '' }}>WhatsApp</option>
-                        </select>
-                    </div>
-
-                    <!-- Filtrele Butonu -->
-                    <div class="col-lg-2 col-md-12">
-                        <button type="submit" class="btn btn-primary action-btn w-100">
-                            <i class="bi bi-funnel"></i>
-                        </button>
-                    </div>
+            <div class="row g-3 align-items-end">
+                <!-- Durum -->
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Durum</label>
+                    <select id="filterStatus" class="form-select">
+                        <option value="">Tümü</option>
+                        <option value="Taslak">Taslak</option>
+                        <option value="Zamanlanmış">Zamanlanmış</option>
+                        <option value="Gönderiliyor">Gönderiliyor</option>
+                        <option value="Gönderildi">Gönderildi</option>
+                        <option value="Başarısız">Başarısız</option>
+                    </select>
                 </div>
-            </form>
+
+                <!-- Tip -->
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Kampanya Tipi</label>
+                    <select id="filterType" class="form-select">
+                        <option value="">Tümü</option>
+                        <option value="SMS">SMS</option>
+                        <option value="E-posta">E-posta</option>
+                        <option value="WhatsApp">WhatsApp</option>
+                    </select>
+                </div>
+
+                <!-- Başlangıç Tarihi -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Başlangıç</label>
+                    <input type="date" id="filterDateFrom" class="form-control">
+                </div>
+
+                <!-- Bitiş Tarihi -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-semibold text-muted mb-2">Bitiş</label>
+                    <input type="date" id="filterDateTo" class="form-control">
+                </div>
+
+                <!-- Temizle Butonu -->
+                <div class="col-lg-1 col-md-12">
+                    <button type="button" class="btn btn-secondary action-btn w-100" onclick="clearFilters()">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Tablo -->
     <div class="table-card card">
-        <div class="table-responsive">
-            <table class="table table-modern">
+        <div class="card-body">
+            <table class="table table-hover" id="campaignsTable">
                 <thead>
                     <tr>
+                        <th width="50">#</th>
                         <th>Kampanya Adı</th>
                         <th>Tip</th>
                         <th>Hedef Kitle</th>
                         <th>Alıcı Sayısı</th>
                         <th>Tarih</th>
                         <th>Durum</th>
-                        <th class="text-end">İşlemler</th>
+                        <th width="120" class="text-end">İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($campaigns as $campaign)
-                    <tr class="fade-in-row">
+                    @foreach($campaigns as $campaign)
+                    <tr>
+                        <td></td>
                         <td>
                             <a href="{{ route('campaigns.show', $campaign) }}" class="campaign-title">
                                 {{ $campaign->name }}
@@ -449,10 +384,13 @@
                                     'custom' => 'Özel',
                                 ];
                             @endphp
-                            <small>{{ $targetLabels[$campaign->target_type] ?? $campaign->target_type }}</small>
+                            <small class="text-muted">{{ $targetLabels[$campaign->target_type] ?? $campaign->target_type }}</small>
                         </td>
                         <td>
-                            <span class="recipient-badge">{{ number_format($campaign->total_recipients) }}</span>
+                            <span class="recipient-badge">
+                                <i class="bi bi-people-fill me-1"></i>
+                                {{ number_format($campaign->total_recipients) }}
+                            </span>
                             @if($campaign->sent_count > 0)
                                 <div class="sent-count">
                                     <i class="bi bi-check-circle-fill me-1"></i>
@@ -460,12 +398,13 @@
                                 </div>
                             @endif
                         </td>
-                        <td>
+                        <td data-sort="{{ $campaign->scheduled_at ? $campaign->scheduled_at->format('Y-m-d H:i:s') : $campaign->created_at->format('Y-m-d H:i:s') }}">
                             @if($campaign->scheduled_at)
                                 <div class="fw-semibold">{{ $campaign->scheduled_at->format('d.m.Y') }}</div>
                                 <small class="text-muted">{{ $campaign->scheduled_at->format('H:i') }}</small>
                             @else
-                                <small class="text-muted">{{ $campaign->created_at->format('d.m.Y H:i') }}</small>
+                                <div class="fw-semibold">{{ $campaign->created_at->format('d.m.Y') }}</div>
+                                <small class="text-muted">{{ $campaign->created_at->format('H:i') }}</small>
                             @endif
                         </td>
                         <td>
@@ -510,39 +449,11 @@
                             </div>
                         </td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7">
-                            <div class="empty-state">
-                                <i class="bi bi-megaphone"></i>
-                                <h5>Kampanya Bulunamadı</h5>
-                                <p>
-                                    @if(request()->hasAny(['search', 'status', 'type']))
-                                        Arama kriterlerinize uygun kampanya bulunamadı.
-                                    @else
-                                        Henüz hiç kampanya oluşturulmamış.
-                                    @endif
-                                </p>
-                                @if(!request()->hasAny(['search', 'status', 'type']))
-                                <a href="{{ route('campaigns.create') }}" class="btn btn-primary action-btn">
-                                    <i class="bi bi-plus-circle me-2"></i>İlk Kampanyayı Oluştur
-                                </a>
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
     </div>
-
-    <!-- Pagination -->
-    @if($campaigns->hasPages())
-    <div class="d-flex justify-content-center mt-4">
-        {{ $campaigns->links() }}
-    </div>
-    @endif
 </div>
 
 <!-- Delete Form -->
@@ -556,25 +467,14 @@
 <script>
 function confirmSend(button) {
     if (confirm('⚠️ Kampanyayı göndermek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!')) {
-        // Loading state
         button.disabled = true;
         button.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-
-        // Submit form
         button.closest('form').submit();
     }
 }
 
 function deleteCampaign(campaignId) {
     if (confirm('⚠️ Bu kampanyayı silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!')) {
-        // Loading overlay
-        $('body').append(`
-            <div class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                 style="background: rgba(0,0,0,0.5); z-index: 9999;">
-                <div class="spinner-border text-light" style="width: 3rem; height: 3rem;"></div>
-            </div>
-        `);
-
         const form = document.getElementById('deleteForm');
         form.action = '/panel/campaigns/' + campaignId;
         form.submit();
@@ -582,37 +482,83 @@ function deleteCampaign(campaignId) {
 }
 
 $(document).ready(function() {
-    // Filtre değişimi otomatik gönderim
-    $('select[name="status"], select[name="type"]').on('change', function() {
-        $('#filterForm').submit();
+    // ✅ DataTable başlat
+    const table = initDataTable('#campaignsTable', {
+        order: [[5, 'desc']], // Tarihe göre sırala
+        pageLength: 25,
+        columnDefs: [
+            { orderable: false, searchable: false, targets: 0 }, // Sıra numarası
+            { orderable: false, targets: [7] }, // İşlemler
+            { targets: 5, type: 'date' } // Tarih
+        ]
     });
 
-    // Arama input debounce
-    let searchTimeout;
-    $('input[name="search"]').on('input', function() {
-        clearTimeout(searchTimeout);
-        const value = $(this).val();
+    // ✅ Filtreler
+    $('#filterStatus, #filterType, #filterDateFrom, #filterDateTo').on('change', function() {
+        const status = $('#filterStatus').val();
+        const type = $('#filterType').val();
+        const dateFrom = $('#filterDateFrom').val();
+        const dateTo = $('#filterDateTo').val();
 
-        if (value.length >= 3 || value.length === 0) {
-            searchTimeout = setTimeout(function() {
-                $('#filterForm').submit();
-            }, 600);
+        // Tüm custom filtreleri temizle
+        $.fn.dataTable.ext.search = [];
+
+        // Durum filtresi
+        if (status) {
+            table.column(6).search(status);
+        } else {
+            table.column(6).search('');
         }
+
+        // Tip filtresi
+        if (type) {
+            table.column(2).search(type);
+        } else {
+            table.column(2).search('');
+        }
+
+        // Tarih aralığı filtresi
+        if (dateFrom || dateTo) {
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    const dateStr = data[5]; // Tarih sütunu
+                    if (!dateStr || dateStr === '-') return true;
+
+                    const dateParts = dateStr.match(/\d{2}\.\d{2}\.\d{4}/);
+                    if (!dateParts) return true;
+
+                    const parts = dateParts[0].split('.');
+                    const rowDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    const startDate = dateFrom ? new Date(dateFrom) : null;
+                    const endDate = dateTo ? new Date(dateTo) : null;
+
+                    if (startDate && rowDate < startDate) return false;
+                    if (endDate && rowDate > endDate) return false;
+
+                    return true;
+                }
+            );
+        }
+
+        table.draw();
     });
 
-    // Satır animasyonları
-    let delay = 0;
-    $('.fade-in-row').each(function() {
-        $(this).css({
-            'animation-delay': delay + 's',
-            'opacity': '0'
-        });
-        delay += 0.05;
+    // Sayfa değişince toplam sayıyı güncelle
+    table.on('draw', function() {
+        const info = table.page.info();
+        $('#campaignCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> kampanya`);
     });
 
-    setTimeout(function() {
-        $('.fade-in-row').css('opacity', '1');
-    }, 50);
+    // İlk yüklemede toplam sayıyı güncelle
+    const info = table.page.info();
+    $('#campaignCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> kampanya`);
 });
+
+function clearFilters() {
+    $('#filterStatus, #filterType, #filterDateFrom, #filterDateTo').val('');
+    $.fn.dataTable.ext.search = [];
+    const table = $('#campaignsTable').DataTable();
+    table.search('').columns().search('').draw();
+}
 </script>
 @endpush
