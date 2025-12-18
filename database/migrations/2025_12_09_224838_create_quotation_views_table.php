@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('quotation_views', function (Blueprint $table) {
             $table->id();
-
+            $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('quotation_id')->constrained('quotations')->cascadeOnDelete();
 
             $table->timestamp('viewed_at');

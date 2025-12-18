@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->string('key')->unique();
             $table->text('value')->nullable();
             $table->string('type')->default('string'); // string, integer, boolean, json

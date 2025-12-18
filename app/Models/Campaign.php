@@ -1,30 +1,32 @@
 <?php
 
 namespace App\Models;
-
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Campaign extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
-    protected $fillable = [
-        'name',
-        'type',
-        'subject',
-        'message',
-        'target_type',
-        'target_filter',
-        'status',
-        'scheduled_at',
-        'started_at',
-        'completed_at',
-        'total_recipients',
-        'sent_count',
-        'failed_count',
-        'created_by',
-    ];
+    // protected $fillable = [
+    //     'name',
+    //     'type',
+    //     'subject',
+    //     'message',
+    //     'target_type',
+    //     'target_filter',
+    //     'status',
+    //     'scheduled_at',
+    //     'started_at',
+    //     'completed_at',
+    //     'total_recipients',
+    //     'sent_count',
+    //     'failed_count',
+    //     'created_by',
+    // ];
+
+    protected $guarded = [];
 
     protected $casts = [
         'target_filter' => 'array',

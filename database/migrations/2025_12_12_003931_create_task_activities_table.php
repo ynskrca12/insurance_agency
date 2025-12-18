@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('task_activities', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('action'); // created, updated, status_changed, assigned, commented

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -13,6 +14,11 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
+        // Zaten giriş yapmışsa dashboard'a yönlendir
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
         return view('auth.login');
     }
 
@@ -21,34 +27,40 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
-        $request->validate([
+        $credentials = $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:6',
+            'password' => 'required|string',
         ], [
             'email.required' => 'E-posta adresi gereklidir.',
             'email.email' => 'Geçerli bir e-posta adresi giriniz.',
             'password.required' => 'Şifre gereklidir.',
-            'password.min' => 'Şifre en az 6 karakter olmalıdır.',
         ]);
 
-        $credentials = $request->only('email', 'password');
-        $remember = $request->has('remember');
+        $remember = $request->filled('remember');
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            // Son giriş bilgisini güncelle
-            auth()->user()->update([
-                'last_login_at' => now(),
-                'last_login_ip' => $request->ip(),
-            ]);
-
             return redirect()->intended(route('dashboard'))
-                ->with('success', 'Hoş geldiniz, ' . auth()->user()->name);
+                ->with('success', 'Hoş geldiniz, ' . Auth::user()->name . '!');
         }
 
-        return back()->withErrors([
-            'email' => 'E-posta veya şifre hatalı.',
-        ])->withInput($request->only('email'));
+        throw ValidationException::withMessages([
+            'email' => 'Girdiğiniz bilgiler hatalı. Lütfen tekrar deneyin.',
+        ]);
+    }
+
+    /**
+     * Logout işlemi
+     */
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home')
+            ->with('success', 'Başarıyla çıkış yaptınız.');
     }
 }

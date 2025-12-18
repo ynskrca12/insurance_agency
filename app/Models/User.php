@@ -25,6 +25,34 @@ class User extends Authenticatable
         'is_active' => 'boolean',
     ];
 
+        /**
+     * Demo user ilişkisi
+     */
+    public function demoUser()
+    {
+        return $this->hasOne(DemoUser::class);
+    }
+
+    /**
+     * Kullanıcının demo hesabı var mı?
+     */
+    public function hasDemo()
+    {
+        return $this->demoUser()->exists();
+    }
+
+    /**
+     * Demo süresi dolmuş mu?
+     */
+    public function isDemoExpired()
+    {
+        if (!$this->hasDemo()) {
+            return false;
+        }
+
+        return $this->demoUser->isExpired();
+    }
+
     /**
      * İlişkiler
      */

@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-
+            $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->string('name');
             $table->string('email')->nullable();
             $table->string('phone', 20);

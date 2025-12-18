@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('insurance_companies', function (Blueprint $table) {
             $table->id();
-
+            $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->string('name')->unique();
             $table->string('code', 10)->unique()->comment('AXA, ALC, HDI');
             $table->string('logo')->nullable();

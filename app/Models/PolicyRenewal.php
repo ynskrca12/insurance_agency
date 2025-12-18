@@ -1,14 +1,14 @@
 <?php
 
 namespace App\Models;
-
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
 class PolicyRenewal extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
     // protected $fillable = [
     //     'policy_id',

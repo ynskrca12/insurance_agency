@@ -1,24 +1,26 @@
 <?php
 
 namespace App\Models;
-
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CampaignLog extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
     public $timestamps = false;
 
-    protected $fillable = [
-        'campaign_id',
-        'customer_id',
-        'status',
-        'message_content',
-        'error_message',
-        'sent_at',
-    ];
+    // protected $fillable = [
+    //     'campaign_id',
+    //     'customer_id',
+    //     'status',
+    //     'message_content',
+    //     'error_message',
+    //     'sent_at',
+    // ];
+
+    protected $guarded = [];
 
     protected $casts = [
         'sent_at' => 'datetime',

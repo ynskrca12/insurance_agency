@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('policy_renewals', function (Blueprint $table) {
             $table->id();
-
+            $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('policy_id')->constrained('policies')->cascadeOnDelete();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
 

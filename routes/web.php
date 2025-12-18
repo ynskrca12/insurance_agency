@@ -14,17 +14,100 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\InsuranceCompanyController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\Web\PageController;
+use App\Http\Controllers\Web\DemoController;
+use App\Http\Controllers\Web\HomeController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+
+Route::get('/mail-config', function () {
+    return [
+        'MAIL_MAILER' => config('mail.default'),
+        'MAIL_HOST' => config('mail.mailers.smtp.host'),
+        'MAIL_PORT' => config('mail.mailers.smtp.port'),
+        'MAIL_USERNAME' => config('mail.mailers.smtp.username'),
+        'MAIL_FROM' => config('mail.from'),
+    ];
+});
+
+Route::get('/optimize', function () {
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+    Artisan::call('route:clear');
+
+    return 'Tüm cache temizlendi!';
+});
+
+
+Route::get('/test-mail-verbose', function () {
+    try {
+        // 1. Config göster
+        echo "=== CONFIG ===<br>";
+        echo "Driver: " . config('mail.default') . "<br>";
+        echo "Host: " . config('mail.mailers.smtp.host') . "<br>";
+        echo "Port: " . config('mail.mailers.smtp.port') . "<br>";
+        echo "Username: " . config('mail.mailers.smtp.username') . "<br>";
+        echo "Encryption: " . config('mail.mailers.smtp.encryption') . "<br><br>";
+
+        // 2. Mail gönder
+        echo "=== MAIL GÖNDERİLİYOR ===<br>";
+
+        Mail::raw('TEST MAIL - ' . now(), function ($message) {
+            $message->to('test@example.com')
+                    ->subject('Test Mail ' . now()->format('H:i:s'));
+        });
+
+        echo "Mail gönderildi!<br><br>";
+
+        // 3. Log'a yaz
+        Log::info('Test mail gönderildi', ['time' => now()]);
+        echo "Log'a yazıldı!<br><br>";
+
+        echo "=== MAILTRAP KONTROL ===<br>";
+        echo "https://mailtrap.io/inboxes adresini kontrol et!";
+
+    } catch (\Exception $e) {
+        echo "HATA: " . $e->getMessage() . "<br>";
+        echo "Dosya: " . $e->getFile() . "<br>";
+        echo "Satır: " . $e->getLine();
+    }
+});
 
 /*
 |--------------------------------------------------------------------------
-| Public Routes (Web Sitesi - Gelecekte eklenecek)
+| PUBLIC WEB SİTESİ ROUTES
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
-    return view('welcome'); // Geçici welcome sayfası
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/hakkimizda', [PageController::class, 'about'])->name('about');
+Route::get('/moduller', [PageController::class, 'modules'])->name('modules');
+Route::get('/paketler', [PageController::class, 'pricing'])->name('pricing');
+Route::get('/crm-nedir', [PageController::class, 'whatIsCrm'])->name('what-is-crm');
+Route::get('/iletisim', [PageController::class, 'contact'])->name('contact');
+Route::post('/iletisim', [PageController::class, 'sendContact'])->name('contact.send');
+
+// Modül Detay Sayfaları
+Route::prefix('moduller')->name('modules.')->group(function () {
+    Route::get('/musteriler', [PageController::class, 'moduleCustomers'])->name('customers');
+    Route::get('/policeler', [PageController::class, 'modulePolicies'])->name('policies');
+    Route::get('/teklifler', [PageController::class, 'moduleQuotations'])->name('quotations');
+    Route::get('/yenilemeler', [PageController::class, 'moduleRenewals'])->name('renewals');
+    Route::get('/odemeler', [PageController::class, 'modulePayments'])->name('payments');
+    Route::get('/gorevler', [PageController::class, 'moduleTasks'])->name('tasks');
+    Route::get('/kampanyalar', [PageController::class, 'moduleCampaigns'])->name('campaigns');
+    Route::get('/raporlar', [PageController::class, 'moduleReports'])->name('reports');
 });
+
+// Demo Kayıt
+Route::get('/demo', [DemoController::class, 'showForm'])->name('demo.form');
+Route::post('/demo', [DemoController::class, 'register'])->name('demo.register');
+Route::get('/demo/expired', [DemoController::class, 'expired'])
+    ->middleware('auth')
+    ->name('demo.expired');
 
 /*
 |--------------------------------------------------------------------------
@@ -36,7 +119,7 @@ Route::prefix('panel')->group(function () {
 
     Route::middleware('guest')->group(function () {
         Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-        Route::post('/login', [LoginController::class, 'login']);
+        Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 
         Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
         Route::post('/register', [RegisterController::class, 'register']);
@@ -46,7 +129,7 @@ Route::prefix('panel')->group(function () {
         ->middleware('auth')
         ->name('logout');
 
-    Route::middleware('auth')->group(function () {
+    Route::middleware('auth', 'check.demo.expiry')->group(function () {
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -156,3 +239,29 @@ Route::prefix('panel')->group(function () {
 });
 
 Route::get('/quotation/view/{token}', [QuotationController::class, 'view'])->name('quotations.view');
+
+Route::get('/make-mailable', function () {
+    Artisan::call('make:mail', ['name' => 'ContactFormMail', '--markdown' => 'emails.contact']);
+    return 'Mailable created successfully!';
+});
+
+
+// Route::get('/test-mail', function () {
+//     try {
+//         $testData = [
+//             'full_name' => 'Test Kullanıcı',
+//             'email' => 'yunuskirca34@gmail.com',
+//             'phone' => '0555 555 55 55',
+//             'subject' => 'Test Mesajı',
+//             'message' => 'Bu bir test mesajıdır.',
+//             'ip_address' => '127.0.0.1',
+//         ];
+
+//         Mail::to('sigortaacenteyonetimsistemi@gmail.com')
+//             ->send(new \App\Mail\ContactFormMail($testData));
+
+//         return 'Test maili gönderildi!';
+//     } catch (\Exception $e) {
+//         return 'Hata: ' . $e->getMessage();
+//     }
+// });

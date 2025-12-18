@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('cross_sell_opportunities', function (Blueprint $table) {
             $table->id();
-
+            $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
 
             $table->enum('suggested_product', [

@@ -46,7 +46,7 @@ class DashboardController extends Controller
             ->get();
 
         // Bugünkü görevler
-        $todayTasks = Task::with(['assignedTo', 'related'])
+        $todayTasks = Task::with(['assignedTo'])
             ->dueToday()
             ->orderBy('priority', 'desc')
             ->get();

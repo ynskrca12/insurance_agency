@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('quotations', function (Blueprint $table) {
             $table->id();
-
+            $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
 
             $table->string('quotation_number')->unique();

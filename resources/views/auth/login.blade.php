@@ -1,125 +1,123 @@
-@extends('layouts.guest')
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap - Sigorta Yönetim Sistemi</title>
 
-@section('title', 'Giriş Yap')
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-@section('content')
-<div class="auth-card">
-    <!-- Header -->
-    <div class="auth-header">
-        <i class="bi bi-shield-check" style="font-size: 3rem;"></i>
-        <h4 class="mt-2 mb-4">Sigorta Yönetim Paneli</h4>
-    </div>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    <!-- Body -->
-    <div class="auth-body">
-        @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle me-2"></i>
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        @endif
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('web/css/style.css') }}">
+</head>
+<body>
 
-        @if($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle me-2"></i>
-            {{ $errors->first() }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        @endif
+<div class="login-page">
+    <div class="login-container">
+        <!-- Back Link -->
+        <a href="{{ route('home') }}" class="login-back-link">
+            <i class="bi bi-arrow-left"></i>
+            Anasayfaya Dön
+        </a>
 
-        <form method="POST" action="{{ route('login') }}" id="loginForm">
-            @csrf
-
-            <!-- Email -->
-            <div class="form-floating mb-3">
-                <input type="email"
-                       class="form-control @error('email') is-invalid @enderror"
-                       id="email"
-                       name="email"
-                       placeholder="E-posta"
-                       value="{{ old('email') }}"
-                       required
-                       autofocus>
-                <label for="email">
-                    <i class="bi bi-envelope me-2"></i>E-posta Adresi
-                </label>
-                @error('email')
-                <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
+        <!-- Login Card -->
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h1>Giriş Yap</h1>
+                <p>Demo hesabınıza giriş yapın</p>
             </div>
 
-            <!-- Password -->
-            <div class="form-floating mb-3">
-                <input type="password"
-                       class="form-control @error('password') is-invalid @enderror"
-                       id="password"
-                       name="password"
-                       placeholder="Şifre"
-                       required>
-                <label for="password">
-                    <i class="bi bi-lock me-2"></i>Şifre
-                </label>
-                @error('password')
-                <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
+            @if(session('success'))
+            <div class="login-alert success">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>{{ session('success') }}</span>
             </div>
+            @endif
 
-            <!-- Remember Me -->
-            <div class="form-check mb-3">
-                <input class="form-check-input"
-                       type="checkbox"
-                       name="remember"
-                       id="remember">
-                <label class="form-check-label" for="remember">
-                    Beni Hatırla
-                </label>
+            @if(session('error'))
+            <div class="login-alert error">
+                <i class="bi bi-x-circle-fill"></i>
+                <span>{{ session('error') }}</span>
             </div>
+            @endif
 
-            <!-- Submit Button -->
-            <div class="d-grid">
-                <button type="submit" class="btn btn-primary btn-lg">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>
+            @if ($errors->any())
+            <div class="login-alert error">
+                <i class="bi bi-x-circle-fill"></i>
+                <span>{{ $errors->first() }}</span>
+            </div>
+            @endif
+
+            <form method="POST" action="{{ route('login.post') }}" class="login-form">
+                @csrf
+
+                <div class="login-form-group">
+                    <label for="email" class="login-form-label">E-posta</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        class="login-form-input @error('email') is-invalid @enderror"
+                        placeholder="ornek@email.com"
+                        value="{{ old('email') }}"
+                        required
+                        autofocus
+                    >
+                    @error('email')
+                        <span class="login-form-error">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="login-form-group">
+                    <label for="password" class="login-form-label">Şifre</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="login-form-input @error('password') is-invalid @enderror"
+                        placeholder="••••••••"
+                        required
+                    >
+                    @error('password')
+                        <span class="login-form-error">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="login-remember">
+                    <input
+                        type="checkbox"
+                        id="remember"
+                        name="remember"
+                        {{ old('remember') ? 'checked' : '' }}
+                    >
+                    <label for="remember">Beni Hatırla</label>
+                </div>
+
+                <button type="submit" class="login-submit-button">
+                    <i class="bi bi-box-arrow-in-right"></i>
                     Giriş Yap
                 </button>
-            </div>
-        </form>
+            </form>
 
-        <hr class="my-4">
-
-        <div class="text-center">
-            <p class="text-muted mb-0">
-                Hesabınız yok mu?
-                <a href="{{ route('register') }}" class="text-decoration-none">
-                    Kayıt Ol
+            <div class="login-footer">
+                <p>Henüz hesabınız yok mu?</p>
+                <a href="{{ route('demo.form') }}">
+                    <i class="bi bi-plus-circle"></i>
+                    Ücretsiz Demo Hesabı Oluştur
                 </a>
-            </p>
+            </div>
         </div>
     </div>
 </div>
-@endsection
 
-@push('scripts')
-<script>
-$(document).ready(function() {
-    // Form validasyonu
-    $('#loginForm').on('submit', function(e) {
-        let email = $('#email').val();
-        let password = $('#password').val();
-
-        if (!email || !password) {
-            e.preventDefault();
-            alert('Lütfen tüm alanları doldurun.');
-            return false;
-        }
-    });
-
-    // Enter tuşu ile form gönderimi
-    $('#password').on('keypress', function(e) {
-        if (e.which === 13) {
-            $('#loginForm').submit();
-        }
-    });
-});
-</script>
-@endpush
+</body>
+</html>

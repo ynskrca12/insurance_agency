@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('payment_reminders', function (Blueprint $table) {
             $table->id();
-
+            $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
             $table->foreignId('installment_id')->constrained('installments')->cascadeOnDelete();
 

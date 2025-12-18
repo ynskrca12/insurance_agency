@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('campaign_logs', function (Blueprint $table) {
             $table->id();
-
+            $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('campaign_id')->constrained('campaigns')->cascadeOnDelete();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
 

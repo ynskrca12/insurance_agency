@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('message_templates', function (Blueprint $table) {
             $table->id();
-
+            $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->string('name');
             $table->enum('type', ['sms', 'email', 'whatsapp'])->default('sms');
             $table->string('subject')->nullable();

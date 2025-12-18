@@ -1,29 +1,31 @@
 <?php
 
 namespace App\Models;
-
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
-    protected $fillable = [
-        'title',
-        'description',
-        'category',
-        'priority',
-        'status',
-        'assigned_to',
-        'assigned_by',
-        'customer_id',
-        'policy_id',
-        'due_date',
-        'reminder_date',
-        'completed_at',
-        'notes',
-    ];
+    // protected $fillable = [
+    //     'title',
+    //     'description',
+    //     'category',
+    //     'priority',
+    //     'status',
+    //     'assigned_to',
+    //     'assigned_by',
+    //     'customer_id',
+    //     'policy_id',
+    //     'due_date',
+    //     'reminder_date',
+    //     'completed_at',
+    //     'notes',
+    // ];
+
+    protected $guarded = [];
 
     protected $casts = [
         'due_date' => 'datetime',
