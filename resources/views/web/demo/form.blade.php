@@ -64,125 +64,136 @@
                 @csrf
 
                 <div class="demo-form-group">
-                    <label for="company_name" class="demo-form-label">
-                        Firma Adı <span class="required-star">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        id="company_name"
-                        name="company_name"
-                        class="demo-form-input @error('company_name') is-invalid @enderror"
-                        placeholder="Örnek: Acme Sigorta"
-                        value="{{ old('company_name') }}"
-                        required
-                    >
-                    @error('company_name')
-                        <span class="demo-form-error">{{ $message }}</span>
-                    @enderror
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="company_name" class="demo-form-label">
+                                Firma Adı <span class="required-star">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="company_name"
+                                name="company_name"
+                                class="demo-form-input @error('company_name') is-invalid @enderror"
+                                placeholder="Örnek: Acme Sigorta"
+                                value="{{ old('company_name') }}"
+                                required
+                            >
+                            @error('company_name')
+                                <span class="demo-form-error">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+
+                        <div class="col-md-6">
+                            <label for="full_name" class="demo-form-label">
+                                Ad Soyad <span class="required-star">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="full_name"
+                                name="full_name"
+                                class="demo-form-input @error('full_name') is-invalid @enderror"
+                                placeholder="Adınız ve soyadınız"
+                                value="{{ old('full_name') }}"
+                                required
+                            >
+                            @error('full_name')
+                                <span class="demo-form-error">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
 
                 <div class="demo-form-group">
-                    <label for="full_name" class="demo-form-label">
-                        Ad Soyad <span class="required-star">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        id="full_name"
-                        name="full_name"
-                        class="demo-form-input @error('full_name') is-invalid @enderror"
-                        placeholder="Adınız ve soyadınız"
-                        value="{{ old('full_name') }}"
-                        required
-                    >
-                    @error('full_name')
-                        <span class="demo-form-error">{{ $message }}</span>
+                    <div class="row">
+                        <div class="col-md-6">
+                             <label for="email" class="demo-form-label">
+                                E-posta <span class="required-star">*</span>
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                class="demo-form-input @error('email') is-invalid @enderror"
+                                placeholder="ornek@email.com"
+                                value="{{ old('email') }}"
+                                required
+                            >
+                            @error('email')
+                                <span class="demo-form-error">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="col-md-6">
+                             <label for="phone" class="demo-form-label">
+                                Telefon <span class="required-star">*</span>
+                            </label>
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                class="demo-form-input @error('phone') is-invalid @enderror"
+                                placeholder="05XX XXX XX XX"
+                                value="{{ old('phone') }}"
+                                required
+                            >
+                            @error('phone')
+                                <span class="demo-form-error">{{ $message }}</span>
                     @enderror
-                </div>
+                        </div>
+                    </div>
 
-                <div class="demo-form-group">
-                    <label for="email" class="demo-form-label">
-                        E-posta <span class="required-star">*</span>
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        class="demo-form-input @error('email') is-invalid @enderror"
-                        placeholder="ornek@email.com"
-                        value="{{ old('email') }}"
-                        required
-                    >
-                    @error('email')
-                        <span class="demo-form-error">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="demo-form-group">
-                    <label for="phone" class="demo-form-label">
-                        Telefon <span class="required-star">*</span>
-                    </label>
-                    <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        class="demo-form-input @error('phone') is-invalid @enderror"
-                        placeholder="05XX XXX XX XX"
-                        value="{{ old('phone') }}"
-                        required
-                    >
-                    @error('phone')
-                        <span class="demo-form-error">{{ $message }}</span>
-                    @enderror
                 </div>
 
                 <!-- ŞİFRE ALANLARI - YENİ -->
                 <div class="demo-form-group">
-                    <label for="password" class="demo-form-label">
-                        Şifre <span class="required-star">*</span>
-                    </label>
-                    <div class="password-wrapper">
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            class="demo-form-input @error('password') is-invalid @enderror"
-                            placeholder="En az 8 karakter"
-                            required
-                        >
-                        <button type="button" class="password-toggle" onclick="togglePassword('password')">
-                            <i class="bi bi-eye" id="password-icon"></i>
-                        </button>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="password-wrapper">
+                                  <label for="password" class="demo-form-label">
+                                        Şifre <span class="required-star">*</span>
+                                    </label>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    class="demo-form-input @error('password') is-invalid @enderror"
+                                    placeholder="En az 8 karakter"
+                                    required
+                                >
+                                <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                    <!-- <i class="bi bi-eye" id="password-icon"></i> -->
+                                </button>
+                            </div>
+                            @error('password')
+                                <span class="demo-form-error">{{ $message }}</span>
+                            @enderror
+                            <small style="color: #80868b; font-size: 0.875rem; display: block; margin-top: 0.375rem;">
+                                En az 8 karakter olmalıdır
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="password_confirmation" class="demo-form-label">
+                                Şifre Tekrar <span class="required-star">*</span>
+                            </label>
+                            <div class="password-wrapper">
+                                <input
+                                    type="password"
+                                    id="password_confirmation"
+                                    name="password_confirmation"
+                                    class="demo-form-input @error('password_confirmation') is-invalid @enderror"
+                                    placeholder="Şifrenizi tekrar girin"
+                                    required
+                                >
+                                <button type="button" class="password-toggle" onclick="togglePassword('password_confirmation')">
+                                    <!-- <i class="bi bi-eye" id="password_confirmation-icon"></i> -->
+                                </button>
+                            </div>
+                            @error('password_confirmation')
+                                <span class="demo-form-error">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
-                    @error('password')
-                        <span class="demo-form-error">{{ $message }}</span>
-                    @enderror
-                    <small style="color: #80868b; font-size: 0.875rem; display: block; margin-top: 0.375rem;">
-                        En az 8 karakter olmalıdır
-                    </small>
                 </div>
-
-                <div class="demo-form-group">
-                    <label for="password_confirmation" class="demo-form-label">
-                        Şifre Tekrar <span class="required-star">*</span>
-                    </label>
-                    <div class="password-wrapper">
-                        <input
-                            type="password"
-                            id="password_confirmation"
-                            name="password_confirmation"
-                            class="demo-form-input @error('password_confirmation') is-invalid @enderror"
-                            placeholder="Şifrenizi tekrar girin"
-                            required
-                        >
-                        <button type="button" class="password-toggle" onclick="togglePassword('password_confirmation')">
-                            <i class="bi bi-eye" id="password_confirmation-icon"></i>
-                        </button>
-                    </div>
-                    @error('password_confirmation')
-                        <span class="demo-form-error">{{ $message }}</span>
-                    @enderror
-                </div>
-                <!-- ŞİFRE ALANLARI SON -->
 
                 <div class="demo-form-group">
                     <label for="city" class="demo-form-label">Şehir</label>

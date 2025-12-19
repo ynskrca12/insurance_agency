@@ -1,7 +1,7 @@
-<nav class="navbar-web">
-    <div class="container">
+<nav class="navbar navbar-expand-lg  navbar-web py-3">
+    <div class="container px-0 py-0">
         <a href="{{ route('home') }}" class="navbar-brand">
-            <i class="bi bi-shield-check"></i>
+            <img src="{{ asset('logosysnew.png') }}" alt="syslogo" style="width: 28px;" class="">
             <span>SigortaCRM</span>
         </a>
 
