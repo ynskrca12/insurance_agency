@@ -2,9 +2,10 @@
     <div class="footer-content">
         <!-- Şirket Bilgileri -->
         <div class="footer-section">
-            <h3>
-                <i class="bi bi-shield-check"></i> SigortaCRM
-            </h3>
+            <a href="{{ route('home') }}" class="navbar-brand text-white">
+                <img src="{{ asset('logosysnew.png') }}" alt="syslogo" style="width: 28px;" class="">
+                <span>SigortaCRM</span>
+            </a>
             <p>
                 Modern, güçlü ve kolay kullanımlı sigorta yönetim sistemi ile acentenizi dijitalleştirin.
             </p>
@@ -12,13 +13,10 @@
                 <a href="#" class="social-link" title="Facebook">
                     <i class="bi bi-facebook"></i>
                 </a>
-                <a href="#" class="social-link" title="Twitter">
-                    <i class="bi bi-twitter"></i>
-                </a>
                 <a href="#" class="social-link" title="LinkedIn">
                     <i class="bi bi-linkedin"></i>
                 </a>
-                <a href="#" class="social-link" title="Instagram">
+                <a href="https://www.instagram.com/sigortayonetimsistemi/" class="social-link" title="Instagram">
                     <i class="bi bi-instagram"></i>
                 </a>
             </div>
@@ -27,7 +25,7 @@
         <!-- Hızlı Linkler -->
         <div class="footer-section">
             <h3>Hızlı Linkler</h3>
-            <ul class="footer-links">
+            <ul class="footer-links" style="padding-left: 0px !important">
                 <li><a href="{{ route('home') }}">Anasayfa</a></li>
                 <li><a href="{{ route('about') }}">Hakkımızda</a></li>
                 <li><a href="{{ route('modules') }}">Modüller</a></li>
@@ -39,7 +37,7 @@
         <!-- Modüller -->
         <div class="footer-section">
             <h3>Modüller</h3>
-            <ul class="footer-links">
+            <ul class="footer-links" style="padding-left: 0px !important">
                 <li><a href="{{ route('modules.customers') }}">Müşteri Yönetimi</a></li>
                 <li><a href="{{ route('modules.policies') }}">Poliçe Yönetimi</a></li>
                 <li><a href="{{ route('modules.quotations') }}">Teklif Yönetimi</a></li>

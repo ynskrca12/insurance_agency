@@ -21,16 +21,53 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Admin\Auth\AdminAuthController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\DemoUserController;
+use App\Http\Controllers\Web\BlogController as WebBlogController;
 
-Route::get('/mail-config', function () {
-    return [
-        'MAIL_MAILER' => config('mail.default'),
-        'MAIL_HOST' => config('mail.mailers.smtp.host'),
-        'MAIL_PORT' => config('mail.mailers.smtp.port'),
-        'MAIL_USERNAME' => config('mail.mailers.smtp.username'),
-        'MAIL_FROM' => config('mail.from'),
-    ];
+// Admin Auth Routes (Guest only)
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
+    });
+
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 });
+
+// Admin Panel Routes (Admin only)
+Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    // Blog Routes
+    Route::resource('blogs', BlogController::class);
+    Route::delete('/blogs/{blog}/delete-image', [BlogController::class, 'deleteImage'])->name('blogs.delete-image');
+
+    // Demo Users Routes
+    Route::resource('demo-users', DemoUserController::class)->only(['index', 'show', 'destroy']);
+    Route::put('/demo-users/{demoUser}/update-trial', [DemoUserController::class, 'updateTrial'])->name('demo-users.update-trial');
+    Route::post('/demo-users/{demoUser}/deactivate', [DemoUserController::class, 'deactivate'])->name('demo-users.deactivate');
+    Route::post('/demo-users/{demoUser}/activate', [DemoUserController::class, 'activate'])->name('demo-users.activate');
+
+    // Contact Messages routes (henüz oluşturulmadı)
+    Route::get('/contact-messages', function() { return 'Contact Messages'; })->name('contact-messages.index');
+
+    // Settings routes (henüz oluşturulmadı)
+    Route::get('/settings', function() { return 'Settings'; })->name('settings');
+    Route::get('/activity-log', function() { return 'Activity Log'; })->name('activity-log');
+});
+
+// Route::get('/mail-config', function () {
+//     return [
+//         'MAIL_MAILER' => config('mail.default'),
+//         'MAIL_HOST' => config('mail.mailers.smtp.host'),
+//         'MAIL_PORT' => config('mail.mailers.smtp.port'),
+//         'MAIL_USERNAME' => config('mail.mailers.smtp.username'),
+//         'MAIL_FROM' => config('mail.from'),
+//     ];
+// });
 
 Route::get('/optimize', function () {
     Artisan::call('config:clear');
@@ -109,6 +146,10 @@ Route::get('/demo/expired', [DemoController::class, 'expired'])
     ->middleware('auth')
     ->name('demo.expired');
 
+    Route::prefix('blog')->name('blog.')->group(function () {
+    Route::get('/', [WebBlogController::class, 'index'])->name('index');
+    Route::get('/{slug}', [WebBlogController::class, 'show'])->name('show');
+});
 /*
 |--------------------------------------------------------------------------
 | Panel Auth Routes (Guest Only)
