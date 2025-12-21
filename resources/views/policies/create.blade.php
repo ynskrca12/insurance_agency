@@ -548,7 +548,7 @@
                                     <option value="2">2 Taksit</option>
                                     <option value="3">3 Taksit</option>
                                     <option value="4">4 Taksit</option>
-                                    <option value="6" selected>6 Taksit</option>
+                                    <option value="6">6 Taksit</option>
                                     <option value="9">9 Taksit</option>
                                     <option value="12">12 Taksit</option>
                                 </select>
