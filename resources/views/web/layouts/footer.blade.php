@@ -2,9 +2,9 @@
     <div class="footer-content">
         <!-- Şirket Bilgileri -->
         <div class="footer-section">
-            <a href="{{ route('home') }}" class="navbar-brand text-white">
+            <a href="{{ route('home') }}" class="navbar-brand text-white mb-2">
                 <img src="{{ asset('logosysnew.png') }}" alt="syslogo" style="width: 28px;" class="">
-                <span>SigortaCRM</span>
+                <span>Sigorta Yönetim Sistemi</span>
             </a>
             <p>
                 Modern, güçlü ve kolay kullanımlı sigorta yönetim sistemi ile acentenizi dijitalleştirin.

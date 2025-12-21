@@ -6,8 +6,8 @@
 @section('content')
 
 <!-- Hero Section -->
-<section class="demo-page-hero">
-    <div class="demo-hero-content">
+<section class="demo-page-hero pb-5">
+    <div class="demo-hero-content py-5">
         <h1>14 Gün Ücretsiz Deneyin</h1>
         <p>
             Kredi kartı bilgisi gerektirmez. Taahhüt yok.

@@ -18,204 +18,208 @@
 
 <!-- Contact Main Section -->
 <section class="contact-main-section">
-    <div class="contact-container">
+    <div class="contact-container px-4 py-5 px-md-5 py-md-5">
 
-        <!-- Contact Form -->
-        <div class="contact-form-wrapper animate-on-scroll">
-            <h2>Mesaj Gönderin</h2>
-            <p class="contact-form-description">
-                Formu doldurun, en kısa sürede size dönüş yapalım.
-            </p>
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <!-- Contact Form -->
+                <div class="contact-form-wrapper animate-on-scroll">
+                    <h2>Mesaj Gönderin</h2>
+                    <p class="contact-form-description">
+                        Formu doldurun, en kısa sürede size dönüş yapalım.
+                    </p>
 
-            @if(session('success'))
-            <div class="alert-message success">
-                <i class="bi bi-check-circle-fill"></i>
-                <span>{{ session('success') }}</span>
+                    @if(session('success'))
+                    <div class="alert-message success">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>{{ session('success') }}</span>
+                    </div>
+                    @endif
+
+                    @if(session('error'))
+                    <div class="alert-message error">
+                        <i class="bi bi-x-circle-fill"></i>
+                        <span>{{ session('error') }}</span>
+                    </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('contact.send') }}" class="contact-form">
+                        @csrf
+
+                        <div class="form-group">
+                            <label for="full_name" class="form-label">
+                                Ad Soyad <span class="required-mark">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="full_name"
+                                name="full_name"
+                                class="form-input @error('full_name') is-invalid @enderror"
+                                placeholder="Adınız ve soyadınız"
+                                value="{{ old('full_name') }}"
+                                required
+                            >
+                            @error('full_name')
+                                <span class="form-error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="form-label">
+                                E-posta <span class="required-mark">*</span>
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                class="form-input @error('email') is-invalid @enderror"
+                                placeholder="ornek@email.com"
+                                value="{{ old('email') }}"
+                                required
+                            >
+                            @error('email')
+                                <span class="form-error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Telefon</label>
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                class="form-input @error('phone') is-invalid @enderror"
+                                placeholder="05XX XXX XX XX"
+                                value="{{ old('phone') }}"
+                            >
+                            @error('phone')
+                                <span class="form-error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject" class="form-label">Konu</label>
+                            <input
+                                type="text"
+                                id="subject"
+                                name="subject"
+                                class="form-input @error('subject') is-invalid @enderror"
+                                placeholder="Mesajınızın konusu"
+                                value="{{ old('subject') }}"
+                            >
+                            @error('subject')
+                                <span class="form-error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message" class="form-label">
+                                Mesajınız <span class="required-mark">*</span>
+                            </label>
+                            <textarea
+                                id="message"
+                                name="message"
+                                class="form-textarea @error('message') is-invalid @enderror"
+                                placeholder="Bize ne söylemek istersiniz?"
+                                required
+                            >{{ old('message') }}</textarea>
+                            @error('message')
+                                <span class="form-error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <button type="submit" class="form-submit-button">
+                            <i class="bi bi-send"></i>
+                            Mesajı Gönder
+                        </button>
+                    </form>
+                </div>
             </div>
-            @endif
 
-            @if(session('error'))
-            <div class="alert-message error">
-                <i class="bi bi-x-circle-fill"></i>
-                <span>{{ session('error') }}</span>
+            <div class="col-md-6">
+                <!-- Contact Info -->
+                <div class="contact-info-wrapper">
+
+                    <!-- Contact Details -->
+                    <div class="contact-info-card animate-on-scroll">
+                        <h3 class="contact-info-card-title">
+                            <i class="bi bi-geo-alt contact-info-card-icon"></i>
+                            İletişim Bilgileri
+                        </h3>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-item-icon">
+                                <i class="bi bi-telephone"></i>
+                            </div>
+                            <div class="contact-info-item-content">
+                                <span class="contact-info-item-label">Telefon</span>
+                                <div class="contact-info-item-value">
+                                    <a href="tel:+902121234567">+90 (534) 234 64 81</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-item-icon">
+                                <i class="bi bi-envelope"></i>
+                            </div>
+                            <div class="contact-info-item-content">
+                                <span class="contact-info-item-label">E-posta</span>
+                                <div class="contact-info-item-value">
+                                    <a href="mailto:info@sigortayonetimsistemi.com">info@sigortayonetimsistemi.com</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-item-icon">
+                                <i class="bi bi-clock"></i>
+                            </div>
+                            <div class="contact-info-item-content">
+                                <span class="contact-info-item-label">Çalışma Saatleri</span>
+                                <div class="contact-info-item-value">
+                                    08:00 - 23:00
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-item-icon">
+                                <i class="bi bi-geo-alt"></i>
+                            </div>
+                            <div class="contact-info-item-content">
+                                <span class="contact-info-item-label">Adres</span>
+                                <div class="contact-info-item-value">
+                                    Pendik, İstanbul
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social Media -->
+                    <div class="contact-info-card animate-on-scroll">
+                        <h3 class="contact-info-card-title">
+                            <i class="bi bi-share contact-info-card-icon"></i>
+                            Sosyal Medya
+                        </h3>
+                        <p class="social-description">
+                            Bizi sosyal medyada takip edin, haberdar olun.
+                        </p>
+                        <div class="social-links-grid">
+                            <a href="#" class="social-link-item" title="Facebook">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            <a href="#" class="social-link-item" title="LinkedIn">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                            <a href="#" class="social-link-item" title="Instagram">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
-            @endif
-
-            <form method="POST" action="{{ route('contact.send') }}" class="contact-form">
-                @csrf
-
-                <div class="form-group">
-                    <label for="full_name" class="form-label">
-                        Ad Soyad <span class="required-mark">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        id="full_name"
-                        name="full_name"
-                        class="form-input @error('full_name') is-invalid @enderror"
-                        placeholder="Adınız ve soyadınız"
-                        value="{{ old('full_name') }}"
-                        required
-                    >
-                    @error('full_name')
-                        <span class="form-error-message">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="email" class="form-label">
-                        E-posta <span class="required-mark">*</span>
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        class="form-input @error('email') is-invalid @enderror"
-                        placeholder="ornek@email.com"
-                        value="{{ old('email') }}"
-                        required
-                    >
-                    @error('email')
-                        <span class="form-error-message">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="phone" class="form-label">Telefon</label>
-                    <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        class="form-input @error('phone') is-invalid @enderror"
-                        placeholder="05XX XXX XX XX"
-                        value="{{ old('phone') }}"
-                    >
-                    @error('phone')
-                        <span class="form-error-message">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="subject" class="form-label">Konu</label>
-                    <input
-                        type="text"
-                        id="subject"
-                        name="subject"
-                        class="form-input @error('subject') is-invalid @enderror"
-                        placeholder="Mesajınızın konusu"
-                        value="{{ old('subject') }}"
-                    >
-                    @error('subject')
-                        <span class="form-error-message">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="message" class="form-label">
-                        Mesajınız <span class="required-mark">*</span>
-                    </label>
-                    <textarea
-                        id="message"
-                        name="message"
-                        class="form-textarea @error('message') is-invalid @enderror"
-                        placeholder="Bize ne söylemek istersiniz?"
-                        required
-                    >{{ old('message') }}</textarea>
-                    @error('message')
-                        <span class="form-error-message">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <button type="submit" class="form-submit-button">
-                    <i class="bi bi-send"></i>
-                    Mesajı Gönder
-                </button>
-            </form>
         </div>
-
-        <!-- Contact Info -->
-        <div class="contact-info-wrapper">
-
-            <!-- Contact Details -->
-            <div class="contact-info-card animate-on-scroll">
-                <h3 class="contact-info-card-title">
-                    <i class="bi bi-geo-alt contact-info-card-icon"></i>
-                    İletişim Bilgileri
-                </h3>
-
-                <div class="contact-info-item">
-                    <div class="contact-info-item-icon">
-                        <i class="bi bi-telephone"></i>
-                    </div>
-                    <div class="contact-info-item-content">
-                        <span class="contact-info-item-label">Telefon</span>
-                        <div class="contact-info-item-value">
-                            <a href="tel:+902121234567">+90 (534) 234 64 81</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="contact-info-item">
-                    <div class="contact-info-item-icon">
-                        <i class="bi bi-envelope"></i>
-                    </div>
-                    <div class="contact-info-item-content">
-                        <span class="contact-info-item-label">E-posta</span>
-                        <div class="contact-info-item-value">
-                            <a href="mailto:info@sigortayonetimsistemi.com">info@sigortayonetimsistemi.com</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="contact-info-item">
-                    <div class="contact-info-item-icon">
-                        <i class="bi bi-clock"></i>
-                    </div>
-                    <div class="contact-info-item-content">
-                        <span class="contact-info-item-label">Çalışma Saatleri</span>
-                        <div class="contact-info-item-value">
-                             08:00 - 23:00
-                        </div>
-                    </div>
-                </div>
-
-                <div class="contact-info-item">
-                    <div class="contact-info-item-icon">
-                        <i class="bi bi-geo-alt"></i>
-                    </div>
-                    <div class="contact-info-item-content">
-                        <span class="contact-info-item-label">Adres</span>
-                        <div class="contact-info-item-value">
-                            Pendik, İstanbul
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Social Media -->
-            <div class="contact-info-card animate-on-scroll">
-                <h3 class="contact-info-card-title">
-                    <i class="bi bi-share contact-info-card-icon"></i>
-                    Sosyal Medya
-                </h3>
-                <p class="social-description">
-                    Bizi sosyal medyada takip edin, haberdar olun.
-                </p>
-                <div class="social-links-grid">
-                    <a href="#" class="social-link-item" title="Facebook">
-                        <i class="bi bi-facebook"></i>
-                    </a>
-                    <a href="#" class="social-link-item" title="LinkedIn">
-                        <i class="bi bi-linkedin"></i>
-                    </a>
-                    <a href="#" class="social-link-item" title="Instagram">
-                        <i class="bi bi-instagram"></i>
-                    </a>
-                </div>
-            </div>
-
-        </div>
-
     </div>
 </section>
 

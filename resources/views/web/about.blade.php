@@ -6,7 +6,7 @@
 @section('content')
 
 <!-- Hero Section -->
-<section class="about-hero">
+<section class="about-hero py-5">
     <div class="about-hero-wrapper">
         <div class="about-hero-content">
             <div class="hero-badge">
@@ -23,7 +23,7 @@
 </section>
 
 <!-- Story Section -->
-<section class="about-story-section">
+<section class="about-story-section pt-5 px-4">
     <div class="story-container">
         <div class="story-content">
             <div class="story-text">
@@ -43,20 +43,6 @@
                     Amacımız sadece bir yazılım sunmak değil, acentelerin iş yapış şekillerini
                     dönüştürmek ve onlara rekabet avantajı sağlamak.
                 </p>
-                <div class="story-stats">
-                    <div class="stat-box">
-                        <h3></h3>
-                        <p> </p>
-                    </div>
-                    <div class="stat-box">
-                        <h3></h3>
-                        <p> </p>
-                    </div>
-                    <div class="stat-box">
-                        <h3></h3>
-                        <p></p>
-                    </div>
-                </div>
             </div>
             <div class="story-image">
                 <div class="image-wrapper">
@@ -77,7 +63,7 @@
 </section>
 
 <!-- Mission & Vision Section -->
-<section class="about-mission-vision-section">
+<section class="about-mission-vision-section py-5 px-4">
     <div class="mv-container">
         <div class="section-header">
             <div class="section-tag">Misyon & Vizyon</div>

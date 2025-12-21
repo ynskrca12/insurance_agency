@@ -6,7 +6,7 @@
 @section('content')
 
 <!-- Hero Section -->
-<section class="module-detail-hero">
+<section class="module-detail-hero py-5 px-4">
     <div class="module-detail-breadcrumb">
         <a href="{{ route('home') }}">Anasayfa</a>
         <i class="bi bi-chevron-right"></i>
@@ -25,10 +25,6 @@
             <a href="{{ route('demo.form') }}" class="btn btn-white btn-lg">
                 <i class="bi bi-play-circle me-2"></i>Ücretsiz Deneyin
             </a>
-        </div>
-        <div class="module-detail-hero-image">
-            <img src="https://via.placeholder.com/600x400/6c757d/ffffff?text=Raporlama"
-                 alt="Raporlama">
         </div>
     </div>
 </section>

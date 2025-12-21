@@ -6,7 +6,7 @@
 @section('content')
 
 <!-- Hero Section -->
-<section class="crm-hero">
+<section class="crm-hero py-5 px-4">
     <div class="crm-hero-content">
         <div class="crm-hero-text">
             <h1>CRM Nedir?</h1>
