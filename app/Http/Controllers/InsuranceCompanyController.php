@@ -7,6 +7,7 @@ use App\Models\Policy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class InsuranceCompanyController extends Controller
 {
@@ -85,10 +86,24 @@ class InsuranceCompanyController extends Controller
         ]);
 
         try {
-            // Logo yükleme
             if ($request->hasFile('logo')) {
-                $logoPath = $request->file('logo')->store('insurance-companies', 'public');
-                $validated['logo'] = $logoPath;
+
+                $file = $request->file('logo');
+
+                // Klasör yolu (public altında)
+                $destinationPath = public_path('insurance_companies');
+
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0755, true);
+                }
+
+                // Dosya adı (istersen uniq yapabilirsin)
+                $fileName = time() . '_' . $file->getClientOriginalName();
+
+                // Dosyayı public altına taşı
+                $file->move($destinationPath, $fileName);
+
+                $validated['logo'] = $fileName;
             }
 
             // Varsayılan değerler
@@ -192,15 +207,32 @@ class InsuranceCompanyController extends Controller
         ]);
 
         try {
-            // Logo yükleme
             if ($request->hasFile('logo')) {
-                // Eski logoyu sil
-                if ($insuranceCompany->logo) {
-                    Storage::disk('public')->delete($insuranceCompany->logo);
+
+                $destinationPath = public_path('insurance_companies');
+
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0755, true);
                 }
 
-                $logoPath = $request->file('logo')->store('insurance-companies', 'public');
-                $validated['logo'] = $logoPath;
+                // Eski logoyu sil
+                if ($insuranceCompany->logo) {
+                    $oldLogoPath = $destinationPath . '/' . $insuranceCompany->logo;
+
+                    if (file_exists($oldLogoPath)) {
+                        unlink($oldLogoPath);
+                    }
+                }
+
+                $file = $request->file('logo');
+
+                // Güvenli ve çakışmayan dosya adı
+                $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+
+                // Dosyayı public altına taşı
+                $file->move($destinationPath, $fileName);
+
+                $validated['logo'] = $fileName;
             }
 
             $validated['is_active'] = $request->boolean('is_active', true);

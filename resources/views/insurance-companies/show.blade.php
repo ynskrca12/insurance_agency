@@ -296,7 +296,7 @@
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
             <div class="d-flex align-items-center flex-wrap gap-3">
                 @if($insuranceCompany->logo)
-                <img src="{{ asset('storage/' . $insuranceCompany->logo) }}"
+                <img src="{{ asset('public/insurance_companies/' . $insuranceCompany->logo) }}"
                      alt="{{ $insuranceCompany->name }}"
                      class="company-logo-header rounded">
                 @endif

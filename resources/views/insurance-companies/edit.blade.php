@@ -456,7 +456,7 @@
                                 @if($insuranceCompany->logo)
                                 <div id="currentLogo" class="logo-container has-image">
                                     <div>
-                                        <img src="{{ asset('storage/' . $insuranceCompany->logo) }}"
+                                        <img src="{{ asset('insurance_companies/' . $insuranceCompany->logo) }}"
                                              alt="{{ $insuranceCompany->name }}"
                                              class="logo-image">
                                         <div class="logo-label">Mevcut Logo</div>

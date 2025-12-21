@@ -439,7 +439,7 @@
                     <!-- Logo -->
                     <div class="company-logo">
                         @if($company->logo)
-                            <img src="{{ asset('storage/' . $company->logo) }}"
+                            <img src="{{ asset('insurance_companies/' . $company->logo) }}"
                                  alt="{{ $company->name }}">
                         @else
                             <i class="bi bi-building company-logo-placeholder"></i>
