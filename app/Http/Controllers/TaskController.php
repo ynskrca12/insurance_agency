@@ -99,7 +99,7 @@ class TaskController extends Controller
                 ->count(),
         ];
 
-        $users = User::orderBy('name')->get();
+        $users = User::forCurrentTenant()->orderBy('name')->get();
 
         return view('tasks.index', compact('tasks', 'stats', 'users'));
     }
@@ -117,7 +117,7 @@ class TaskController extends Controller
 
         $tasks = $query->get()->groupBy('status');
 
-        $users = User::orderBy('name')->get();
+        $users = User::forCurrentTenant()->orderBy('name')->get();
 
         return view('tasks.kanban', compact('tasks', 'users'));
     }
@@ -127,7 +127,7 @@ class TaskController extends Controller
      */
     public function create(Request $request)
     {
-        $users = User::orderBy('name')->get();
+        $users = User::forCurrentTenant()->orderBy('name')->get();
         $customers = Customer::where('status', 'active')->orderBy('name')->get();
         $policies = [];
 
@@ -222,7 +222,7 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        $users = User::orderBy('name')->get();
+        $users = User::forCurrentTenant()->orderBy('name')->get();
         $customers = Customer::where('status', 'active')->orderBy('name')->get();
         $policies = [];
 

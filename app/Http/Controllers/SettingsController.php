@@ -59,7 +59,7 @@ class SettingsController extends Controller
      */
     public function users()
     {
-        $users = User::orderBy('name')->paginate(20);
+        $users = User::forCurrentTenant()->orderBy('name')->paginate(20);
 
         return view('settings.users', compact('users'));
     }
@@ -81,6 +81,7 @@ class SettingsController extends Controller
         try {
             $validated['password'] = Hash::make($validated['password']);
             $validated['is_active'] = $request->boolean('is_active', true);
+            $validated['tenant_id'] = auth()->user()->tenant_id;
 
             User::create($validated);
 

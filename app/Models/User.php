@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Builder;
+
 
 class User extends Authenticatable
 {
@@ -24,6 +26,30 @@ class User extends Authenticatable
         'password' => 'hashed',
         'is_active' => 'boolean',
     ];
+        /**
+     * ============================================
+     * TENANT SCOPE METODLARI (MANUEL)
+     * ============================================
+     */
+
+    /**
+     * Scope: Sadece kendi tenant'ındaki kullanıcılar
+     */
+    public function scopeForCurrentTenant(Builder $query)
+    {
+        if (auth()->check()) {
+            return $query->where('tenant_id', auth()->user()->tenant_id);
+        }
+        return $query;
+    }
+
+    /**
+     * Scope: Tüm kullanıcılar (admin için)
+     */
+    public function scopeAllUsers(Builder $query)
+    {
+        return $query;
+    }
 
         /**
      * Demo user ilişkisi
