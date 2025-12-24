@@ -4,14 +4,6 @@
 
 @push('styles')
 <style>
-    .dashboard-header {
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-    }
-
     .stat-card {
         border: 1px solid #dcdcdc;
         border-radius: 12px;
@@ -212,25 +204,6 @@
 
 @section('content')
 <div class="container-fluid">
-    <!-- Dashboard Header -->
-    <div class="dashboard-header">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <div>
-                <h1 class="h3 mb-1 fw-bold text-dark">
-                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                </h1>
-                <p class="text-muted mb-0 small">
-                    Sistemin genel durumunu buradan takip edebilirsiniz
-                </p>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-light text-dark border" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
-                    <i class="bi bi-calendar3 me-1"></i>
-                    {{ now()->isoFormat('D MMMM YYYY') }}
-                </span>
-            </div>
-        </div>
-    </div>
 
     <!-- İstatistik Kartları -->
     <div class="row g-4 mb-4">

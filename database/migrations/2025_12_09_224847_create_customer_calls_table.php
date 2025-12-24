@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-
+            $table->integer('created_by')->nullable();
             $table->timestamp('called_at');
             $table->integer('duration')->nullable()->comment('Süre (saniye)');
 

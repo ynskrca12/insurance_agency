@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
             $table->foreignId('installment_id')->constrained('installments')->cascadeOnDelete();
+            $table->integer('created_by')->nullable();
 
             $table->datetime('reminder_date');
             $table->enum('channel', ['sms', 'email', 'whatsapp', 'phone'])->default('sms');

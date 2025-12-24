@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-
+            $table->integer('created_by')->nullable();
             // Polymorphic
             $table->nullableMorphs('subject');
 

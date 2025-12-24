@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('policy_id')->constrained('policies')->cascadeOnDelete();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
+            $table->integer('created_by')->nullable();
 
             $table->decimal('total_amount', 12, 2);
             $table->integer('installment_count')->default(1);

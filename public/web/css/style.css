@@ -5070,7 +5070,13 @@ html {
     color: #1a73e8;
 }
 
+@media (max-width: 768px) {
 
+    .d-mb-none{
+        display: none !important;
+    }
+
+}
 
 
 

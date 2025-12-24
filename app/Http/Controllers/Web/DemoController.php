@@ -58,7 +58,10 @@ class DemoController extends Controller
                 'name' => $validated['full_name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
-                'role' => 'admin',
+                'role' => 'owner',
+                'is_active' => true,
+                'tenant_id' => null,
+                'email_verified_at' => now(),
             ]);
 
             // 2. Demo user kaydı oluştur - 14 GÜN DENEME

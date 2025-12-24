@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
-
+            $table->integer('created_by')->nullable();
             $table->enum('suggested_product', [
                 'kasko',
                 'trafik',

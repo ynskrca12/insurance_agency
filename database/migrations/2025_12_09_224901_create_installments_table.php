@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('payment_plan_id')->constrained('payment_plans')->cascadeOnDelete();
+            $table->integer('created_by')->nullable();
 
             $table->integer('installment_number');
             $table->decimal('amount', 12, 2);

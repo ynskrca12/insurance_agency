@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('campaign_id')->constrained('campaigns')->cascadeOnDelete();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
-
+            $table->integer('created_by')->nullable();
             $table->enum('status', ['sent', 'failed'])->default('sent');
             $table->text('message_content');
             $table->text('error_message')->nullable();

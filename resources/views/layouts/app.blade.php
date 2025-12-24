@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') - Sigorta Yönetim Paneli</title>
+    <title>@yield('title', 'Genel Bakış') - Sigorta Yönetim Paneli</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('logosysnew.png') }}">
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -12,92 +15,488 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
-
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
 
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <!-- Custom CSS -->
     <style>
         :root {
-            --sidebar-width: 250px;
+            --sidebar-width: 260px;
+            --navbar-height: 72px;
+
+            /* Modern Color Palette - Trust & Professional */
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+
+            --secondary: #0ea5e9;
+            --secondary-dark: #0284c7;
+
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+
+            --neutral-50: #f8fafc;
+            --neutral-100: #f1f5f9;
+            --neutral-200: #e2e8f0;
+            --neutral-300: #cbd5e1;
+            --neutral-400: #94a3b8;
+            --neutral-500: #64748b;
+            --neutral-600: #475569;
+            --neutral-700: #334155;
+            --neutral-800: #1e293b;
+            --neutral-900: #0f172a;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-size: 0.9rem;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--neutral-50);
+            color: var(--neutral-800);
         }
 
+        /* ============================================
+           NAVBAR - ULTRA MODERN DESIGN
+        ============================================ */
+        .top-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--navbar-height);
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--neutral-200);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            z-index: 1030;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .navbar-container {
+            width: 100%;
+            max-width: 100%;
+            display: grid;
+            grid-template-columns: 230px 1fr 340px;
+            align-items: center;
+            padding: 0 32px;
+        }
+
+        /* ============================================
+           LOGO SECTION - PREMIUM
+        ============================================ */
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-logo:hover {
+            transform: translateY(-1px);
+        }
+
+        .logo-image-wrapper {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navbar-logo img {
+            width: 34px;
+            height: 34px;
+        }
+
+        .navbar-logo-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .navbar-logo-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--neutral-900);
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        .navbar-logo-subtitle {
+            font-size: 11px;
+            color: var(--neutral-500);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ============================================
+           DEMO BANNER - ANIMATED PREMIUM
+        ============================================ */
+        .demo-banner-wrapper {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            border-radius: 12px;
+            padding: 0;
+            height: 42px;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
+        }
+
+        /* Animated gradient background */
+        .demo-banner-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                transparent
+            );
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .demo-banner-content {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            animation: scroll-left 30s linear infinite;
+            padding: 0;
+        }
+
+        .demo-banner-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 40px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+
+        .demo-icon {
+            width: 23px;
+            height: 23px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            animation: bounce-subtle 2s ease-in-out infinite;
+        }
+
+        .demo-icon i {
+            font-size: 13px;
+        }
+
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        /* ============================================
+           USER SECTION - ULTRA MODERN
+        ============================================ */
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 14px;
+        }
+
+        .user-info-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 6px 6px 14px;
+            background: var(--neutral-50);
+            border: 1px solid var(--neutral-200);
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .user-info-card:hover {
+            background: white;
+            border-color: var(--primary-light);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+            transform: translateY(-1px);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.02em;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding-right: 8px;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--neutral-900);
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+        }
+
+        .user-role {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--neutral-500);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* Divider */
+        .navbar-divider {
+            width: 1px;
+            height: 32px;
+            background: var(--neutral-200);
+        }
+
+        /* Logout Button - Premium */
+        .logout-btn {
+            position: relative;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .logout-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: left 0.5s ease;
+        }
+
+        .logout-btn:hover::before {
+            left: 100%;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .logout-btn:active {
+            transform: translateY(0);
+        }
+
+        .logout-btn i {
+            font-size: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .logout-btn:hover i {
+            transform: translateX(2px);
+        }
+
+        /* ============================================
+           SIDEBAR - MODERN
+        ============================================ */
         .sidebar {
             position: fixed;
-            top: 56px;
+            top: var(--navbar-height);
             bottom: 0;
             left: 0;
             z-index: 100;
-            padding: 1rem 0;
-            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            padding: 24px 0;
             width: var(--sidebar-width);
-            background-color: #f8f9fa;
+            background: white;
+            border-right: 1px solid var(--neutral-200);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.02);
         }
 
         .sidebar-sticky {
             position: sticky;
             top: 0;
-            height: calc(100vh - 56px);
-            padding-top: .5rem;
+            height: calc(100vh - var(--navbar-height));
+            padding: 0 16px;
             overflow-x: hidden;
             overflow-y: auto;
         }
 
+        /* Custom Scrollbar */
+        .sidebar-sticky::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-sticky::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar-sticky::-webkit-scrollbar-thumb {
+            background: var(--neutral-300);
+            border-radius: 10px;
+        }
+
+        .sidebar-sticky::-webkit-scrollbar-thumb:hover {
+            background: var(--neutral-400);
+        }
+
         .sidebar .nav-link {
-            font-weight: 500;
-            color: #333;
-            padding: 0.75rem 1rem;
-            border-left: 3px solid transparent;
-            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--neutral-600);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 4px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
         }
 
         .sidebar .nav-link:hover {
-            background-color: #e9ecef;
+            background: var(--neutral-100);
+            color: var(--neutral-900);
+            transform: translateX(2px);
         }
 
         .sidebar .nav-link.active {
-            color: #0d6efd;
-            background-color: #e7f1ff;
-            border-left-color: #0d6efd;
+            color: var(--primary);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(59, 130, 246, 0.05));
+            font-weight: 700;
         }
 
         .sidebar .nav-link i {
-            margin-right: 0.5rem;
+            margin-right: 12px;
             width: 20px;
             text-align: center;
+            font-size: 18px;
         }
 
+        /* Badge Styling */
+        .badge {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        /* ============================================
+           MAIN CONTENT
+        ============================================ */
         main {
             margin-left: var(--sidebar-width);
-            padding-top: 56px;
-        }
-
-        .navbar {
-            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+            padding-top: var(--navbar-height);
+            min-height: 100vh;
         }
 
         .content-wrapper {
-            padding: 2rem;
+            padding: 32px;
         }
 
-        .stat-card {
-            border-left: 4px solid #0d6efd;
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 1200px) {
+            .navbar-container {
+                grid-template-columns: 200px 1fr 320px;
+            }
         }
 
-        .table-actions a,
-        .table-actions button {
-            margin-right: 0.25rem;
+        @media (max-width: 992px) {
+            .navbar-container {
+                grid-template-columns: auto 1fr auto;
+            }
+
+            .navbar-logo-text {
+                display: none;
+            }
+
+            .demo-banner-item {
+                padding: 11px 30px;
+                font-size: 12px;
+            }
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
+            :root {
+                --navbar-height: 60px;
+            }
+
+            .navbar-container {
+                grid-template-columns: 1fr auto;
+                gap: 12px;
+                padding: 0 16px;
+            }
+
             .sidebar {
                 transform: translateX(-100%);
+                transition: transform 0.3s ease;
             }
 
             .sidebar.show {
@@ -107,6 +506,57 @@
             main {
                 margin-left: 0;
             }
+
+            .demo-banner-wrapper {
+                display: none;
+            }
+
+            .user-details {
+                display: none;
+            }
+
+            .navbar-divider {
+                display: none;
+            }
+
+            .logout-btn span {
+                display: none;
+            }
+
+            .logout-btn {
+                padding: 10px 14px;
+            }
+
+            .content-wrapper {
+                padding: 20px 16px;
+            }
+        }
+
+        /* ============================================
+           ANIMATIONS
+        ============================================ */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .top-navbar {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Hover Effects */
+        .hover-lift {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-2px);
         }
     </style>
 
@@ -114,24 +564,86 @@
 </head>
 <body>
     <!-- Top Navbar -->
-    <nav class="navbar navbar-dark bg-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{ route('dashboard') }}">
-                <i class="bi bi-shield-check"></i>
-                Sigorta Paneli
+    <nav class="top-navbar">
+        <div class="navbar-container">
+            <!-- Logo Section -->
+            <a href="{{ route('dashboard') }}" class="navbar-logo">
+                <div class="logo-image-wrapper">
+                    <img src="{{ asset('logosysnew.png') }}" alt="Logo">
+                </div>
+                <div class="navbar-logo-text">
+                    <span class="navbar-logo-title">Sigorta</span>
+                    <span class="navbar-logo-subtitle">Yönetim Sistemi</span>
+                </div>
             </a>
 
-            <div class="d-flex align-items-center">
-                <span class="text-white me-3">
-                    <i class="bi bi-person-circle"></i>
-                    {{ auth()->user()->name }}
-                </span>
+            <!-- Demo Banner - Animated Scroll -->
+            <div class="demo-banner-wrapper">
+                <div class="demo-banner-content">
+                    <!-- First Set -->
+                    <div class="demo-banner-item">
+                        <span class="demo-icon">
+                            <i class="bi bi-gift-fill"></i>
+                        </span>
+                        <span>14 Gün Ücretsiz Demo Sürümü</span>
+                    </div>
+                    <div class="demo-banner-item">
+                        <span class="demo-icon">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </span>
+                        <span>Tüm Özelliklere Tam Erişim</span>
+                    </div>
+                    <div class="demo-banner-item">
+                        <span class="demo-icon">
+                            <i class="bi bi-headset"></i>
+                        </span>
+                        <span>Tam Sürüm İçin Bizimle İletişime Geçin</span>
+                    </div>
 
-                <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                    <!-- Duplicate for seamless loop -->
+                    <div class="demo-banner-item">
+                        <span class="demo-icon">
+                            <i class="bi bi-gift-fill"></i>
+                        </span>
+                        <span>14 Gün Ücretsiz Demo Sürümü</span>
+                    </div>
+                    <div class="demo-banner-item">
+                        <span class="demo-icon">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </span>
+                        <span>Tüm Özelliklere Tam Erişim</span>
+                    </div>
+                    <div class="demo-banner-item">
+                        <span class="demo-icon">
+                            <i class="bi bi-headset"></i>
+                        </span>
+                        <span>Tam Sürüm İçin Bizimle İletişime Geçin</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Actions -->
+            <div class="navbar-actions">
+                <!-- User Info Card -->
+                <div class="user-info-card">
+                    <div class="user-avatar">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name">{{ auth()->user()->name }}</span>
+                        <span class="user-role">{{ auth()->user()->role_label }}</span>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="navbar-divider"></div>
+
+                <!-- Logout Button -->
+                <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
                     @csrf
-                    <button type="submit" class="btn btn-sm btn-outline-light">
+                    <button type="submit" class="logout-btn hover-lift">
                         <i class="bi bi-box-arrow-right"></i>
-                        Çıkış
+                        <span>Çıkış Yap</span>
                     </button>
                 </form>
             </div>
@@ -148,7 +660,7 @@
                             <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
                                href="{{ route('dashboard') }}">
                                 <i class="bi bi-speedometer2"></i>
-                                Dashboard
+                                Genel Bakış
                             </a>
                         </li>
 
@@ -157,6 +669,10 @@
                                href="{{ route('customers.index') }}">
                                 <i class="bi bi-people"></i>
                                 Müşteriler
+                                @php
+                                    $allCustomers = \App\Models\Customer::where('created_by', auth()->id())->count();
+                                @endphp
+                                    <span class="badge bg-success ms-auto">{{ $allCustomers }}</span>
                             </a>
                         </li>
 
@@ -165,6 +681,10 @@
                                href="{{ route('policies.index') }}">
                                 <i class="bi bi-file-earmark-text"></i>
                                 Poliçeler
+                                @php
+                                    $allPolicies = \App\Models\Policy::where('created_by', auth()->id())->count();
+                                @endphp
+                                    <span class="badge bg-success ms-auto">{{ $allPolicies }}</span>
                             </a>
                         </li>
 
@@ -183,9 +703,9 @@
                                 @php
                                     $criticalCount = \App\Models\PolicyRenewal::critical()->count();
                                 @endphp
-                                @if($criticalCount > 0)
-                                    <span class="badge bg-danger ms-2">{{ $criticalCount }}</span>
-                                @endif
+                                {{-- @if($criticalCount > 0) --}}
+                                    <span class="badge bg-danger ms-auto">{{ $criticalCount }}</span>
+                                {{-- @endif --}}
                             </a>
                         </li>
 
@@ -194,12 +714,6 @@
                             href="{{ route('payments.installments') }}">
                                 <i class="bi bi-credit-card"></i>
                                 Ödemeler
-                                @php
-                                    $overdueCount = \App\Models\Installment::overdue()->count();
-                                @endphp
-                                @if($overdueCount > 0)
-                                    <span class="badge bg-danger ms-2">{{ $overdueCount }}</span>
-                                @endif
                             </a>
                         </li>
 
@@ -214,7 +728,7 @@
                                         ->count();
                                 @endphp
                                 @if($myOpenTasks > 0)
-                                    <span class="badge bg-warning ms-2">{{ $myOpenTasks }}</span>
+                                    <span class="badge bg-warning ms-auto">{{ $myOpenTasks }}</span>
                                 @endif
                             </a>
                         </li>
@@ -228,7 +742,7 @@
                                     $draftCampaigns = \App\Models\Campaign::where('status', 'draft')->count();
                                 @endphp
                                 @if($draftCampaigns > 0)
-                                    <span class="badge bg-warning ms-2">{{ $draftCampaigns }}</span>
+                                    <span class="badge bg-warning ms-auto">{{ $draftCampaigns }}</span>
                                 @endif
                             </a>
                         </li>
@@ -241,7 +755,7 @@
                             </a>
                         </li>
 
-                        <hr>
+                        <hr class="my-3" style="border-color: var(--neutral-200);">
 
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('insurance-companies.*') ? 'active' : '' }}"
@@ -252,7 +766,7 @@
                                     $activeCompanies = \App\Models\InsuranceCompany::where('is_active', true)->count();
                                 @endphp
                                 @if($activeCompanies > 0)
-                                    <span class="badge bg-success ms-2">{{ $activeCompanies }}</span>
+                                    <span class="badge bg-success ms-auto">{{ $activeCompanies }}</span>
                                 @endif
                             </a>
                         </li>
@@ -357,11 +871,11 @@
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
-     <!--  DataTables JS -->
+    <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
-    <!--  DataTables Buttons (Excel, PDF, Print) -->
+    <!-- DataTables Buttons -->
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -411,7 +925,6 @@
                 language: dataTableTurkish,
                 pageLength: 10,
                 lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Tümü"]],
-                // order: [[0, 'asc']],
                 dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>Brtip',
                 buttons: [
                     {
@@ -421,7 +934,7 @@
                         exportOptions: {
                             columns: ':not(:last-child)'
                         },
-                        title: 'Müşteriler_' + new Date().toLocaleDateString('tr-TR')
+                        title: 'Export_' + new Date().toLocaleDateString('tr-TR')
                     },
                     {
                         extend: 'pdf',
@@ -430,7 +943,7 @@
                         exportOptions: {
                             columns: ':not(:last-child)'
                         },
-                        title: 'Müşteriler_' + new Date().toLocaleDateString('tr-TR'),
+                        title: 'Export_' + new Date().toLocaleDateString('tr-TR'),
                         customize: function(doc) {
                             doc.defaultStyle.fontSize = 9;
                             doc.styles.tableHeader.fontSize = 10;
@@ -443,7 +956,7 @@
                         exportOptions: {
                             columns: ':not(:last-child)'
                         },
-                        title: 'Müşteriler'
+                        title: 'Export'
                     }
                 ],
                 responsive: true,
@@ -451,20 +964,19 @@
                 stateSave: true,
             };
 
-                const table = $(tableId).DataTable({
-                    ...defaultOptions,
-                    ...options
+            const table = $(tableId).DataTable({
+                ...defaultOptions,
+                ...options
+            });
+
+            table.on('order.dt search.dt draw.dt', function () {
+                let i = 1;
+                table.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+                    this.data(i++);
                 });
+            }).draw();
 
-                // ✅ Otomatik sıra numarası ekle
-                table.on('order.dt search.dt draw.dt', function () {
-                    let i = 1;
-                    table.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
-                        this.data(i++);
-                    });
-                }).draw();
-
-              return table;
+            return table;
         }
     </script>
 

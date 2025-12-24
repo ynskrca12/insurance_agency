@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('quotation_id')->constrained('quotations')->cascadeOnDelete();
             $table->foreignId('insurance_company_id')->constrained('insurance_companies')->restrictOnDelete();
-
+            $table->integer('created_by')->nullable();
             $table->decimal('premium_amount', 12, 2);
             $table->text('coverage_summary')->nullable();
 

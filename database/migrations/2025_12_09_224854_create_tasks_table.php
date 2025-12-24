@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
+            $table->integer('created_by')->nullable();
             // TEMEL BİLGİLER
             $table->string('title');
             $table->text('description')->nullable();

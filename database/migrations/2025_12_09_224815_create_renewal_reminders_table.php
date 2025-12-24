@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('renewal_reminders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
+            $table->integer('created_by')->nullable();
             $table->foreignId('policy_id')->constrained('policies')->cascadeOnDelete();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
             $table->foreignId('policy_renewal_id')->nullable()->constrained('policy_renewals')->cascadeOnDelete();

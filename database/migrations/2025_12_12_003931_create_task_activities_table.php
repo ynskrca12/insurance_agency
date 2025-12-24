@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->integer('created_by')->nullable();
             $table->string('action'); // created, updated, status_changed, assigned, commented
             $table->text('description')->nullable();
             $table->json('changes')->nullable();
