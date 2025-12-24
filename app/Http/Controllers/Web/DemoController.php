@@ -64,6 +64,9 @@ class DemoController extends Controller
                 'email_verified_at' => now(),
             ]);
 
+            // Tenant ID'yi kendi ID'si yap (ana kullanıcı)
+            $user->update(['tenant_id' => $user->id]);
+
             // 2. Demo user kaydı oluştur - 14 GÜN DENEME
             $demoUser = DemoUser::create([
                 'company_name' => $validated['company_name'],
