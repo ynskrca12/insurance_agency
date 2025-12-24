@@ -508,21 +508,21 @@
                             </a>
                         </div>
                         <div class="col-md-3 col-sm-6">
-                            <a href="#" class="quick-action-btn btn-light d-flex flex-column align-items-center text-center p-3 w-100">
+                            <a href="{{ route('policies.create') }}" class="quick-action-btn btn-light d-flex flex-column align-items-center text-center p-3 w-100">
                                 <i class="bi bi-file-earmark-plus-fill mb-2" style="font-size: 2rem;"></i>
                                 <strong>Yeni Poliçe</strong>
                                 <small class="text-muted">Poliçe oluştur</small>
                             </a>
                         </div>
                         <div class="col-md-3 col-sm-6">
-                            <a href="#" class="quick-action-btn btn-light d-flex flex-column align-items-center text-center p-3 w-100">
+                            <a href="{{ route('quotations.create') }}" class="quick-action-btn btn-light d-flex flex-column align-items-center text-center p-3 w-100">
                                 <i class="bi bi-calculator-fill mb-2" style="font-size: 2rem;"></i>
                                 <strong>Yeni Teklif</strong>
                                 <small class="text-muted">Teklif hazırla</small>
                             </a>
                         </div>
                         <div class="col-md-3 col-sm-6">
-                            <a href="#" class="quick-action-btn btn-light d-flex flex-column align-items-center text-center p-3 w-100">
+                            <a href="{{ route('reports.index') }}" class="quick-action-btn btn-light d-flex flex-column align-items-center text-center p-3 w-100">
                                 <i class="bi bi-graph-up-arrow mb-2" style="font-size: 2rem;"></i>
                                 <strong>Raporlar</strong>
                                 <small class="text-muted">Rapor görüntüle</small>

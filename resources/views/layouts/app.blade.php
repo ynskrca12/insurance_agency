@@ -7,7 +7,7 @@
     <title>@yield('title', 'Genel Bakış') - Sigorta Yönetim Paneli</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('logosysnew.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('public/logosysnew.png') }}">
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -159,11 +159,9 @@
         .demo-banner-wrapper {
             position: relative;
             overflow: hidden;
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
             border-radius: 12px;
             padding: 0;
             height: 42px;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
         }
 
         /* Animated gradient background */
@@ -201,7 +199,7 @@
             align-items: center;
             gap: 10px;
             padding: 11px 40px;
-            color: white;
+            color: #000;
             font-size: 13px;
             font-weight: 600;
             letter-spacing: 0.01em;
@@ -519,10 +517,6 @@
                 display: none;
             }
 
-            .logout-btn span {
-                display: none;
-            }
-
             .logout-btn {
                 padding: 10px 14px;
             }
@@ -560,6 +554,426 @@
         }
     </style>
 
+    <style>
+    /* ============================================
+    MOBİL OPTİMİZASYON - PROFESYONEL
+    ============================================ */
+
+    /* Mobile Menu Toggle Button */
+    .mobile-menu-toggle {
+        display: none;
+        position: fixed;
+        top: 2px;
+        right: 16px;
+        z-index: 1050;
+        background: white;
+        border: 2px solid var(--neutral-200);
+        border-radius: 10px;
+        padding: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .mobile-menu-toggle:hover {
+        background: var(--neutral-50);
+        border-color: var(--primary);
+    }
+
+    .mobile-menu-toggle span {
+        display: block;
+        width: 22px;
+        height: 2px;
+        background: var(--neutral-800);
+        margin: 4px 0;
+        transition: all 0.3s ease;
+        border-radius: 2px;
+    }
+
+    .mobile-menu-toggle.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .mobile-menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .mobile-menu-toggle.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -7px);
+    }
+
+    /* Mobile Sidebar Overlay */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 1020;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .sidebar-overlay.show {
+        display: block;
+        opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+        .top-navbar {
+            height: 60px;
+            padding: 0 !important;
+        }
+
+        .navbar-container {
+            grid-template-columns: auto 1fr auto;
+            gap: 8px;
+            padding: 0 60px 0 16px !important;
+        }
+
+        .navbar-logo {
+            gap: 10px;
+        }
+
+        .logo-image-wrapper {
+            width: 36px;
+            height: 36px;
+        }
+
+        .navbar-logo img {
+            width: 28px;
+            height: 28px;
+        }
+
+        .navbar-logo-text {
+            display: none !important;
+        }
+
+        .navbar-actions {
+            gap: 8px;
+        }
+
+        .user-info-card {
+            padding: 4px;
+            gap: 0;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            font-size: 13px;
+        }
+
+        .user-details {
+            display: none !important;
+        }
+
+        .navbar-divider {
+            display: none !important;
+        }
+
+        .logout-btn {
+            padding: 8px 12px;
+            gap: 0;
+        }
+
+        .logout-btn i {
+            font-size: 18px;
+            margin: 0;
+        }
+        .mobile-menu-toggle {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: -65px;
+            left: -280px;
+            bottom: 0;
+            width: 280px;
+            z-index: 1040;
+            padding: 80px 0 24px;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar.show {
+            transform: translateX(280px);
+            left: -280px;
+        }
+
+        .sidebar-sticky {
+            height: calc(100vh - 80px);
+            padding: 0 12px;
+        }
+
+        .sidebar .nav-link {
+            font-size: 15px;
+            padding: 14px 16px;
+            margin-bottom: 6px;
+        }
+
+        .sidebar .nav-link i {
+            font-size: 20px;
+            margin-right: 14px;
+        }
+
+        .sidebar hr {
+            margin: 16px 12px !important;
+        }
+
+        .sidebar .dropdown-menu {
+            position: static !important;
+            transform: none !important;
+            box-shadow: none;
+            border: none;
+            background: var(--neutral-50);
+            margin: 4px 0 8px 0;
+            border-radius: 8px;
+        }
+
+        .sidebar .dropdown-item {
+            padding: 10px 16px 10px 48px;
+            font-size: 14px;
+        }
+
+        .sidebar .dropdown-toggle::after {
+            margin-left: auto;
+        }
+
+        main {
+            margin-left: 0 !important;
+            padding-top: 60px !important;
+        }
+
+        .content-wrapper {
+            padding: 16px !important;
+        }
+
+        .breadcrumb {
+            font-size: 12px;
+            padding: 8px 0;
+            margin-bottom: 16px;
+        }
+
+        .breadcrumb-item {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .alert {
+            font-size: 13px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card {
+            margin-bottom: 16px;
+            border-radius: 12px;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .btn {
+            font-size: 13px;
+            padding: 10px 16px;
+        }
+
+        .btn-sm {
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+
+        .table-responsive {
+            margin: 0 -16px;
+            border-radius: 0;
+        }
+
+        .table {
+            font-size: 13px;
+        }
+
+        .table th,
+        .table td {
+            padding: 10px 8px;
+        }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 12px;
+        }
+
+        .dataTables_wrapper .dataTables_length select {
+            font-size: 13px;
+            padding: 6px 8px;
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            font-size: 13px;
+            padding: 6px 12px;
+        }
+
+        .dataTables_wrapper .dt-buttons {
+            margin-bottom: 12px;
+        }
+
+        .dataTables_wrapper .dt-buttons .btn {
+            font-size: 12px;
+            padding: 6px 10px;
+            margin: 2px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .form-control,
+        .form-select {
+            font-size: 14px;
+            padding: 10px 12px;
+        }
+
+        .form-text {
+            font-size: 11px;
+        }
+
+        .modal-dialog {
+            margin: 10px;
+        }
+
+        .modal-content {
+            border-radius: 16px;
+        }
+
+        .modal-header,
+        .modal-footer {
+            padding: 16px;
+        }
+
+        .modal-body {
+            padding: 20px 16px;
+        }
+
+        .stat-card {
+            margin-bottom: 12px;
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .stat-card h3 {
+            font-size: 24px;
+        }
+
+        .stat-card p {
+            font-size: 13px;
+        }
+
+        .page-header {
+            margin-bottom: 20px;
+        }
+
+        .page-header h1 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .page-header .btn {
+            width: 100%;
+            margin-top: 12px;
+        }
+    }
+    @media (max-width: 374px) {
+        .navbar-container {
+            padding: 0 50px 0 12px !important;
+        }
+
+        .mobile-menu-toggle {
+            left: 12px;
+            padding: 8px;
+        }
+
+        .mobile-menu-toggle span {
+            width: 20px;
+        }
+
+        .sidebar {
+            width: 260px;
+        }
+
+        .sidebar.show {
+            transform: translateX(260px);
+        }
+
+        .content-wrapper {
+            padding: 12px !important;
+        }
+
+        .logout-btn {
+            padding: 6px 10px;
+        }
+
+        .user-info-card {
+            padding: 2px;
+        }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            font-size: 12px;
+        }
+    }
+
+    @media (max-width: 768px) and (orientation: landscape) {
+        .sidebar {
+            width: 260px;
+        }
+
+        .sidebar.show {
+            transform: translateX(260px);
+        }
+
+        .sidebar-sticky {
+            height: calc(100vh - 60px);
+            padding-top: 60px;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 992px) {
+        .navbar-container {
+            grid-template-columns: 180px 1fr 280px;
+            padding: 0 24px;
+        }
+
+        .demo-banner-item {
+            padding: 11px 24px;
+            font-size: 12px;
+        }
+
+        .sidebar {
+            width: 240px;
+        }
+
+        main {
+            margin-left: 240px;
+        }
+
+        .content-wrapper {
+            padding: 24px;
+        }
+    }
+    </style>
+
     @stack('styles')
 </head>
 <body>
@@ -569,7 +983,7 @@
             <!-- Logo Section -->
             <a href="{{ route('dashboard') }}" class="navbar-logo">
                 <div class="logo-image-wrapper">
-                    <img src="{{ asset('logosysnew.png') }}" alt="Logo">
+                    <img src="{{ asset('public/logosysnew.png') }}" alt="Logo">
                 </div>
                 <div class="navbar-logo-text">
                     <span class="navbar-logo-title">Sigorta</span>
@@ -639,13 +1053,13 @@
                 <div class="navbar-divider"></div>
 
                 <!-- Logout Button -->
-                <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                <!-- <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
                     @csrf
                     <button type="submit" class="logout-btn hover-lift">
                         <i class="bi bi-box-arrow-right"></i>
                         <span>Çıkış Yap</span>
                     </button>
-                </form>
+                </form> -->
             </div>
         </div>
     </nav>
@@ -755,8 +1169,6 @@
                             </a>
                         </li>
 
-                        <hr class="my-3" style="border-color: var(--neutral-200);">
-
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('insurance-companies.*') ? 'active' : '' }}"
                             href="{{ route('insurance-companies.index') }}">
@@ -803,6 +1215,17 @@
                                     </a>
                                 </li>
                             </ul>
+                        </li>
+
+                        <li>
+                            <!-- Logout Button -->
+                            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                                @csrf
+                                <button type="submit" class="logout-btn hover-lift w-100 d-flex justify-content-center">
+                                    <i class="bi bi-box-arrow-right me-2"></i>
+                                    <span>Çıkış Yap</span>
+                                </button>
+                            </form>
                         </li>
                     </ul>
                 </div>
@@ -978,6 +1401,79 @@
 
             return table;
         }
+    </script>
+
+    <!-- Mobile Menu Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile menu elements
+        const mobileToggle = document.createElement('button');
+        mobileToggle.className = 'mobile-menu-toggle';
+        mobileToggle.innerHTML = '<span></span><span></span><span></span>';
+        mobileToggle.setAttribute('aria-label', 'Menu');
+
+        // Sidebar overlay
+        const sidebarOverlay = document.createElement('div');
+        sidebarOverlay.className = 'sidebar-overlay';
+
+        // Add elements to body
+        document.body.appendChild(mobileToggle);
+        document.body.appendChild(sidebarOverlay);
+
+        const sidebar = document.getElementById('sidebarMenu');
+
+        // Toggle menu
+        function toggleMenu() {
+            mobileToggle.classList.toggle('active');
+            sidebar.classList.toggle('show');
+            sidebarOverlay.classList.toggle('show');
+            document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+        }
+
+        // Close menu
+        function closeMenu() {
+            mobileToggle.classList.remove('active');
+            sidebar.classList.remove('show');
+            sidebarOverlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        // Event listeners
+        mobileToggle.addEventListener('click', toggleMenu);
+        sidebarOverlay.addEventListener('click', closeMenu);
+
+        // Close on navigation
+        const navLinks = sidebar.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    // Don't close for dropdown toggles
+                    if (!this.classList.contains('dropdown-toggle')) {
+                        closeMenu();
+                    }
+                }
+            });
+        });
+
+        // Close on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                closeMenu();
+            }
+        });
+
+        // Handle dropdown in mobile
+        const dropdownToggle = document.getElementById('settingsDropdown');
+        if (dropdownToggle) {
+            dropdownToggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    const dropdownMenu = this.nextElementSibling;
+                    dropdownMenu.classList.toggle('show');
+                }
+            });
+        }
+    });
     </script>
 
     @stack('scripts')
