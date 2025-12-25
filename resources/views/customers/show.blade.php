@@ -267,6 +267,352 @@
         }
     }
 </style>
+<style>
+    /* ============================================
+       MOBILE OPTIMIZATION - PROFESSIONAL
+    ============================================ */
+    @media (max-width: 768px) {
+        /* Customer Header Mobile */
+        .customer-header {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+        }
+
+        .customer-header h1 {
+            font-size: 1.25rem !important;
+            margin-bottom: 0.5rem;
+        }
+
+        .customer-header .d-flex.gap-3 {
+            gap: 0.5rem !important;
+        }
+
+        .customer-header .header-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        /* Action Buttons Mobile */
+        .customer-header .d-flex.gap-2 {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .customer-header .action-btn {
+            flex: 1;
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+        }
+
+        /* Quick Stats Grid Mobile */
+        .customer-header .row.g-3 {
+            margin-top: 1rem !important;
+            gap: 0.75rem !important;
+        }
+
+        .customer-header .col-6 {
+            padding: 0 !important;
+        }
+
+        .stat-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            font-size: 18px;
+            margin-right: 0.5rem !important;
+        }
+        .stat-box {
+            margin: 2px;
+            padding: 12px 5px;
+        }
+
+        .stat-box .h4 {
+            font-size: 1.25rem !important;
+        }
+
+        .stat-box small {
+            font-size: 0.7rem;
+        }
+
+        /* Sidebar Mobile - Full Width */
+        .col-lg-4 {
+            order: 2;
+        }
+
+        .col-lg-8 {
+            order: 1;
+        }
+
+        /* Info Cards Mobile */
+        .info-card {
+            margin-bottom: 1rem;
+            border-radius: 8px;
+        }
+
+        .info-card .card-header {
+            padding: 0.75rem 1rem;
+            border-radius: 8px 8px 0 0 !important;
+        }
+
+        .info-card .card-header h6 {
+            font-size: 0.875rem;
+        }
+
+        .info-card .card-body {
+            padding: 1rem;
+        }
+
+        .info-item {
+            padding: 0.625rem 0;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-size: 0.875rem;
+        }
+
+        .quick-action-btn {
+            width: 2rem;
+            height: 2rem;
+            font-size: 14px;
+        }
+
+        /* Tabs Mobile - Horizontal Scroll */
+        .nav-tabs-modern {
+            border-radius: 8px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .nav-tabs-modern::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-tabs-modern .nav-item {
+            display: inline-block;
+        }
+
+        .nav-tabs-modern .nav-link {
+            font-size: 0.8125rem;
+            border-radius: 6px;
+        }
+
+        .nav-tabs-modern .nav-link span:not(.badge) {
+            display: inline;
+        }
+
+        .nav-tabs-modern .badge {
+            padding: 2px 6px;
+            font-size: 0.7rem;
+        }
+
+        /* Tab Content Mobile */
+        .content-card {
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .content-card .card-body {
+            padding: 1rem;
+        }
+
+        /* Table Mobile - Card View */
+        .table-responsive {
+            margin: 0;
+            padding: 0 !important;
+        }
+
+        .table-modern {
+            display: none;
+        }
+
+        /* Policy Card Mobile */
+        .policy-card-mobile {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .policy-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .policy-card-number {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 0.25rem;
+        }
+
+        .policy-card-type {
+            font-size: 0.75rem;
+        }
+
+        .policy-card-body {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .policy-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .policy-info-label {
+            font-size: 0.7rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .policy-info-value {
+            font-size: 0.875rem;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .policy-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.75rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .policy-card-action {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: #475569;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        /* Timeline Mobile */
+        .timeline-item {
+            padding: 0.875rem;
+            margin-left: 0.5rem;
+            margin-bottom: 0.625rem;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .timeline-item::before {
+            left: -0.375rem;
+            top: 1rem;
+            width: 0.625rem;
+            height: 0.625rem;
+        }
+
+        .timeline-item strong,
+        .timeline-item p {
+            font-size: 0.875rem;
+        }
+
+        .timeline-item small {
+            font-size: 0.75rem;
+        }
+
+        /* Note Form Mobile */
+        .note-form {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .note-form label {
+            font-size: 0.875rem;
+        }
+
+        .note-form textarea {
+            font-size: 0.875rem;
+        }
+
+        .note-form .btn-sm {
+            font-size: 0.8125rem;
+            padding: 0.5rem 0.875rem;
+        }
+
+        /* Empty State Mobile */
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+        }
+
+        .empty-state h6 {
+            font-size: 0.9375rem;
+        }
+
+        .empty-state p {
+            font-size: 0.8125rem;
+        }
+
+        .empty-state .btn-sm {
+            font-size: 0.8125rem;
+        }
+
+        /* Badge Mobile */
+        .badge-modern {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        /* Row Gap Mobile */
+        .row.g-4 {
+            gap: 1rem !important;
+        }
+    }
+
+    /* Ultra Small Screens */
+    @media (max-width: 374px) {
+        .customer-header h1 {
+            font-size: 1.125rem !important;
+        }
+
+        .stat-box .h4 {
+            font-size: 1.125rem !important;
+        }
+
+        .stat-box small {
+            font-size: 0.65rem;
+        }
+
+        .nav-tabs-modern .nav-link {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .policy-card-mobile {
+            padding: 0.75rem;
+        }
+    }
+</style>
 @endpush
 
 @section('content')
@@ -310,7 +656,7 @@
     </div>
 
     <!-- Quick Stats -->
-    <div class="row g-3 mt-3">
+    <div class="row mt-3">
         <div class="col-6 col-md-3">
             <div class="stat-box">
                 <div class="d-flex align-items-center">
@@ -527,87 +873,155 @@
 
         <!-- Tab İçerikleri -->
         <div class="tab-content">
-            <!-- Poliçeler -->
-            <div class="tab-pane fade show active" id="policies">
-                <div class="content-card card">
-                    <div class="card-body p-0">
-                        @if($customer->policies->isEmpty())
-                            <div class="empty-state">
-                                <i class="bi bi-inbox"></i>
-                                <h6 class="text-muted mb-2">Henüz Poliçe Bulunmuyor</h6>
-                                <p class="text-muted small mb-3">Bu müşteriye ait henüz bir poliçe kaydı eklenmemiş.</p>
-                                <a href="{{ route('policies.create') }}" class="btn btn-primary btn-sm action-btn">
-                                    <i class="bi bi-plus-circle me-2"></i>Yeni Poliçe Ekle
-                                </a>
-                            </div>
-                        @else
-                            <div class="table-responsive p-3">
-                                <table class="table table-modern mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Poliçe No</th>
-                                            <th>Tür</th>
-                                            <th>Şirket</th>
-                                            <th>Başlangıç</th>
-                                            <th>Bitiş</th>
-                                            <th>Prim</th>
-                                            <th>Durum</th>
-                                            <th class="text-center">İşlem</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($customer->policies as $policy)
-                                        <tr>
-                                            <td>
-                                                <strong class="text-primary">{{ $policy->policy_number }}</strong>
-                                            </td>
-                                            <td>
-                                                <span class="badge badge-modern bg-info">
-                                                    {{ $policy->policy_type_label }}
-                                                </span>
-                                            </td>
-                                            <td>{{ $policy->insuranceCompany->name }}</td>
-                                            <td>
-                                                <small class="text-muted">{{ $policy->start_date->format('d.m.Y') }}</small>
-                                            </td>
-                                            <td>
-                                                <small class="text-muted">{{ $policy->end_date->format('d.m.Y') }}</small>
-                                            </td>
-                                            <td>
-                                                <strong>{{ number_format($policy->premium_amount, 2) }} ₺</strong>
-                                            </td>
-                                            <td>
-                                                @php
-                                                    $statusConfig = [
-                                                        'active' => ['color' => 'success', 'label' => 'Aktif'],
-                                                        'expiring_soon' => ['color' => 'warning', 'label' => 'Yakında Bitiyor'],
-                                                        'critical' => ['color' => 'danger', 'label' => 'Kritik'],
-                                                        'expired' => ['color' => 'secondary', 'label' => 'Süresi Bitti'],
-                                                        'renewed' => ['color' => 'info', 'label' => 'Yenilendi'],
-                                                        'cancelled' => ['color' => 'dark', 'label' => 'İptal'],
-                                                    ];
-                                                    $config = $statusConfig[$policy->status] ?? ['color' => 'secondary', 'label' => $policy->status];
-                                                @endphp
-                                                <span class="badge badge-modern bg-{{ $config['color'] }}">
-                                                    {{ $config['label'] }}
-                                                </span>
-                                            </td>
-                                            <td class="text-center">
-                                                <a href="{{ route('policies.show', $policy) }}"
-                                                   class="quick-action-btn btn btn-light"
-                                                   title="Detaylar">
-                                                    <i class="bi bi-eye text-primary"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @endif
-                    </div>
+        <!-- Poliçeler -->
+        <div class="tab-pane fade show active" id="policies">
+            <div class="content-card card">
+                <div class="card-body p-0">
+                    @if($customer->policies->isEmpty())
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <h6 class="text-muted mb-2">Henüz Poliçe Bulunmuyor</h6>
+                            <p class="text-muted small mb-3">Bu müşteriye ait henüz bir poliçe kaydı eklenmemiş.</p>
+                            <a href="{{ route('policies.create') }}" class="btn btn-primary btn-sm action-btn">
+                                <i class="bi bi-plus-circle me-2"></i>Yeni Poliçe Ekle
+                            </a>
+                        </div>
+                    @else
+                        <!-- Desktop Table View -->
+                        <div class="table-responsive p-3 d-none d-md-block">
+                            <table class="table table-modern mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Poliçe No</th>
+                                        <th>Tür</th>
+                                        <th>Şirket</th>
+                                        <th>Başlangıç</th>
+                                        <th>Bitiş</th>
+                                        <th>Prim</th>
+                                        <th>Durum</th>
+                                        <th class="text-center">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($customer->policies as $policy)
+                                    <tr>
+                                        <td>
+                                            <strong class="text-primary">{{ $policy->policy_number }}</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-modern bg-info">
+                                                {{ $policy->policy_type_label }}
+                                            </span>
+                                        </td>
+                                        <td>{{ $policy->insuranceCompany->name }}</td>
+                                        <td>
+                                            <small class="text-muted">{{ $policy->start_date->format('d.m.Y') }}</small>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">{{ $policy->end_date->format('d.m.Y') }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ number_format($policy->premium_amount, 2) }} ₺</strong>
+                                        </td>
+                                        <td>
+                                            @php
+                                                $statusConfig = [
+                                                    'active' => ['color' => 'success', 'label' => 'Aktif'],
+                                                    'expiring_soon' => ['color' => 'warning', 'label' => 'Yakında Bitiyor'],
+                                                    'critical' => ['color' => 'danger', 'label' => 'Kritik'],
+                                                    'expired' => ['color' => 'secondary', 'label' => 'Süresi Bitti'],
+                                                    'renewed' => ['color' => 'info', 'label' => 'Yenilendi'],
+                                                    'cancelled' => ['color' => 'dark', 'label' => 'İptal'],
+                                                ];
+                                                $config = $statusConfig[$policy->status] ?? ['color' => 'secondary', 'label' => $policy->status];
+                                            @endphp
+                                            <span class="badge badge-modern bg-{{ $config['color'] }}">
+                                                {{ $config['label'] }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="{{ route('policies.show', $policy) }}"
+                                            class="quick-action-btn btn btn-light"
+                                            title="Detaylar">
+                                                <i class="bi bi-eye text-primary"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Mobile Card View -->
+                        <div class="d-md-none p-3">
+                            @foreach($customer->policies as $policy)
+                                @php
+                                    $statusConfig = [
+                                        'active' => ['color' => 'success', 'label' => 'Aktif'],
+                                        'expiring_soon' => ['color' => 'warning', 'label' => 'Yakında Bitiyor'],
+                                        'critical' => ['color' => 'danger', 'label' => 'Kritik'],
+                                        'expired' => ['color' => 'secondary', 'label' => 'Süresi Bitti'],
+                                        'renewed' => ['color' => 'info', 'label' => 'Yenilendi'],
+                                        'cancelled' => ['color' => 'dark', 'label' => 'İptal'],
+                                    ];
+                                    $config = $statusConfig[$policy->status] ?? ['color' => 'secondary', 'label' => $policy->status];
+                                @endphp
+
+                                <div class="policy-card-mobile">
+                                    <!-- Card Header -->
+                                    <div class="policy-card-header">
+                                        <div>
+                                            <div class="policy-card-number">{{ $policy->policy_number }}</div>
+                                            <span class="badge badge-modern bg-info policy-card-type">
+                                                {{ $policy->policy_type_label }}
+                                            </span>
+                                        </div>
+                                        <span class="badge badge-modern bg-{{ $config['color'] }}">
+                                            {{ $config['label'] }}
+                                        </span>
+                                    </div>
+
+                                    <!-- Card Body -->
+                                    <div class="policy-card-body">
+                                        <div class="policy-info-item">
+                                            <div class="policy-info-label">Şirket</div>
+                                            <div class="policy-info-value">{{ $policy->insuranceCompany->name }}</div>
+                                        </div>
+
+                                        <div class="policy-info-item">
+                                            <div class="policy-info-label">Prim Tutarı</div>
+                                            <div class="policy-info-value text-success">{{ number_format($policy->premium_amount, 2) }} ₺</div>
+                                        </div>
+
+                                        <div class="policy-info-item">
+                                            <div class="policy-info-label">Başlangıç</div>
+                                            <div class="policy-info-value">{{ $policy->start_date->format('d.m.Y') }}</div>
+                                        </div>
+
+                                        <div class="policy-info-item">
+                                            <div class="policy-info-label">Bitiş</div>
+                                            <div class="policy-info-value">{{ $policy->end_date->format('d.m.Y') }}</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Card Footer -->
+                                    <div class="policy-card-footer">
+                                        <span class="text-muted" style="font-size: 0.75rem;">
+                                            <i class="bi bi-calendar-event"></i>
+                                            {{ $policy->created_at->diffForHumans() }}
+                                        </span>
+                                        <a href="{{ route('policies.show', $policy) }}" class="policy-card-action">
+                                            <i class="bi bi-eye"></i>
+                                            Detay
+                                        </a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
+        </div>
 
             <!-- Teklifler -->
             <div class="tab-pane fade" id="quotations">

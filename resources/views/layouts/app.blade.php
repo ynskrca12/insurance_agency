@@ -454,7 +454,7 @@
         }
 
         .content-wrapper {
-            padding: 32px;
+            padding: 20px 0px;
         }
 
         /* ============================================
@@ -519,10 +519,6 @@
 
             .logout-btn {
                 padding: 10px 14px;
-            }
-
-            .content-wrapper {
-                padding: 20px 16px;
             }
         }
 
@@ -752,10 +748,6 @@
             padding-top: 60px !important;
         }
 
-        .content-wrapper {
-            padding: 16px !important;
-        }
-
         .breadcrumb {
             font-size: 12px;
             padding: 8px 0;
@@ -915,10 +907,6 @@
             transform: translateX(260px);
         }
 
-        .content-wrapper {
-            padding: 12px !important;
-        }
-
         .logout-btn {
             padding: 6px 10px;
         }
@@ -969,7 +957,7 @@
         }
 
         .content-wrapper {
-            padding: 24px;
+            padding: 10px 0;
         }
     }
     </style>
