@@ -196,6 +196,458 @@
         margin-right: 0.5rem;
     }
 </style>
+
+<style>
+    /* ============================================
+       MOBILE OPTIMIZATION - PROFESSIONAL
+    ============================================ */
+
+    /* Mobile Cards Container */
+    .mobile-cards-container {
+        display: none;
+    }
+
+    /* Quotation Card Mobile */
+    .quotation-card-mobile {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .quotation-card-mobile:active {
+        transform: scale(0.98);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Card Ribbon - Status */
+    .quotation-card-ribbon {
+        position: absolute;
+        top: 12px;
+        right: -32px;
+        width: 120px;
+        text-align: center;
+        padding: 4px 0;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: white;
+        transform: rotate(45deg);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Card Header */
+    .quotation-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .quotation-card-number {
+        font-size: 15px;
+        font-weight: 700;
+        color: #2563eb;
+        margin-bottom: 4px;
+    }
+
+    .quotation-card-customer {
+        font-size: 13px;
+        color: #475569;
+        font-weight: 600;
+    }
+
+    .quotation-card-phone {
+        font-size: 11px;
+        color: #94a3b8;
+        font-weight: 500;
+    }
+
+    .quotation-card-type {
+        flex-shrink: 0;
+        margin-left: 8px;
+    }
+
+    /* Card Body - Grid */
+    .quotation-card-body {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .quotation-info-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .quotation-info-label {
+        font-size: 10px;
+        color: #64748b;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .quotation-info-value {
+        font-size: 13px;
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .quotation-info-value.price {
+        font-size: 16px;
+        color: #10b981;
+        font-weight: 700;
+    }
+
+    .quotation-info-value.companies {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .quotation-info-value.companies .count {
+        font-size: 18px;
+        font-weight: 700;
+        color: #2563eb;
+    }
+
+    .quotation-info-value.companies .label {
+        font-size: 11px;
+        color: #94a3b8;
+        font-weight: 500;
+    }
+
+    .quotation-info-value small {
+        display: block;
+        font-size: 10px;
+        color: #94a3b8;
+        font-weight: 500;
+        margin-top: 2px;
+    }
+
+    /* Validity Indicator */
+    .validity-indicator {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .validity-indicator i {
+        font-size: 12px;
+    }
+
+    .validity-indicator.valid {
+        color: #10b981;
+    }
+
+    .validity-indicator.expired {
+        color: #ef4444;
+    }
+
+    /* View Count Badge */
+    .view-count-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        background: #f1f5f9;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #475569;
+    }
+
+    .view-count-badge i {
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    /* Card Actions */
+    .quotation-card-actions {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        padding-top: 12px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .quotation-action-btn {
+        padding: 8px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .quotation-action-btn:active {
+        transform: scale(0.95);
+    }
+
+    .quotation-action-btn i {
+        font-size: 16px;
+    }
+
+    .quotation-action-btn span {
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .quotation-action-btn.view {
+        border-color: #0dcaf0;
+        background: #e0f7ff;
+    }
+
+    .quotation-action-btn.view i {
+        color: #0dcaf0;
+    }
+
+    .quotation-action-btn.view span {
+        color: #0dcaf0;
+    }
+
+    .quotation-action-btn.edit {
+        border-color: #ffc107;
+        background: #fff9e6;
+    }
+
+    .quotation-action-btn.edit i {
+        color: #ffc107;
+    }
+
+    .quotation-action-btn.edit span {
+        color: #ffc107;
+    }
+
+    .quotation-action-btn.share {
+        border-color: #0d6efd;
+        background: #e7f1ff;
+    }
+
+    .quotation-action-btn.share i {
+        color: #0d6efd;
+    }
+
+    .quotation-action-btn.share span {
+        color: #0d6efd;
+    }
+
+    .quotation-action-btn.delete {
+        border-color: #dc3545;
+        background: #ffe6e6;
+    }
+
+    .quotation-action-btn.delete i {
+        color: #dc3545;
+    }
+
+    .quotation-action-btn.delete span {
+        color: #dc3545;
+    }
+
+    /* Mobile Search Bar */
+    .mobile-search-bar {
+        display: none;
+        position: sticky;
+        top: 60px;
+        z-index: 100;
+        background: white;
+        padding: 12px 0;
+        margin: -16px 0 16px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .mobile-search-input {
+        width: 100%;
+        padding: 10px 16px 10px 40px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 14px;
+        background: #f8fafc;
+    }
+
+    .mobile-search-input:focus {
+        outline: none;
+        border-color: #2563eb;
+        background: white;
+    }
+
+    .mobile-search-icon {
+        position: absolute;
+        left: 14px;
+        top: 22px;
+        color: #64748b;
+    }
+
+    /* Empty State */
+    .empty-state-mobile {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-state-mobile i {
+        font-size: 64px;
+        color: #cbd5e1;
+        margin-bottom: 16px;
+    }
+
+    .empty-state-mobile h3 {
+        font-size: 18px;
+        color: #475569;
+        margin-bottom: 8px;
+    }
+
+    .empty-state-mobile p {
+        font-size: 14px;
+        color: #94a3b8;
+    }
+
+    /* ============================================
+       RESPONSIVE - MOBILE VIEW
+    ============================================ */
+    @media (max-width: 768px) {
+        /* Container Padding */
+        .container-fluid {
+            padding: 0 !important;
+        }
+
+        /* Page Header Mobile */
+        .page-header {
+            margin: 0 16px 16px 16px;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .page-header h1 {
+            font-size: 1.125rem !important;
+        }
+
+        .page-header p {
+            font-size: 0.8125rem;
+        }
+
+        .page-header .d-flex {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+
+        .page-header .btn {
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        /* Stats Cards Mobile */
+        .row.g-3.mb-4 {
+            margin: 0 16px 16px 16px !important;
+            gap: 8px !important;
+        }
+
+        .row.g-3.mb-4 > div {
+            padding: 0 !important;
+        }
+
+        .stat-card {
+            padding: 0.875rem;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.375rem;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+        }
+
+        /* Filter Card Mobile */
+        .filter-card {
+            margin: 0 16px 16px 16px;
+            border-radius: 8px;
+        }
+
+        .filter-card .card-body {
+            padding: 12px;
+        }
+
+        .filter-card .row {
+            gap: 10px;
+        }
+
+        .filter-card .col-lg-2,
+        .filter-card .col-lg-1,
+        .filter-card .col-md-6,
+        .filter-card .col-md-12 {
+            width: 100%;
+            padding: 0;
+        }
+
+        .filter-card label {
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .filter-card .form-select,
+        .filter-card .form-control {
+            font-size: 13px;
+            padding: 8px 12px;
+        }
+
+        /* Hide Desktop Table */
+        .table-card {
+            display: none !important;
+        }
+
+        /* Show Mobile Cards */
+        .mobile-cards-container {
+            display: block;
+            padding: 0 16px;
+        }
+
+        /* Show Mobile Search */
+        .mobile-search-bar {
+            display: block;
+            margin: 0 16px 16px 16px;
+        }
+    }
+
+    /* Small Mobile */
+    @media (max-width: 374px) {
+        .page-header h1 {
+            font-size: 1rem !important;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+        }
+
+        .quotation-card-mobile {
+            padding: 0.875rem;
+        }
+
+        .quotation-card-actions {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+    }
+</style>
 @endpush
 
 @section('content')
@@ -307,8 +759,145 @@
         </div>
     </div>
 
+    <!-- Mobile: Search Bar -->
+    <div class="mobile-search-bar">
+        <i class="bi bi-search mobile-search-icon"></i>
+        <input type="text" id="mobileSearch" class="mobile-search-input" placeholder="Teklif ara...">
+    </div>
+
+    <!-- Mobile: Card Görünümü -->
+    <div class="mobile-cards-container">
+        @forelse($quotations as $quotation)
+            @php
+                $statusConfig = [
+                    'draft' => ['color' => 'secondary', 'label' => 'Taslak', 'ribbon' => '#6c757d'],
+                    'sent' => ['color' => 'info', 'label' => 'Gönderildi', 'ribbon' => '#0dcaf0'],
+                    'viewed' => ['color' => 'primary', 'label' => 'Görüntülendi', 'ribbon' => '#0d6efd'],
+                    'approved' => ['color' => 'warning', 'label' => 'Onaylandı', 'ribbon' => '#ffc107'],
+                    'rejected' => ['color' => 'danger', 'label' => 'Reddedildi', 'ribbon' => '#dc3545'],
+                    'converted' => ['color' => 'success', 'label' => 'Dönüştürüldü', 'ribbon' => '#198754'],
+                    'expired' => ['color' => 'dark', 'label' => 'Süresi Doldu', 'ribbon' => '#212529'],
+                ];
+                $config = $statusConfig[$quotation->status] ?? ['color' => 'secondary', 'label' => $quotation->status, 'ribbon' => '#6c757d'];
+            @endphp
+
+            <div class="quotation-card-mobile" data-quotation-id="{{ $quotation->id }}">
+                <!-- Status Ribbon -->
+                <div class="quotation-card-ribbon" style="background: {{ $config['ribbon'] }}">
+                    {{ $config['label'] }}
+                </div>
+
+                <!-- Card Header -->
+                <div class="quotation-card-header">
+                    <div style="flex: 1; min-width: 0;">
+                        <div class="quotation-card-number">{{ $quotation->quotation_number }}</div>
+                        <div class="quotation-card-customer">{{ $quotation->customer->name }}</div>
+                        <div class="quotation-card-phone">
+                            <i class="bi bi-telephone"></i> {{ $quotation->customer->phone }}
+                        </div>
+                    </div>
+                    <div class="quotation-card-type">
+                        <span class="badge badge-modern badge-pill bg-info">
+                            {{ ucfirst($quotation->quotation_type) }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card Body - Main Info Grid -->
+                <div class="quotation-card-body">
+                    <!-- Şirket Sayısı -->
+                    <div class="quotation-info-item">
+                        <div class="quotation-info-label">Şirket Sayısı</div>
+                        <div class="quotation-info-value companies">
+                            <span class="count">{{ $quotation->items->count() }}</span>
+                            <span class="label">şirket</span>
+                        </div>
+                    </div>
+
+                    <!-- En Düşük Fiyat -->
+                    <div class="quotation-info-item">
+                        <div class="quotation-info-label">En Düşük Fiyat</div>
+                        <div class="quotation-info-value price">
+                            @if($quotation->lowest_price_item)
+                                {{ number_format($quotation->lowest_price_item->premium_amount, 0) }}₺
+                            @else
+                                <span style="color: #94a3b8; font-size: 13px;">-</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Geçerlilik Tarihi -->
+                    <div class="quotation-info-item">
+                        <div class="quotation-info-label">Geçerlilik</div>
+                        <div class="quotation-info-value">
+                            {{ $quotation->valid_until->format('d.m.Y') }}
+                            <div class="validity-indicator {{ $quotation->isValid() ? 'valid' : 'expired' }}">
+                                <i class="bi bi-{{ $quotation->isValid() ? 'check-circle-fill' : 'x-circle-fill' }}"></i>
+                                <small>{{ $quotation->isValid() ? 'Geçerli' : 'Doldu' }}</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Görüntülenme -->
+                    <div class="quotation-info-item">
+                        <div class="quotation-info-label">Görüntülenme</div>
+                        <div class="quotation-info-value">
+                            <span class="view-count-badge">
+                                <i class="bi bi-eye"></i>
+                                {{ $quotation->view_count }} kez
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Actions -->
+                <div class="quotation-card-actions">
+                    <a href="{{ route('quotations.show', $quotation) }}" class="quotation-action-btn view">
+                        <i class="bi bi-eye"></i>
+                        <span>Detay</span>
+                    </a>
+
+                    @if($quotation->status !== 'converted')
+                    <a href="{{ route('quotations.edit', $quotation) }}" class="quotation-action-btn edit">
+                        <i class="bi bi-pencil"></i>
+                        <span>Düzenle</span>
+                    </a>
+                    @else
+                    <div class="quotation-action-btn" style="opacity: 0.5; cursor: not-allowed;">
+                        <i class="bi bi-pencil"></i>
+                        <span>Düzenle</span>
+                    </div>
+                    @endif
+
+                    <button onclick="copyShareLink('{{ $quotation->share_url }}')" class="quotation-action-btn share">
+                        <i class="bi bi-share"></i>
+                        <span>Paylaş</span>
+                    </button>
+
+                    @if($quotation->status !== 'converted')
+                    <button onclick="deleteQuotation({{ $quotation->id }})" class="quotation-action-btn delete">
+                        <i class="bi bi-trash"></i>
+                        <span>Sil</span>
+                    </button>
+                    @else
+                    <div class="quotation-action-btn" style="opacity: 0.5; cursor: not-allowed;">
+                        <i class="bi bi-trash"></i>
+                        <span>Sil</span>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        @empty
+            <div class="empty-state-mobile">
+                <i class="bi bi-file-earmark-text"></i>
+                <h3>Teklif Bulunamadı</h3>
+                <p>Henüz teklif kaydı bulunmamaktadır.</p>
+            </div>
+        @endforelse
+    </div>
+
     <!-- Tablo -->
-    <div class="table-card card">
+    <div class="table-card card desktop-table-container">
         <div class="card-body">
             <table class="table table-hover" id="quotationsTable">
                 <thead>
@@ -544,5 +1133,87 @@ function copyShareLink(url) {
         prompt('Linki manuel olarak kopyalayın:', url);
     });
 }
+</script>
+
+<script>
+$(document).ready(function() {
+
+    // Mobile Search
+    $('#mobileSearch').on('keyup', function() {
+        const searchTerm = $(this).val().toLowerCase();
+        filterMobileCards(searchTerm);
+    });
+
+    // Mobile Filter Function
+    function filterMobileCards(searchTerm = '') {
+        const status = $('#filterStatus').val();
+        const quotationType = $('#filterQuotationType').val();
+
+        let visibleCount = 0;
+
+        $('.quotation-card-mobile').each(function() {
+            const $card = $(this);
+            const cardText = $card.text().toLowerCase();
+            const cardStatus = $card.find('.quotation-card-ribbon').text().trim();
+            const cardType = $card.find('.badge-pill').text().trim();
+
+            let show = true;
+
+            // Search filter
+            if (searchTerm && !cardText.includes(searchTerm)) {
+                show = false;
+            }
+
+            // Status filter
+            if (status && cardStatus !== status) {
+                show = false;
+            }
+
+            // Type filter
+            if (quotationType && !cardType.toLowerCase().includes(quotationType.toLowerCase())) {
+                show = false;
+            }
+
+            if (show) {
+                $card.show();
+                visibleCount++;
+            } else {
+                $card.hide();
+            }
+        });
+
+        // Update count for mobile
+        if (window.innerWidth <= 768) {
+            $('#quotationCount').html(`Gösterilen: <strong>${visibleCount}</strong> / <strong>{{ $quotations->count() }}</strong> teklif`);
+        }
+    }
+
+    // Filter change event for mobile
+    $('#filterStatus, #filterQuotationType').on('change', function() {
+        if (window.innerWidth <= 768) {
+            filterMobileCards($('#mobileSearch').val().toLowerCase());
+        }
+    });
+});
+
+// Update clearFilters function
+function clearFilters() {
+    $('#filterStatus, #filterQuotationType, #filterDateFrom, #filterDateTo').val('');
+    $('#mobileSearch').val('');
+
+    $.fn.dataTable.ext.search = [];
+
+    const table = $('#quotationsTable').DataTable();
+    table.search('').columns().search('').draw();
+
+    // Reset mobile cards
+    $('.quotation-card-mobile').show();
+
+    if (window.innerWidth <= 768) {
+        $('#quotationCount').html(`Toplam <strong>{{ $quotations->count() }}</strong> teklif`);
+    }
+}
+
+// Existing functions remain the same...
 </script>
 @endpush

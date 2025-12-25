@@ -175,6 +175,416 @@
         padding: 1.5rem;
     }
 </style>
+<style>
+    /* ... Mevcut stiller ... */
+
+    /* ============================================
+       MOBILE OPTIMIZATION - PROFESSIONAL
+    ============================================ */
+
+    /* Mobile Cards Container */
+    .mobile-cards-container {
+        display: none;
+    }
+
+    /* Policy Card Mobile */
+    .policy-card-mobile {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s ease;
+    }
+
+    .policy-card-mobile:active {
+        transform: scale(0.98);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Card Header */
+    .policy-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .policy-card-number {
+        font-size: 15px;
+        font-weight: 700;
+        color: #2563eb;
+        margin-bottom: 4px;
+    }
+
+    .policy-card-customer {
+        font-size: 13px;
+        color: #475569;
+        font-weight: 500;
+    }
+
+    .policy-card-status-badge {
+        flex-shrink: 0;
+    }
+
+    /* Card Body - Grid */
+    .policy-card-body {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .policy-info-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .policy-info-label {
+        font-size: 10px;
+        color: #64748b;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .policy-info-value {
+        font-size: 13px;
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .policy-info-value.text-primary {
+        color: #2563eb;
+    }
+
+    .policy-info-value.text-success {
+        color: #10b981;
+    }
+
+    .policy-info-value.text-danger {
+        color: #ef4444;
+    }
+
+    .policy-info-value small {
+        display: block;
+        font-size: 11px;
+        color: #94a3b8;
+        font-weight: 500;
+        margin-top: 2px;
+    }
+
+    /* Card Meta - Full Width Info */
+    .policy-card-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        background: #f8fafc;
+        border-radius: 8px;
+        margin-bottom: 12px;
+    }
+
+    .policy-card-meta-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .policy-meta-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .policy-meta-value {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 2px;
+    }
+
+    .policy-meta-label {
+        font-size: 10px;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    /* Card Actions */
+    .policy-card-actions {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .policy-action-btn {
+        padding: 10px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .policy-action-btn:active {
+        transform: scale(0.95);
+    }
+
+    .policy-action-btn i {
+        font-size: 18px;
+    }
+
+    .policy-action-btn span {
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .policy-action-btn.view {
+        border-color: #3b82f6;
+        background: #eff6ff;
+    }
+
+    .policy-action-btn.view i {
+        color: #3b82f6;
+    }
+
+    .policy-action-btn.view span {
+        color: #3b82f6;
+    }
+
+    .policy-action-btn.edit {
+        border-color: #f59e0b;
+        background: #fffbeb;
+    }
+
+    .policy-action-btn.edit i {
+        color: #f59e0b;
+    }
+
+    .policy-action-btn.edit span {
+        color: #f59e0b;
+    }
+
+    .policy-action-btn.delete {
+        border-color: #ef4444;
+        background: #fef2f2;
+    }
+
+    .policy-action-btn.delete i {
+        color: #ef4444;
+    }
+
+    .policy-action-btn.delete span {
+        color: #ef4444;
+    }
+
+    /* Mobile Search Bar */
+    .mobile-search-bar {
+        display: none;
+        position: sticky;
+        top: 60px;
+        z-index: 100;
+        background: white;
+        padding: 12px 0;
+        margin: -16px 0 16px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .mobile-search-input {
+        width: 100%;
+        padding: 10px 16px 10px 40px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 14px;
+        background: #f8fafc;
+    }
+
+    .mobile-search-input:focus {
+        outline: none;
+        border-color: #2563eb;
+        background: white;
+    }
+
+    .mobile-search-icon {
+        position: absolute;
+        left: 14px;
+        top: 22px;
+        color: #64748b;
+    }
+
+    /* Empty State */
+    .empty-state-mobile {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-state-mobile i {
+        font-size: 64px;
+        color: #cbd5e1;
+        margin-bottom: 16px;
+    }
+
+    .empty-state-mobile h3 {
+        font-size: 18px;
+        color: #475569;
+        margin-bottom: 8px;
+    }
+
+    .empty-state-mobile p {
+        font-size: 14px;
+        color: #94a3b8;
+    }
+
+    /* ============================================
+       RESPONSIVE - MOBILE VIEW
+    ============================================ */
+    @media (max-width: 768px) {
+        /* Container Padding */
+        .container-fluid {
+            padding: 0 !important;
+        }
+
+        /* Page Header Mobile */
+        .page-header {
+            margin: 0 16px 16px 16px;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .page-header h1 {
+            font-size: 1.125rem !important;
+        }
+
+        .page-header p {
+            font-size: 0.8125rem;
+        }
+
+        .page-header .d-flex {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+
+        .page-header .btn {
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        /* Stats Cards Mobile */
+        .row.g-3.mb-4 {
+            margin: 0 16px 16px 16px !important;
+            gap: 8px !important;
+        }
+
+        .row.g-3.mb-4 > div {
+            padding: 0 !important;
+        }
+
+        .stat-card {
+            border-radius: 8px;
+        }
+
+        .stat-card .card-body {
+            padding: 0.875rem;
+        }
+
+        .stat-value {
+            font-size: 1.375rem;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+        }
+
+        /* Filter Card Mobile */
+        .filter-card {
+            margin: 0 16px 16px 16px;
+            border-radius: 8px;
+        }
+
+        .filter-card .card-body {
+            padding: 12px;
+        }
+
+        .filter-card .row {
+            gap: 10px;
+        }
+
+        .filter-card .col-lg-2,
+        .filter-card .col-lg-3,
+        .filter-card .col-lg-1,
+        .filter-card .col-md-6 {
+            width: 100%;
+            padding: 0;
+        }
+
+        .filter-card label {
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .filter-card .form-select,
+        .filter-card .form-control {
+            font-size: 13px;
+            padding: 8px 12px;
+        }
+
+        /* Hide Desktop Table */
+        .main-card {
+            display: none !important;
+        }
+
+        /* Show Mobile Cards */
+        .mobile-cards-container {
+            display: block;
+            padding: 0 16px;
+        }
+
+        /* Show Mobile Search */
+        .mobile-search-bar {
+            display: block;
+            margin: 0 16px 16px 16px;
+        }
+    }
+
+    /* Small Mobile */
+    @media (max-width: 374px) {
+        .page-header h1 {
+            font-size: 1rem !important;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+        }
+
+        .policy-card-mobile {
+            padding: 0.875rem;
+        }
+
+        .policy-card-body {
+            gap: 10px;
+        }
+    }
+</style>
 @endpush
 
 @section('content')
@@ -197,7 +607,7 @@
     </div>
 
     <!-- İstatistik Kartları -->
-    <div class="row g-3 mb-4">
+    <div class="row mb-4 mx-2 mx-md-0">
         <div class="col-lg col-md-4 col-6">
             <div class="stat-card card">
                 <div class="card-body">
@@ -311,8 +721,152 @@
         </div>
     </div>
 
+     <!-- Mobile: Search Bar -->
+    <div class="mobile-search-bar">
+        <i class="bi bi-search mobile-search-icon"></i>
+        <input type="text" id="mobileSearch" class="mobile-search-input" placeholder="Poliçe, müşteri ara...">
+    </div>
+
+    <!-- Mobile: Card Görünümü -->
+    <div class="mobile-cards-container">
+        @forelse($policies as $policy)
+            @php
+                $statusConfig = [
+                    'active' => ['color' => 'success', 'label' => 'Aktif', 'icon' => 'check-circle-fill'],
+                    'expiring_soon' => ['color' => 'warning', 'label' => 'Yaklaşan', 'icon' => 'clock-fill'],
+                    'critical' => ['color' => 'danger', 'label' => 'Kritik', 'icon' => 'exclamation-triangle-fill'],
+                    'expired' => ['color' => 'secondary', 'label' => 'Dolmuş', 'icon' => 'x-circle-fill'],
+                    'renewed' => ['color' => 'info', 'label' => 'Yenilendi', 'icon' => 'arrow-repeat'],
+                    'cancelled' => ['color' => 'dark', 'label' => 'İptal', 'icon' => 'slash-circle-fill'],
+                ];
+                $config = $statusConfig[$policy->status] ?? ['color' => 'secondary', 'label' => $policy->status, 'icon' => 'circle-fill'];
+                $daysLeft = $policy->days_until_expiry;
+            @endphp
+
+            <div class="policy-card-mobile" data-policy-id="{{ $policy->id }}">
+                <!-- Card Header -->
+                <div class="policy-card-header">
+                    <div>
+                        <div class="policy-card-number">{{ $policy->policy_number }}</div>
+                        <div class="policy-card-customer">{{ $policy->customer->name }}</div>
+                    </div>
+                    <div class="policy-card-status-badge">
+                        <span class="badge badge-modern bg-{{ $config['color'] }}">
+                            <i class="bi bi-{{ $config['icon'] }}"></i>
+                            {{ $config['label'] }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card Body - Main Info Grid -->
+                <div class="policy-card-body">
+                    <!-- Poliçe Türü -->
+                    <div class="policy-info-item">
+                        <div class="policy-info-label">Poliçe Türü</div>
+                        <div class="policy-info-value">
+                            <span class="badge badge-modern bg-info">{{ $policy->policy_type_label }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Sigorta Şirketi -->
+                    <div class="policy-info-item">
+                        <div class="policy-info-label">Sigorta Şirketi</div>
+                        <div class="policy-info-value">{{ $policy->insuranceCompany->code }}</div>
+                    </div>
+
+                    <!-- Araç/Adres -->
+                    <div class="policy-info-item">
+                        <div class="policy-info-label">
+                            @if($policy->isVehiclePolicy())
+                                Araç Bilgisi
+                            @elseif($policy->isPropertyPolicy())
+                                Adres
+                            @else
+                                Bilgi
+                            @endif
+                        </div>
+                        <div class="policy-info-value">
+                            @if($policy->isVehiclePolicy())
+                                {{ $policy->vehicle_plate }}
+                                <small>{{ $policy->vehicle_brand }}</small>
+                            @elseif($policy->isPropertyPolicy())
+                                <small>{{ Str::limit($policy->property_address, 25) }}</small>
+                            @else
+                                -
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Bitiş Tarihi -->
+                    <div class="policy-info-item">
+                        <div class="policy-info-label">Bitiş Tarihi</div>
+                        <div class="policy-info-value {{ $daysLeft <= 30 ? 'text-danger' : '' }}">
+                            {{ $policy->end_date->format('d.m.Y') }}
+                            @if($daysLeft > 0)
+                                <small>{{ $daysLeft }} gün</small>
+                            @elseif($daysLeft === 0)
+                                <small class="text-danger">Bugün!</small>
+                            @else
+                                <small class="text-danger">{{ abs($daysLeft) }} gün önce</small>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Meta - Full Width -->
+                <div class="policy-card-meta">
+                    <div class="policy-card-meta-item">
+                        <div class="policy-meta-icon">
+                            <i class="bi bi-cash-stack text-success"></i>
+                        </div>
+                        <div class="policy-meta-value">{{ number_format($policy->premium_amount, 0) }}₺</div>
+                        <div class="policy-meta-label">Prim Tutarı</div>
+                    </div>
+
+                    <div class="policy-card-meta-item">
+                        <div class="policy-meta-icon">
+                            <i class="bi bi-calendar-event text-primary"></i>
+                        </div>
+                        <div class="policy-meta-value">{{ $policy->start_date->format('d.m.y') }}</div>
+                        <div class="policy-meta-label">Başlangıç</div>
+                    </div>
+
+                    <div class="policy-card-meta-item">
+                        <div class="policy-meta-icon">
+                            <i class="bi bi-telephone text-info"></i>
+                        </div>
+                        <div class="policy-meta-value">{{ $policy->customer->phone }}</div>
+                        <div class="policy-meta-label">Telefon</div>
+                    </div>
+                </div>
+
+                <!-- Card Actions -->
+                <div class="policy-card-actions">
+                    <a href="{{ route('policies.show', $policy) }}" class="policy-action-btn view">
+                        <i class="bi bi-eye"></i>
+                        <span>Detay</span>
+                    </a>
+                    <a href="{{ route('policies.edit', $policy) }}" class="policy-action-btn edit">
+                        <i class="bi bi-pencil"></i>
+                        <span>Düzenle</span>
+                    </a>
+                    <button onclick="deletePolicy({{ $policy->id }})" class="policy-action-btn delete">
+                        <i class="bi bi-trash"></i>
+                        <span>Sil</span>
+                    </button>
+                </div>
+            </div>
+        @empty
+            <div class="empty-state-mobile">
+                <i class="bi bi-file-earmark-text"></i>
+                <h3>Poliçe Bulunamadı</h3>
+                <p>Henüz poliçe kaydı bulunmamaktadır.</p>
+            </div>
+        @endforelse
+    </div>
+
     <!-- Tablo -->
-    <div class="main-card card">
+    <div class="main-card card desktop-table-container">
         <div class="card-body">
             <table id="policiesTable" class="table table-hover">
                 <thead>
@@ -528,5 +1082,94 @@ function deletePolicy(policyId) {
         form.submit();
     }
 }
+</script>
+<script>
+$(document).ready(function() {
+    // ... Mevcut DataTable kodu ...
+
+    // Mobile Search
+    $('#mobileSearch').on('keyup', function() {
+        const searchTerm = $(this).val().toLowerCase();
+        filterMobileCards(searchTerm);
+    });
+
+    // Mobile Filter Function
+    function filterMobileCards(searchTerm = '') {
+        const policyType = $('#filterPolicyType').val();
+        const status = $('#filterStatus').val();
+        const company = $('#filterCompany').val();
+
+        let visibleCount = 0;
+
+        $('.policy-card-mobile').each(function() {
+            const $card = $(this);
+            const cardText = $card.text().toLowerCase();
+            const cardStatus = $card.find('.policy-card-status-badge .badge').text().trim();
+            const cardType = $card.find('.badge-modern.bg-info').text().trim();
+            const cardCompany = $card.find('.policy-info-value').eq(1).text().trim();
+
+            let show = true;
+
+            // Search filter
+            if (searchTerm && !cardText.includes(searchTerm)) {
+                show = false;
+            }
+
+            // Policy type filter
+            if (policyType && cardType !== policyType) {
+                show = false;
+            }
+
+            // Status filter
+            if (status && cardStatus !== status) {
+                show = false;
+            }
+
+            // Company filter
+            if (company && cardCompany !== company) {
+                show = false;
+            }
+
+            if (show) {
+                $card.show();
+                visibleCount++;
+            } else {
+                $card.hide();
+            }
+        });
+
+        // Update count for mobile
+        if (window.innerWidth <= 768) {
+            $('#policyCount').html(`Gösterilen: <strong>${visibleCount}</strong> / <strong>{{ $policies->count() }}</strong> poliçe`);
+        }
+    }
+
+    // Filter change event for mobile
+    $('#filterPolicyType, #filterStatus, #filterCompany').on('change', function() {
+        if (window.innerWidth <= 768) {
+            filterMobileCards($('#mobileSearch').val().toLowerCase());
+        }
+    });
+});
+
+// Update clearFilters function
+function clearFilters() {
+    $('#filterPolicyType, #filterStatus, #filterCompany, #filterDateFrom, #filterDateTo').val('');
+    $('#mobileSearch').val('');
+
+    $.fn.dataTable.ext.search = [];
+
+    const table = $('#policiesTable').DataTable();
+    table.search('').columns().search('').draw();
+
+    // Reset mobile cards
+    $('.policy-card-mobile').show();
+
+    if (window.innerWidth <= 768) {
+        $('#policyCount').html(`Toplam <strong>{{ $policies->count() }}</strong> poliçe`);
+    }
+}
+
+// Existing deletePolicy function remains the same
 </script>
 @endpush

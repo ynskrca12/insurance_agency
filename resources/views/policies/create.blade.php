@@ -382,7 +382,6 @@
                                        class="form-control"
                                        id="vehicle_year"
                                        name="vehicle_year"
-                                       value="{{ old('vehicle_year', date('Y')) }}"
                                        min="1900"
                                        max="{{ date('Y') + 1 }}"
                                        placeholder="{{ date('Y') }}">

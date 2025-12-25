@@ -1094,6 +1094,10 @@
                             <a class="nav-link" href="{{ route('quotations.index') }}">
                                 <i class="bi bi-file-earmark-plus"></i>
                                 Teklifler
+                                @php
+                                    $draftQuotations = \App\Models\Quatation::where('status', 'draft')->count();
+                                @endphp
+                                    <span class="badge bg-info ms-auto">{{ $draftQuotations }}</span>
                             </a>
                         </li>
 
@@ -1116,6 +1120,10 @@
                             href="{{ route('payments.installments') }}">
                                 <i class="bi bi-credit-card"></i>
                                 Ödemeler
+                                 @php
+                                    $payments = \App\Models\Payment::completed()->count();
+                                @endphp
+                                    <span class="badge bg-success ms-auto">{{ $payments }}</span>
                             </a>
                         </li>
 
@@ -1130,7 +1138,7 @@
                                         ->count();
                                 @endphp
                                 @if($myOpenTasks > 0)
-                                    <span class="badge bg-warning ms-auto">{{ $myOpenTasks }}</span>
+                                    <span class="badge bg-info ms-auto">{{ $myOpenTasks }}</span>
                                 @endif
                             </a>
                         </li>
@@ -1144,7 +1152,7 @@
                                     $draftCampaigns = \App\Models\Campaign::where('status', 'draft')->count();
                                 @endphp
                                 @if($draftCampaigns > 0)
-                                    <span class="badge bg-warning ms-auto">{{ $draftCampaigns }}</span>
+                                    <span class="badge bg-info ms-auto">{{ $draftCampaigns }}</span>
                                 @endif
                             </a>
                         </li>

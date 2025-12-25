@@ -310,6 +310,525 @@
         padding: 1rem 1.5rem;
     }
 </style>
+@push('styles')
+<style>
+    /* ============================================
+       MOBILE OPTIMIZATION - PROFESSIONAL
+    ============================================ */
+
+    /* Mobile Cards Container */
+    .mobile-cards-container {
+        display: none;
+    }
+
+    /* Installment Card Mobile */
+    .installment-card-mobile {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .installment-card-mobile:active {
+        transform: scale(0.98);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Status Stripe */
+    .installment-card-stripe {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+    }
+
+    .installment-card-stripe.overdue {
+        background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .installment-card-stripe.today {
+        background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .installment-card-stripe.critical {
+        background: linear-gradient(180deg, #ff9800 0%, #e65100 100%);
+    }
+
+    .installment-card-stripe.normal {
+        background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+    }
+
+    /* Card Header */
+    .installment-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        padding-left: 12px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .installment-card-customer {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 4px;
+    }
+
+    .installment-card-phone {
+        font-size: 11px;
+        color: #94a3b8;
+        font-weight: 500;
+    }
+
+    .installment-card-status-badge {
+        flex-shrink: 0;
+        margin-left: 8px;
+    }
+
+    /* Amount Alert Box */
+    .installment-amount-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        margin-left: 12px;
+        margin-right: 12px;
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border: 2px solid #86efac;
+    }
+
+    .installment-amount-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: #10b981;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+    }
+
+    .installment-amount-content {
+        flex: 1;
+        margin-left: 12px;
+    }
+
+    .installment-amount-label {
+        font-size: 10px;
+        color: #059669;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }
+
+    .installment-amount-value {
+        font-size: 22px;
+        font-weight: 800;
+        color: #059669;
+        line-height: 1;
+    }
+
+    /* Due Date Alert */
+    .installment-due-alert {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        margin-left: 12px;
+        margin-right: 12px;
+    }
+
+    .installment-due-alert.overdue {
+        background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        border: 1px solid #fca5a5;
+    }
+
+    .installment-due-alert.today {
+        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        border: 1px solid #fcd34d;
+    }
+
+    .installment-due-alert.critical {
+        background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        border: 1px solid #ffb74d;
+    }
+
+    .installment-due-alert.normal {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border: 1px solid #cbd5e1;
+    }
+
+    .installment-due-icon {
+        font-size: 22px;
+    }
+
+    .installment-due-content {
+        flex: 1;
+    }
+
+    .installment-due-text {
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+
+    .installment-due-date {
+        font-size: 11px;
+        opacity: 0.8;
+        font-weight: 600;
+    }
+
+    /* Card Body - Grid */
+    .installment-card-body {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 12px;
+        padding-left: 12px;
+    }
+
+    .installment-info-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .installment-info-label {
+        font-size: 10px;
+        color: #64748b;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .installment-info-value {
+        font-size: 13px;
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .installment-info-value a {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    /* Installment Number Badge */
+    .installment-number-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 12px;
+        background: #e8f4fd;
+        border: 1px solid #b3d9ff;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #0066cc;
+    }
+
+    /* Card Actions */
+    .installment-card-actions {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        padding-left: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .installment-card-actions.three-cols {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .installment-action-btn {
+        padding: 10px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .installment-action-btn:active {
+        transform: scale(0.95);
+    }
+
+    .installment-action-btn i {
+        font-size: 18px;
+    }
+
+    .installment-action-btn span {
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .installment-action-btn.pay {
+        border-color: #10b981;
+        background: #f0fdf4;
+    }
+
+    .installment-action-btn.pay i {
+        color: #10b981;
+    }
+
+    .installment-action-btn.pay span {
+        color: #10b981;
+    }
+
+    .installment-action-btn.remind {
+        border-color: #0ea5e9;
+        background: #e0f7ff;
+    }
+
+    .installment-action-btn.remind i {
+        color: #0ea5e9;
+    }
+
+    .installment-action-btn.remind span {
+        color: #0ea5e9;
+    }
+
+    .installment-action-btn.view {
+        border-color: #2563eb;
+        background: #eff6ff;
+    }
+
+    .installment-action-btn.view i {
+        color: #2563eb;
+    }
+
+    .installment-action-btn.view span {
+        color: #2563eb;
+    }
+
+    /* Mobile Search Bar */
+    .mobile-search-bar {
+        display: none;
+        position: sticky;
+        top: 60px;
+        z-index: 100;
+        background: white;
+        padding: 12px 0;
+        margin: -16px 0 16px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .mobile-search-input {
+        width: 100%;
+        padding: 10px 16px 10px 40px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 14px;
+        background: #f8fafc;
+    }
+
+    .mobile-search-input:focus {
+        outline: none;
+        border-color: #2563eb;
+        background: white;
+    }
+
+    .mobile-search-icon {
+        position: absolute;
+        left: 14px;
+        top: 22px;
+        color: #64748b;
+    }
+
+    /* Empty State */
+    .empty-state-mobile {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-state-mobile i {
+        font-size: 64px;
+        color: #cbd5e1;
+        margin-bottom: 16px;
+    }
+
+    .empty-state-mobile h3 {
+        font-size: 18px;
+        color: #475569;
+        margin-bottom: 8px;
+    }
+
+    .empty-state-mobile p {
+        font-size: 14px;
+        color: #94a3b8;
+    }
+
+    /* ============================================
+       RESPONSIVE - MOBILE VIEW
+    ============================================ */
+    @media (max-width: 768px) {
+        /* Container Padding */
+        .container-fluid {
+            padding: 0 !important;
+        }
+
+        /* Page Header Mobile */
+        .page-header {
+            margin: 0 16px 16px 16px;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .page-header h1 {
+            font-size: 1.125rem !important;
+        }
+
+        .page-header p {
+            font-size: 0.8125rem;
+        }
+
+        .page-header .d-flex {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+
+        .page-header .d-flex.gap-2 {
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .page-header .btn {
+            flex: 1;
+            font-size: 0.8125rem;
+            padding: 0.5rem 0.75rem;
+        }
+
+        /* Stats Cards Mobile */
+        .row.g-3.mb-4 {
+            margin: 0 16px 16px 16px !important;
+            gap: 8px !important;
+        }
+
+        .row.g-3.mb-4 > div {
+            padding: 0 !important;
+        }
+
+        .stat-card {
+            padding: 0.875rem;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+        }
+
+        .stat-sublabel {
+            font-size: 0.65rem;
+        }
+
+        /* Filter Card Mobile */
+        .filter-card {
+            margin: 0 16px 16px 16px !important;
+            border-radius: 8px;
+        }
+
+        .filter-card .card-body {
+            padding: 12px;
+        }
+
+        .filter-card .row {
+            gap: 10px;
+        }
+
+        .filter-card .col-lg-2,
+        .filter-card .col-lg-3,
+        .filter-card .col-lg-1,
+        .filter-card .col-md-6,
+        .filter-card .col-md-12 {
+            width: 100%;
+            padding: 0;
+        }
+
+        .filter-card label {
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .filter-card .form-select,
+        .filter-card .form-control {
+            font-size: 13px;
+            padding: 8px 12px;
+        }
+
+        /* Hide Desktop Table */
+        .table-card {
+            display: none !important;
+        }
+
+        /* Show Mobile Cards */
+        .mobile-cards-container {
+            display: block;
+            padding: 0 16px;
+        }
+
+        /* Show Mobile Search */
+        .mobile-search-bar {
+            display: block;
+            margin: 0 16px 16px 16px;
+        }
+
+        /* Modal Mobile */
+        .modal-modern .modal-dialog {
+            margin: 0.5rem;
+        }
+
+        .modal-modern .modal-header,
+        .modal-modern .modal-body,
+        .modal-modern .modal-footer {
+            padding: 1rem;
+        }
+    }
+
+    /* Small Mobile */
+    @media (max-width: 374px) {
+        .page-header h1 {
+            font-size: 1rem !important;
+        }
+
+        .stat-value {
+            font-size: 1.125rem;
+        }
+
+        .installment-card-mobile {
+            padding: 0.875rem;
+        }
+
+        .installment-amount-value {
+            font-size: 20px;
+        }
+
+        .installment-card-actions.three-cols {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
 @endpush
 
 @section('content')
@@ -414,8 +933,180 @@
         </div>
     </div>
 
-    <!-- Tablo -->
-    <div class="table-card card">
+    <!-- Mobile: Search Bar -->
+<div class="mobile-search-bar">
+    <i class="bi bi-search mobile-search-icon"></i>
+    <input type="text" id="mobileSearch" class="mobile-search-input" placeholder="Müşteri, poliçe ara...">
+</div>
+
+<!-- Mobile: Card Görünümü -->
+<div class="mobile-cards-container">
+    @forelse($installments as $installment)
+        @php
+            $daysUntilDue = now()->startOfDay()->diffInDays($installment->due_date->startOfDay(), false);
+            $isOverdue = $daysUntilDue < 0;
+            $isDueToday = $daysUntilDue === 0;
+            $isCritical = $daysUntilDue > 0 && $daysUntilDue <= 7;
+
+            // Stripe & Alert Config
+            if ($isOverdue) {
+                $stripeClass = 'overdue';
+                $alertClass = 'overdue';
+                $alertIcon = 'bi-exclamation-triangle-fill';
+                $alertColor = '#ef4444';
+                $alertText = abs($daysUntilDue) . ' gün geçti';
+            } elseif ($isDueToday) {
+                $stripeClass = 'today';
+                $alertClass = 'today';
+                $alertIcon = 'bi-clock-fill';
+                $alertColor = '#f59e0b';
+                $alertText = 'Bugün';
+            } elseif ($isCritical) {
+                $stripeClass = 'critical';
+                $alertClass = 'critical';
+                $alertIcon = 'bi-exclamation-circle-fill';
+                $alertColor = '#ff9800';
+                $alertText = $daysUntilDue . ' gün kaldı';
+            } else {
+                $stripeClass = 'normal';
+                $alertClass = 'normal';
+                $alertIcon = 'bi-calendar-check';
+                $alertColor = '#64748b';
+                $alertText = $daysUntilDue . ' gün kaldı';
+            }
+
+            // Status Config
+            $statusConfig = [
+                'pending' => ['color' => 'warning', 'label' => 'Bekliyor'],
+                'paid' => ['color' => 'success', 'label' => 'Ödendi'],
+                'overdue' => ['color' => 'danger', 'label' => 'Gecikmiş'],
+            ];
+            $status = $statusConfig[$installment->status] ?? ['color' => 'secondary', 'label' => $installment->status];
+        @endphp
+
+        <div class="installment-card-mobile" data-installment-id="{{ $installment->id }}" data-days="{{ $daysUntilDue }}">
+            <!-- Status Stripe -->
+            <div class="installment-card-stripe {{ $stripeClass }}"></div>
+
+            <!-- Card Header -->
+            <div class="installment-card-header">
+                <div style="flex: 1; min-width: 0;">
+                    <div class="installment-card-customer">
+                        {{ $installment->paymentPlan->customer->name }}
+                    </div>
+                    <div class="installment-card-phone">
+                        <i class="bi bi-telephone"></i> {{ $installment->paymentPlan->customer->phone }}
+                    </div>
+                </div>
+                <div class="installment-card-status-badge">
+                    <span class="badge badge-modern bg-{{ $status['color'] }}">
+                        {{ $status['label'] }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Amount Box -->
+            <div class="installment-amount-box">
+                <div class="installment-amount-icon">
+                    <i class="bi bi-cash-coin"></i>
+                </div>
+                <div class="installment-amount-content">
+                    <div class="installment-amount-label">Taksit Tutarı</div>
+                    <div class="installment-amount-value">{{ number_format($installment->amount, 2) }}₺</div>
+                </div>
+            </div>
+
+            <!-- Due Date Alert -->
+            <div class="installment-due-alert {{ $alertClass }}">
+                <i class="bi {{ $alertIcon }}" style="color: {{ $alertColor }}; font-size: 22px;"></i>
+                <div class="installment-due-content">
+                    <div class="installment-due-text" style="color: {{ $alertColor }}">
+                        {{ $alertText }}
+                    </div>
+                    <div class="installment-due-date" style="color: {{ $alertColor }}">
+                        Vade: {{ $installment->due_date->format('d.m.Y') }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="installment-card-body">
+                <!-- Poliçe No -->
+                <div class="installment-info-item">
+                    <div class="installment-info-label">Poliçe Numarası</div>
+                    <div class="installment-info-value">
+                        <a href="{{ route('policies.show', $installment->paymentPlan->policy) }}">
+                            {{ $installment->paymentPlan->policy->policy_number }}
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Taksit -->
+                <div class="installment-info-item">
+                    <div class="installment-info-label">Taksit Bilgisi</div>
+                    <div class="installment-info-value">
+                        <span class="installment-number-badge">
+                            {{ $installment->installment_number }}/{{ $installment->paymentPlan->installment_count }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Actions -->
+            @if($installment->status === 'pending' || $installment->status === 'overdue')
+                <div class="installment-card-actions three-cols">
+                    <button type="button"
+                            class="installment-action-btn pay"
+                            data-bs-toggle="modal"
+                            data-bs-target="#paymentModal"
+                            onclick="setInstallmentData({{ $installment->id }}, '{{ addslashes($installment->paymentPlan->customer->name) }}', '{{ $installment->paymentPlan->policy->policy_number }}', {{ $installment->installment_number }}, {{ $installment->amount }})">
+                        <i class="bi bi-cash"></i>
+                        <span>Ödeme</span>
+                    </button>
+
+                    <form method="POST" action="{{ route('payments.sendReminder', $installment) }}" style="margin: 0;">
+                        @csrf
+                        <button type="submit" class="installment-action-btn remind" style="width: 100%;">
+                            <i class="bi bi-send"></i>
+                            <span>Hatırlat</span>
+                        </button>
+                    </form>
+
+                    <a href="{{ route('customers.show', $installment->paymentPlan->customer) }}"
+                       class="installment-action-btn view">
+                        <i class="bi bi-eye"></i>
+                        <span>Müşteri</span>
+                    </a>
+                </div>
+            @else
+                <div class="installment-card-actions">
+                    @if($installment->payment)
+                        <a href="{{ route('payments.show', $installment->payment) }}"
+                           class="installment-action-btn view">
+                            <i class="bi bi-eye"></i>
+                            <span>Ödeme Detayı</span>
+                        </a>
+                    @endif
+
+                    <a href="{{ route('customers.show', $installment->paymentPlan->customer) }}"
+                       class="installment-action-btn view">
+                        <i class="bi bi-person"></i>
+                        <span>Müşteri</span>
+                    </a>
+                </div>
+            @endif
+        </div>
+    @empty
+        <div class="empty-state-mobile">
+            <i class="bi bi-calendar3"></i>
+            <h3>Taksit Bulunamadı</h3>
+            <p>Henüz taksit kaydı bulunmamaktadır.</p>
+        </div>
+    @endforelse
+</div>
+
+    <!-- Desktop: Tablo Görünümü -->
+    <div class="table-card card desktop-table-container">
         <div class="card-body">
             <table class="table table-hover" id="installmentsTable">
                 <thead>
@@ -799,6 +1490,101 @@ function clearFilters() {
     $.fn.dataTable.ext.search = [];
     const table = $('#installmentsTable').DataTable();
     table.search('').columns().search('').draw();
+}
+</script>
+
+<script>
+
+$(document).ready(function() {
+    // ... Mevcut DataTable kodu ...
+
+    // Mobile Search
+    $('#mobileSearch').on('keyup', function() {
+        const searchTerm = $(this).val().toLowerCase();
+        filterMobileCards(searchTerm);
+    });
+
+    // Mobile Filter Function
+    function filterMobileCards(searchTerm = '') {
+        const status = $('#filterStatus').val();
+        const dateFilter = $('#filterDateFilter').val();
+
+        let visibleCount = 0;
+
+        $('.installment-card-mobile').each(function() {
+            const $card = $(this);
+            const cardText = $card.text().toLowerCase();
+            const cardStatus = $card.find('.badge-modern').text().trim();
+            const cardDays = parseInt($card.attr('data-days'));
+
+            let show = true;
+
+            // Search filter
+            if (searchTerm && !cardText.includes(searchTerm)) {
+                show = false;
+            }
+
+            // Status filter
+            if (status && cardStatus !== status) {
+                show = false;
+            }
+
+            // Date filter
+            if (dateFilter) {
+                switch(dateFilter) {
+                    case 'due_today':
+                        show = show && cardDays === 0;
+                        break;
+                    case 'overdue':
+                        show = show && cardDays < 0;
+                        break;
+                    case 'upcoming_7':
+                        show = show && cardDays > 0 && cardDays <= 7;
+                        break;
+                    case 'upcoming_30':
+                        show = show && cardDays > 0 && cardDays <= 30;
+                        break;
+                }
+            }
+
+            if (show) {
+                $card.show();
+                visibleCount++;
+            } else {
+                $card.hide();
+            }
+        });
+
+        // Update count for mobile
+        if (window.innerWidth <= 768) {
+            $('#installmentCount').html(`Gösterilen: <strong>${visibleCount}</strong> / <strong>{{ $installments->count() }}</strong> taksit`);
+        }
+    }
+
+    // Filter change event for mobile
+    $('#filterStatus, #filterDateFilter').on('change', function() {
+        if (window.innerWidth <= 768) {
+            filterMobileCards($('#mobileSearch').val().toLowerCase());
+        }
+    });
+});
+
+// Update clearFilters function
+function clearFilters() {
+    $('#filterStatus, #filterDateFilter, #filterDateFrom, #filterDateTo').val('');
+    $('#mobileSearch').val('');
+
+    $.fn.dataTable.ext.search = [];
+
+    const table = $('#installmentsTable').DataTable();
+    table.search('').columns().search('').draw();
+
+    // Reset mobile cards
+    $('.installment-card-mobile').show();
+
+    if (window.innerWidth <= 768) {
+        $('#installmentCount').html(`Toplam: <strong>{{ $installments->count() }}</strong> taksit`);
+    }
 }
 </script>
 @endpush
