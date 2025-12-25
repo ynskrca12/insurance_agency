@@ -5,11 +5,8 @@
 @push('styles')
 <style>
     .page-header {
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
+        padding: 12px 0;
+        margin-bottom: 1rem;
     }
 
     .settings-sidebar {
@@ -244,7 +241,7 @@
 <div class="container-fluid">
     <!-- Page Header -->
     <div class="page-header">
-        <h1 class="h3 mb-0 fw-bold text-dark">
+        <h1 class="h4 mb-0 fw-bold text-dark">
             <i class="bi bi-gear me-2"></i>Genel Ayarlar
         </h1>
     </div>

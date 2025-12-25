@@ -5,11 +5,8 @@
 @push('styles')
 <style>
     .form-header {
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
+        padding: 12px 0;
+        margin-bottom: 1rem;
     }
 
     .form-card {
@@ -173,7 +170,7 @@
             <div class="form-header">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <div class="flex-grow-1">
-                        <h1 class="h3 mb-1 fw-bold text-dark">
+                        <h1 class="h4 mb-1 fw-bold text-dark">
                             <i class="bi bi-pencil me-2"></i>Müşteri Düzenle
                         </h1>
                         <p class="text-muted mb-0 small">{{ $customer->name }} bilgilerini güncelleyin</p>

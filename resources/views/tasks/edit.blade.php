@@ -5,11 +5,8 @@
 @push('styles')
 <style>
     .form-header {
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
+        padding: 12px 0;
+        margin-bottom: 1rem;
     }
 
     .form-card {
@@ -199,13 +196,13 @@
             <div class="form-header">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <div>
-                        <h1 class="h3 mb-1 fw-bold text-dark">
+                        <h1 class="h4 mb-1 fw-bold text-dark">
                             <i class="bi bi-pencil me-2"></i>Görev Düzenle
                         </h1>
                         <p class="text-muted mb-0 small">Görev bilgilerini güncelleyin</p>
                     </div>
                     <div class="d-flex gap-2">
-                        <a href="{{ route('tasks.show', $task) }}" class="btn btn-info action-btn">
+                        <a href="{{ route('tasks.show', $task) }}" class="btn btn-info action-btn text-white">
                             <i class="bi bi-eye me-2"></i>Detay
                         </a>
                         <a href="{{ route('tasks.index') }}" class="btn btn-light action-btn">
