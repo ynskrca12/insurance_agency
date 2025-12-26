@@ -557,12 +557,28 @@
             Toplam: <strong>{{ $renewals->count() }}</strong> yenileme
         </p>
     </div>
-    <div>
-        <a href="{{ route('renewals.calendar') }}" class="btn btn-info text-white">
-            <i class="bi bi-calendar3 me-2"></i>Takvim Görünümü
+    <div class="d-flex gap-2 flex-wrap">
+        <!--  Kayıtları Oluştur Butonu -->
+        @if(in_array(auth()->user()->role, ['owner', 'manager']))
+        <a href="{{ route('renewals.generate') }}"
+           class="btn btn-primary d-flex align-items-center"
+           onclick="return confirm('⚙️ Yenileme Kayıtları Oluşturma\n\n• 90 gün içinde bitecek poliçeler taranacak\n• Yeni yenileme kayıtları oluşturulacak\n• Mevcut kayıtlar güncellenmeyecek\n\nDevam edilsin mi?')">
+            <i class="bi bi-plus-circle-fill me-2"></i>
+            <span class="d-none d-md-inline">Kayıtları Oluştur</span>
+            <span class="d-inline d-md-none">Oluştur</span>
         </a>
+        @endif
+
+        <a href="{{ route('renewals.calendar') }}" class="btn btn-info text-white">
+            <i class="bi bi-calendar3 me-2"></i>
+            <span class="d-none d-md-inline">Takvim Görünümü</span>
+            <span class="d-inline d-md-none">Takvim</span>
+        </a>
+
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#bulkReminderModal">
-            <i class="bi bi-send me-2"></i>Toplu Hatırlatıcı
+            <i class="bi bi-send me-2"></i>
+            <span class="d-none d-md-inline">Toplu Hatırlatıcı</span>
+            <span class="d-inline d-md-none">Hatırlat</span>
         </button>
     </div>
 </div>

@@ -120,6 +120,14 @@ class Policy extends Model
         return $query->where('policy_type', $type);
     }
 
+     /**
+     * Activity Logs ilişkisi (Polymorphic)
+     */
+    public function activityLogs()
+    {
+        return $this->morphMany(ActivityLog::class, 'subject');
+    }
+
     /**
      * Bitimine kaç gün kaldı?
      */

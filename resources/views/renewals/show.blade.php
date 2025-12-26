@@ -738,17 +738,56 @@
             <form method="POST" action="{{ route('renewals.markAsRenewed', $renewal) }}">
                 @csrf
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Yeni Poliçe</label>
-                        <select class="form-select" name="new_policy_id" required>
-                            <option value="">Poliçe seçiniz</option>
-                            <!-- Burada müşterinin yeni poliçeleri listelenecek -->
-                        </select>
-                        <small class="form-text text-muted">
-                            <i class="bi bi-info-circle me-1"></i>
-                            Önce yeni poliçeyi oluşturmanız gerekiyor
-                        </small>
+                    <!-- Bilgilendirme -->
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Mevcut Poliçe:</strong> {{ $renewal->policy->policy_number }}
+                        ({{ $renewal->policy->policy_type_label }})
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Yeni Poliçe <span class="text-danger">*</span>
+                        </label>
+
+                        @if($customerPolicies->count() > 0)
+                            <select class="form-select" name="new_policy_id" required>
+                                <option value="">Yeni poliçeyi seçiniz</option>
+                                @foreach($customerPolicies as $policy)
+                                    <option value="{{ $policy->id }}">
+                                        {{ $policy->policy_number }} -
+                                        {{ $policy->policy_type_label }} -
+                                        {{ $policy->insuranceCompany->name }} -
+                                        ({{ $policy->start_date->format('d.m.Y') }} / {{ $policy->end_date->format('d.m.Y') }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-check-circle text-success me-1"></i>
+                                {{ $customerPolicies->count() }} adet aktif poliçe bulundu
+                            </small>
+                        @else
+                            <div class="alert alert-warning mb-3">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                Müşterinin henüz yeni bir poliçesi yok!
+                            </div>
+
+                            <a href="{{ route('policies.create', ['customer_id' => $renewal->customer_id]) }}"
+                               class="btn btn-primary w-100 mb-3">
+                                <i class="bi bi-plus-circle me-2"></i>
+                                Önce Yeni Poliçe Oluştur
+                            </a>
+
+                            <select class="form-select" name="new_policy_id" disabled>
+                                <option value="">Önce yeni poliçe oluşturun</option>
+                            </select>
+                            <small class="form-text text-danger">
+                                <i class="bi bi-x-circle me-1"></i>
+                                Yenileme işlemini tamamlamak için önce yeni poliçe oluşturmalısınız
+                            </small>
+                        @endif
+                    </div>
+
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Yenileme Notları</label>
                         <textarea class="form-control"
@@ -761,8 +800,10 @@
                     <button type="button" class="btn btn-light action-btn" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle me-2"></i>İptal
                     </button>
-                    <button type="submit" class="btn btn-success action-btn">
-                        <i class="bi bi-check-circle me-2"></i>Tamamla
+                    <button type="submit"
+                            class="btn btn-success action-btn"
+                            {{ $customerPolicies->count() === 0 ? 'disabled' : '' }}>
+                        <i class="bi bi-check-circle me-2"></i>Yenilemeyi Tamamla
                     </button>
                 </div>
             </form>

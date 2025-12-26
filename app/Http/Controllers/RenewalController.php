@@ -116,13 +116,17 @@ class RenewalController extends Controller
             ]);
 
             $renewal->policy->activityLogs()->create([
+                'tenant_id' => auth()->user()->tenant_id,
                 'user_id' => auth()->id(),
-                'activity_type' => 'renewal_contact',
+                'created_by' => auth()->id(),
+                'action' => 'renewal_contact',
                 'description' => "Yenileme için müşteri ile iletişime geçildi ({$validated['contact_method']})",
-                'metadata' => [
+                'properties' => json_encode([
                     'contact_method' => $validated['contact_method'],
                     'notes' => $validated['contact_notes'],
-                ],
+                ]),
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
             ]);
 
             DB::commit();
@@ -163,13 +167,17 @@ class RenewalController extends Controller
             ]);
 
             $renewal->policy->activityLogs()->create([
+                'tenant_id' => auth()->user()->tenant_id,
                 'user_id' => auth()->id(),
-                'activity_type' => 'renewal_completed',
+                'created_by' => auth()->id(),
+                'action' => 'renewal_completed',
                 'description' => 'Poliçe başarıyla yenilendi',
-                'metadata' => [
+                'properties' => json_encode([
                     'old_policy_id' => $renewal->policy_id,
                     'new_policy_id' => $validated['new_policy_id'],
-                ],
+                ]),
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
             ]);
 
             DB::commit();
@@ -209,13 +217,17 @@ class RenewalController extends Controller
             // $renewal->policy->customer->update(['status' => 'passive']);
 
             $renewal->policy->activityLogs()->create([
+                'tenant_id' => auth()->user()->tenant_id,
                 'user_id' => auth()->id(),
-                'activity_type' => 'renewal_lost',
+                'created_by' => auth()->id(),
+                'action' => 'renewal_lost',
                 'description' => 'Poliçe yenilemesi kaybedildi',
-                'metadata' => [
+                'properties' => json_encode([
                     'lost_reason' => $validated['lost_reason'],
                     'notes' => $validated['notes'],
-                ],
+                ]),
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
             ]);
 
             DB::commit();
@@ -470,5 +482,42 @@ class RenewalController extends Controller
         $renewed = PolicyRenewal::renewed()->count();
 
         return $total > 0 ? round(($renewed / $total) * 100, 1) : 0;
+    }
+
+        /**
+     * Yenileme kayıtlarını manuel oluştur
+     */
+    public function generateRenewalRecords()
+    {
+        // Yetki kontrolü
+        if (!in_array(auth()->user()->role, ['owner', 'manager'])) {
+            abort(403, 'Bu işlem için yetkiniz yok.');
+        }
+
+        try {
+            // Komutu çalıştır
+            Artisan::call('renewals:create');
+
+            // Çıktıyı al
+            $output = Artisan::output();
+
+            // Log kaydet
+            Log::info('Yenileme kayıtları oluşturuldu', [
+                'user_id' => auth()->id(),
+                'output' => $output,
+            ]);
+
+            return redirect()->route('renewals.index')
+                ->with('success', 'Yenileme kayıtları başarıyla oluşturuldu! ' . strip_tags($output));
+
+        } catch (\Exception $e) {
+            Log::error('Yenileme kayıtları oluşturulurken hata', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()->route('renewals.index')
+                ->with('error', 'Hata oluştu: ' . $e->getMessage());
+        }
     }
 }

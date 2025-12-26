@@ -183,6 +183,7 @@ Route::prefix('panel')->group(function () {
         Route::post('quotations/{quotation}/send', [QuotationController::class, 'send'])->name('quotations.send');
         Route::post('quotations/{quotation}/convert', [QuotationController::class, 'convert'])->name('quotations.convert');
 
+        // Renewals (Yenilemeler)
         Route::get('renewals', [RenewalController::class, 'index'])->name('renewals.index');
         Route::get('renewals/calendar', [RenewalController::class, 'calendar'])->name('renewals.calendar');
         Route::get('renewals/{renewal}', [RenewalController::class, 'show'])->name('renewals.show');
@@ -191,6 +192,10 @@ Route::prefix('panel')->group(function () {
         Route::post('renewals/{renewal}/mark-lost', [RenewalController::class, 'markAsLost'])->name('renewals.markAsLost');
         Route::post('renewals/{renewal}/send-reminder', [RenewalController::class, 'sendReminder'])->name('renewals.sendReminder');
         Route::post('renewals/bulk-send-reminders', [RenewalController::class, 'bulkSendReminders'])->name('renewals.bulkSendReminders');
+
+        // Manuel Tetikleme
+        Route::get('/generate', [RenewalController::class, 'generateRenewalRecords'])
+            ->name('renewals.generate');
 
         // Payments
         Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
