@@ -5,11 +5,8 @@
 @push('styles')
 <style>
     .page-header {
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
+        padding: 12px 0;
+        margin-bottom: 1rem;
     }
 
     .filter-card {
@@ -309,7 +306,7 @@
     <div class="page-header">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <h1 class="h3 mb-2 fw-bold text-dark">
+                <h1 class="h4 mb-2 fw-bold text-dark">
                     <i class="bi bi-cash-coin me-2"></i>Ödeme Raporları
                 </h1>
                 <div class="period-info">

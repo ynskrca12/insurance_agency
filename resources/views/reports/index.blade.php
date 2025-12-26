@@ -4,28 +4,6 @@
 
 @push('styles')
 <style>
-    .page-header {
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 2rem;
-        margin-bottom: 2.5rem;
-        text-align: center;
-    }
-
-    .page-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #212529;
-        margin-bottom: 0.5rem;
-    }
-
-    .page-subtitle {
-        color: #6c757d;
-        font-size: 1rem;
-        margin: 0;
-    }
-
     .report-card {
         border: 1px solid #dcdcdc;
         border-radius: 12px;
@@ -135,22 +113,6 @@
         border-bottom: 1px solid #e8e8e8;
         padding: 1.25rem 1.5rem;
     }
-
-    .stats-title {
-        color: #212529;
-        font-size: 1.125rem;
-        font-weight: 600;
-        margin-bottom: 0;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .stats-title i {
-        color: #6c757d;
-        font-size: 1.25rem;
-    }
-
     .stat-item {
         padding: 1.5rem;
         border-right: 1px solid #f0f0f0;
@@ -237,12 +199,6 @@
 
         <!-- Hızlı İstatistikler -->
     <div class="stats-card card mb-5">
-        <div class="card-header">
-            <h5 class="stats-title">
-                <i class="bi bi-speedometer2"></i>
-                <span>Hızlı Bakış</span>
-            </h5>
-        </div>
         <div class="card-body p-0">
             <div class="row g-0">
                 <div class="col-lg-3 col-md-6">

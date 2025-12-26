@@ -5,11 +5,8 @@
 @push('styles')
 <style>
     .page-header {
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
+        padding: 12px 0;
+        margin-bottom: 1rem;
     }
 
     .form-card {
@@ -213,7 +210,7 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                    <h1 class="h3 mb-0 fw-bold text-dark">
+                    <h1 class="h4 mb-0 fw-bold text-dark">
                         <i class="bi bi-plus-circle me-2"></i>Yeni Sigorta Şirketi
                     </h1>
                     <a href="{{ route('insurance-companies.index') }}" class="btn btn-light action-btn">
