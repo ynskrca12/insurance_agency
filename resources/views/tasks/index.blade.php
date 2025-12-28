@@ -87,12 +87,6 @@
         padding: 1.5rem;
     }
 
-    .btn-secondary {
-        border: 1px solid #dcdcdc;
-        background: #f8f8f8;
-        color: #333;
-    }
-
     .dt-buttons .btn {
         margin-right: 0.5rem;
     }

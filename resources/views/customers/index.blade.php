@@ -54,16 +54,6 @@
         border-color: #162f6e;
     }
 
-    .btn-secondary {
-        border: 1px solid #dcdcdc;
-        background: #f8f8f8;
-        color: #333;
-    }
-
-    .btn-secondary:hover {
-        background: #e7e7e7;
-    }
-
     .table thead {
         background: #f5f5f5;
     }

@@ -200,16 +200,6 @@
         margin-left: 0.5rem;
         margin-right: 0.5rem;
     }
-
-    .btn-secondary {
-        border: 1px solid #dcdcdc;
-        background: #f8f8f8;
-        color: #333;
-    }
-
-    .btn-secondary:hover {
-        background: #e7e7e7;
-    }
 </style>
 
 <style>

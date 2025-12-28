@@ -179,16 +179,6 @@
     .dataTables_info, .dataTables_paginate {
         padding: 1rem 1.25rem;
     }
-
-    .btn-secondary {
-        border: 1px solid #dcdcdc;
-        background: #f8f8f8;
-        color: #333;
-    }
-
-    .btn-secondary:hover {
-        background: #e7e7e7;
-    }
     .dt-buttons .btn {
         margin-right: 0.5rem;
     }
