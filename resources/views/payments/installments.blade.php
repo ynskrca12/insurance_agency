@@ -48,7 +48,7 @@
 
     .filter-card {
         border: 1px solid #dcdcdc;
-        border-radius: 12px;
+        border-radius: 20px;
         background: #ffffff;
         margin-bottom: 1.5rem;
         overflow: hidden;
@@ -93,7 +93,7 @@
 
     .table-card {
         border: 1px solid #dcdcdc;
-        border-radius: 12px;
+        border-radius: 20px;
         background: #ffffff;
         overflow: hidden;
     }
@@ -872,7 +872,7 @@
     </div>
 
     <!-- Filtreler -->
-    <div class="filter-card card">
+    <div class="filter-card">
         <div class="card-body">
             <div class="row g-3 align-items-end">
                 <!-- Durum -->
@@ -1093,7 +1093,7 @@
 </div>
 
     <!-- Desktop: Tablo Görünümü -->
-    <div class="table-card card desktop-table-container">
+    <div class="table-card desktop-table-container">
         <div class="card-body">
             <table class="table table-hover" id="installmentsTable">
                 <thead>

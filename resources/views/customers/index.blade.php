@@ -20,7 +20,7 @@
     .main-card {
         background: #ffffff;
         border: 1px solid #dcdcdc;
-        border-radius: 8px;
+        border-radius: 20px;
     }
 
     .filter-card .card-body {

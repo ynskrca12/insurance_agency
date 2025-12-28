@@ -6,7 +6,7 @@
 <style>
     .report-card {
         border: 1px solid #dcdcdc;
-        border-radius: 12px;
+        border-radius: 45px;
         background: #ffffff;
         transition: all 0.3s ease;
         height: 100%;
@@ -83,12 +83,13 @@
     }
 
     .report-btn {
-        border-radius: 8px;
+        border-radius: 20px;
         padding: 0.75rem 1.5rem;
         font-weight: 500;
         transition: all 0.3s ease;
         border: none;
         width: 100%;
+        color: #fff !important;
     }
 
     .report-btn:hover:not(:disabled) {

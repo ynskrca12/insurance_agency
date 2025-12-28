@@ -22,7 +22,7 @@
     }
 
     .stat-card .card-body {
-        padding: 1.25rem;
+        padding: 15px;
         text-align: center;
     }
 
@@ -41,9 +41,6 @@
     }
 
     .filter-card {
-        border: 1px solid #dcdcdc;
-        border-radius: 12px;
-        background: #ffffff;
         margin-bottom: 1.5rem;
     }
 
@@ -158,7 +155,7 @@
     .main-card {
         background: #ffffff;
         border: 1px solid #dcdcdc;
-        border-radius: 8px;
+        border-radius: 20px;
     }
     .main-card .card-body {
         padding: 1.5rem;
@@ -488,10 +485,6 @@
             border-radius: 8px;
         }
 
-        .stat-card .card-body {
-            padding: 0.875rem;
-        }
-
         .stat-value {
             font-size: 1.375rem;
         }
@@ -597,7 +590,7 @@
 
     <!-- İstatistik Kartları -->
     <div class="row mb-4 mx-2 mx-md-0">
-        <div class="col-lg col-md-4 col-6">
+        <div class="col-lg col-md-4 col-6 ps-md-0">
             <div class="stat-card card">
                 <div class="card-body">
                     <div class="stat-value text-primary">{{ number_format($stats['total']) }}</div>
@@ -633,7 +626,7 @@
             </div>
         </div>
 
-        <div class="col-lg col-md-4 col-6">
+        <div class="col-lg col-md-4 col-6 pe-0">
             <div class="stat-card card">
                 <div class="card-body">
                     <div class="stat-value text-secondary">{{ number_format($stats['expired']) }}</div>

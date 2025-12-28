@@ -46,12 +46,15 @@
         border: 1px solid #dcdcdc;
         border-radius: 8px;
     }
+    .filter-card .card-body {
+        padding: 1.5rem;
+    }
     .main-card .card-body {
         padding: 1.5rem;
     }
         .stat-card {
         border: 1px solid #dcdcdc;
-        border-radius: 10px;
+        border-radius: 20px;
         background: #ffffff;
         transition: all 0.3s ease;
     }
@@ -62,7 +65,7 @@
     }
 
     .stat-card .card-body {
-        padding: 1.25rem;
+        padding: 1rem;
         text-align: center;
     }
 
@@ -449,7 +452,7 @@
         }
 
         .stat-card .card-body {
-            padding: 0.875rem;
+            padding: 0;
         }
 
         .stat-value {

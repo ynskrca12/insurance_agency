@@ -11,7 +11,7 @@
 
     .stat-card {
         border: 1px solid #dcdcdc;
-        border-radius: 12px;
+        border-radius: 20px;
         background: #ffffff;
         padding: 1.25rem;
         text-align: center;
@@ -86,7 +86,7 @@
 
     .table-card {
         border: 1px solid #dcdcdc;
-        border-radius: 12px;
+        border-radius: 20px;
         background: #ffffff;
         overflow: hidden;
     }
@@ -549,7 +549,6 @@
 
         .stat-card {
             padding: 0.875rem;
-            border-radius: 8px;
         }
 
         .stat-value {

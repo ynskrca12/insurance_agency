@@ -11,7 +11,7 @@
 
     .stat-card {
         border: 1px solid #dcdcdc;
-        border-radius: 12px;
+        border-radius: 20px;
         background: #ffffff;
         padding: 1.25rem;
         text-align: center;
@@ -42,7 +42,7 @@
 
     .filter-card {
         border: 1px solid #dcdcdc;
-        border-radius: 12px;
+        border-radius: 20px;
         background: #ffffff;
         margin-bottom: 1.5rem;
         overflow: hidden;
@@ -90,7 +90,7 @@
 
     .table-card {
         border: 1px solid #dcdcdc;
-        border-radius: 12px;
+        border-radius: 20px;
         background: #ffffff;
         overflow: hidden;
     }
@@ -1086,7 +1086,7 @@
 </div>
 
     <!-- Desktop: Tablo Görünümü -->
-    <div class="table-card card desktop-table-container">
+    <div class="table-card desktop-table-container">
         <div class="card-body">
             <table class="table table-hover" id="campaignsTable">
                 <thead>
