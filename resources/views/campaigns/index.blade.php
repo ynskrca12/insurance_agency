@@ -98,7 +98,9 @@
     .table-card .card-body {
         padding: 1.5rem;
     }
-
+    .table-card td {
+        vertical-align: middle;
+    }
     .campaign-title {
         color: #212529;
         text-decoration: none;

@@ -94,6 +94,9 @@
     .table-card .card-body {
         padding: 1.5rem;
     }
+    .table-card td {
+        vertical-align: middle;
+    }
 
     .payment-ref {
         font-weight: 600;

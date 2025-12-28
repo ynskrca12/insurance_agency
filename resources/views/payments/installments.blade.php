@@ -101,6 +101,9 @@
     .table-card .card-body {
         padding: 1.5rem;
     }
+    .table-card td {
+        vertical-align: middle;
+    }
 
     .table-modern tbody tr.row-overdue {
         background: #fff5f5 !important;

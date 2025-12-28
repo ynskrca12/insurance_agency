@@ -6,7 +6,7 @@
 <style>
     .stat-card {
         border: 1px solid #dcdcdc;
-        border-radius: 12px;
+        border-radius: 20px;
         background: #ffffff;
         transition: all 0.3s ease;
         height: 100%;

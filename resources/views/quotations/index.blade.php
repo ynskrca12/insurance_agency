@@ -95,6 +95,10 @@
         padding: 1.5rem;
     }
 
+    .table-card td {
+        vertical-align: middle;
+    }
+
     .quotation-number {
         font-weight: 600;
         color: #0d6efd;

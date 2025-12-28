@@ -48,13 +48,6 @@
         padding: 1.5rem;
     }
 
-    .table-card {
-        border: 1px solid #dcdcdc;
-        border-radius: 12px;
-        background: #ffffff;
-        overflow: hidden;
-    }
-
     .form-control,
     .form-select {
         border: 1px solid #dcdcdc;
@@ -159,6 +152,10 @@
     }
     .main-card .card-body {
         padding: 1.5rem;
+    }
+      .main-card td {
+        vertical-align: middle;
+        font-size: 0.9rem;
     }
 </style>
 <style>

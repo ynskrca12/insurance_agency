@@ -52,6 +52,10 @@
     .main-card .card-body {
         padding: 1.5rem;
     }
+
+    .main-card td {
+        vertical-align: middle;
+    }
         .stat-card {
         border: 1px solid #dcdcdc;
         border-radius: 20px;

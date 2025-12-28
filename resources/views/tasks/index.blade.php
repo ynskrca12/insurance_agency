@@ -86,6 +86,9 @@
     .table-card .card-body {
         padding: 1.5rem;
     }
+    .table-card td {
+        vertical-align: middle;
+    }
 
     .dt-buttons .btn {
         margin-right: 0.5rem;
