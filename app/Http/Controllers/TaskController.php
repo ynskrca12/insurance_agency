@@ -292,6 +292,8 @@ class TaskController extends Controller
 
             // Aktivite logu
             $task->activityLogs()->create([
+                'tenant_id' => $task->tenant_id,
+                'task_id' => $task->id,
                 'user_id' => auth()->id(),
                 'action' => 'updated',
                 'description' => 'Görev güncellendi',
@@ -344,6 +346,8 @@ class TaskController extends Controller
 
         // Aktivite logu
         $task->activityLogs()->create([
+            'tenant_id' => $task->tenant_id,
+            'task_id' => $task->id,
             'user_id' => auth()->id(),
             'action' => 'status_changed',
             'description' => "Durum değişti: {$oldStatus} → {$validated['status']}",
