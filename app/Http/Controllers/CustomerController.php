@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Models\CustomerNote;
 
 class CustomerController extends Controller
 {
@@ -78,12 +81,40 @@ class CustomerController extends Controller
             'id_number.max' => 'TC Kimlik No en fazla 11 karakter olabilir.',
         ]);
 
-        $validated['created_by'] = auth()->id();
+        DB::beginTransaction();
+        try {
+            $notes = $validated['notes'] ?? null;
+            unset($validated['notes']);
 
-        $customer = Customer::create($validated);
+            $validated['created_by'] = auth()->id();
+            $customer = Customer::create($validated);
 
-        return redirect()->route('customers.show', $customer)
-            ->with('success', 'Müşteri başarıyla eklendi.');
+            if ($notes) {
+                CustomerNote::create([
+                    'customer_id' => $customer->id,
+                    'user_id' => auth()->id(),
+                    'note_type' => 'note',
+                    'note' => $notes,
+                    'next_action_date' => null,
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('customers.show', $customer)
+                ->with('success', 'Müşteri başarıyla eklendi.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Customer store error', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ]);
+
+            return back()->withInput()
+                ->with('error', 'Müşteri kaydedilirken bir hata oluştu: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -132,10 +163,39 @@ class CustomerController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $customer->update($validated);
+        DB::beginTransaction();
+        try {
+            $newNote = $validated['notes'] ?? null;
+            unset($validated['notes']);
 
-        return redirect()->route('customers.show', $customer)
-            ->with('success', 'Müşteri başarıyla güncellendi.');
+            $customer->update($validated);
+
+            if ($newNote) {
+                CustomerNote::create([
+                    'customer_id' => $customer->id,
+                    'user_id' => auth()->id(),
+                    'note_type' => 'note',
+                    'note' => "Müşteri bilgileri güncellendi:\n\n" . $newNote,
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('customers.show', $customer)
+                ->with('success', 'Müşteri bilgileri güncellendi.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Customer update error', [
+                'customer_id' => $customer->id,
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ]);
+
+            return back()->withInput()
+                ->with('error', 'Güncelleme sırasında bir hata oluştu: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -152,5 +212,65 @@ class CustomerController extends Controller
 
         return redirect()->route('customers.index')
             ->with('success', 'Müşteri başarıyla silindi.');
+    }
+
+      /**
+     * Müşteriye not ekle
+     */
+    public function addNote(Request $request, Customer $customer)
+    {
+        $validated = $request->validate([
+            'note' => 'required|string|max:5000',
+            'note_type' => 'nullable|in:note,call,meeting,email,sms',
+            'next_action_date' => 'nullable|date',
+        ], [
+            'note.required' => 'Not içeriği boş olamaz.',
+            'note.max' => 'Not en fazla 5000 karakter olabilir.',
+        ]);
+
+        try {
+            $customerNote = CustomerNote::create([
+                'customer_id' => $customer->id,
+                'user_id' => auth()->id(),
+                'note_type' => $validated['note_type'] ?? 'note',
+                'note' => $validated['note'],
+                'next_action_date' => $validated['next_action_date'] ?? null,
+            ]);
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Not başarıyla eklendi.',
+                    'note' => [
+                        'id' => $customerNote->id,
+                        'note' => $customerNote->note,
+                        'note_type' => $customerNote->note_type,
+                        'note_type_label' => $customerNote->note_type_label,
+                        'user_name' => auth()->user()->name,
+                        'created_at' => $customerNote->created_at->diffForHumans(),
+                        'created_at_formatted' => $customerNote->created_at->format('d.m.Y H:i'),
+                    ]
+                ]);
+            }
+
+            // Normal istek
+            return back()->with('success', 'Not başarıyla eklendi.');
+
+        } catch (\Exception $e) {
+            Log::error('Customer note add error', [
+                'customer_id' => $customer->id,
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ]);
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Not eklenirken bir hata oluştu: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return back()->with('error', 'Not eklenirken bir hata oluştu: ' . $e->getMessage());
+        }
     }
 }

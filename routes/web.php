@@ -175,6 +175,7 @@ Route::prefix('panel')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::resource('customers', CustomerController::class);
+        Route::post('/{customer}/notes', [CustomerController::class, 'addNote'])->name('customers.addNote');
 
         Route::resource('policies', PolicyController::class);
 

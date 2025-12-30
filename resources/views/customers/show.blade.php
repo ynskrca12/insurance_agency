@@ -561,10 +561,6 @@
             padding: 2rem 1rem;
         }
 
-        .empty-state i {
-            font-size: 48px;
-        }
-
         .empty-state h6 {
             font-size: 0.9375rem;
         }
@@ -1064,56 +1060,81 @@
             <div class="tab-pane fade" id="notes">
                 <div class="content-card card">
                     <div class="card-body">
+                        <!-- Alert Container (AJAX mesajları için) -->
+                        <div id="noteAlertContainer"></div>
+
                         <!-- Not Ekleme Formu -->
                         <form id="addNoteForm" class="note-form">
+                            @csrf
                             <label class="form-label fw-semibold mb-2 text-dark">
                                 <i class="bi bi-pencil-square me-1"></i>Yeni Not Ekle
                             </label>
+
+                            <!-- Not Tipi Seçimi -->
+                            <div class="mb-3">
+                                <select class="form-select border" id="note_type" name="note_type" style="border-color: #dcdcdc;">
+                                    <option value="note">📝 Genel Not</option>
+                                    <option value="call">📞 Telefon Görüşmesi</option>
+                                    <option value="meeting">👥 Toplantı</option>
+                                    <option value="email">📧 E-posta</option>
+                                    <option value="sms">💬 SMS</option>
+                                </select>
+                            </div>
+
+                            <!-- Not İçeriği -->
                             <div class="input-group">
                                 <textarea class="form-control border"
-                                          id="newNote"
-                                          rows="3"
-                                          placeholder="Müşteri hakkında not ekleyin..."
-                                          style="resize: none; border-color: #dcdcdc;"></textarea>
+                                        id="newNote"
+                                        name="note"
+                                        rows="3"
+                                        placeholder="Müşteri hakkında not ekleyin..."
+                                        style="resize: none; border-color: #dcdcdc;"
+                                        required></textarea>
                             </div>
+
+                            <!-- Sonraki İşlem Tarihi (Opsiyonel) -->
+                            <div class="mt-3">
+                                <label class="form-label small text-muted">
+                                    <i class="bi bi-calendar-event me-1"></i>Sonraki İşlem Tarihi (Opsiyonel)
+                                </label>
+                                <input type="date"
+                                    class="form-control border"
+                                    id="next_action_date"
+                                    name="next_action_date"
+                                    style="border-color: #dcdcdc;">
+                            </div>
+
+                            <!-- Form Butonları -->
                             <div class="d-flex justify-content-end mt-3 gap-2">
-                                <button type="button" class="btn btn-light btn-sm action-btn" onclick="document.getElementById('newNote').value = ''">
+                                <button type="button"
+                                        class="btn btn-light btn-sm action-btn"
+                                        onclick="document.getElementById('addNoteForm').reset()">
                                     <i class="bi bi-x-circle me-1"></i>Temizle
                                 </button>
-                                <button type="submit" class="btn btn-primary btn-sm action-btn">
+                                <button type="submit"
+                                        class="btn btn-primary btn-sm action-btn"
+                                        id="submitNoteBtn">
                                     <i class="bi bi-check-circle me-1"></i>Notu Kaydet
                                 </button>
                             </div>
                         </form>
 
-                        <!-- Notlar Listesi -->
-                        @if($customer->customerNotes->isEmpty())
-                            <div class="empty-state">
-                                <i class="bi bi-sticky"></i>
-                                <h6 class="text-muted mb-2">Henüz Not Bulunmuyor</h6>
-                                <p class="text-muted small mb-0">Müşteri ile ilgili önemli bilgileri not olarak ekleyebilirsiniz.</p>
-                            </div>
-                        @else
-                            <div class="mt-4">
-                                @foreach($customer->customerNotes->sortByDesc('created_at') as $note)
-                                <div class="timeline-item">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <span class="badge badge-modern bg-light text-dark border">
-                                            {{ $note->note_type_label }}
-                                        </span>
-                                        <small class="text-muted">
-                                            {{ $note->created_at->diffForHumans() }}
-                                        </small>
-                                    </div>
-                                    <p class="mb-2 text-dark">{{ $note->note }}</p>
-                                    <small class="text-muted">
-                                        <i class="bi bi-person-circle me-1"></i>
-                                        <strong>{{ $note->user->name }}</strong>
-                                    </small>
+                        <!-- Notlar Listesi Container -->
+                        <div id="notesListContainer" class="mt-4">
+                            @if($customer->customerNotes->isEmpty())
+                                <div class="empty-state" id="emptyNotesState">
+                                    <i class="bi bi-sticky"></i>
+                                    <h6 class="text-muted mb-2">Henüz Not Bulunmuyor</h6>
+                                    <p class="text-muted small mb-0">Müşteri ile ilgili önemli bilgileri not olarak ekleyebilirsiniz.</p>
                                 </div>
-                                @endforeach
-                            </div>
-                        @endif
+                            @else
+                                <div id="notesList">
+                                    @foreach($customer->customerNotes->sortByDesc('created_at') as $note)
+                                        @include('customers.partials.note-item', ['note' => $note])
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1167,27 +1188,215 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // Not ekleme formu
     $('#addNoteForm').on('submit', function(e) {
         e.preventDefault();
 
         const note = $('#newNote').val().trim();
         if (!note) {
-            alert('Lütfen bir not giriniz.');
+            showNoteAlert('Lütfen bir not giriniz.', 'warning');
             return;
         }
 
-        // AJAX ile not ekleme işlemi
-        alert('Not ekleme özelliği yakında aktif olacaktır.');
-        $('#newNote').val('');
+        const submitBtn = $('#submitNoteBtn');
+        const originalBtnText = submitBtn.html();
+
+        // Butonu devre dışı bırak
+        submitBtn.prop('disabled', true)
+                 .html('<span class="spinner-border spinner-border-sm me-1"></span>Kaydediliyor...');
+
+        const formData = {
+            note: note,
+            note_type: $('#note_type').val(),
+            next_action_date: $('#next_action_date').val() || null,
+            _token: $('input[name="_token"]').val()
+        };
+
+        $.ajax({
+            url: '{{ route("customers.addNote", $customer) }}',
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Başarılı mesaj
+                    showNoteAlert(response.message, 'success');
+
+                    // Formu temizle
+                    $('#addNoteForm')[0].reset();
+
+                    // Empty state'i kaldır
+                    $('#emptyNotesState').remove();
+
+                    // notesList div'i yoksa oluştur
+                    if ($('#notesList').length === 0) {
+                        $('#notesListContainer').html('<div id="notesList"></div>');
+                    }
+
+                    // Yeni notu listeye ekle
+                    addNoteToList(response.note);
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = 'Not eklenirken bir hata oluştu.';
+
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    const errors = Object.values(xhr.responseJSON.errors).flat();
+                    errorMessage = errors.join('<br>');
+                }
+
+                showNoteAlert(errorMessage, 'danger');
+            },
+            complete: function() {
+                // Butonu tekrar aktif et
+                submitBtn.prop('disabled', false).html(originalBtnText);
+            }
+        });
     });
 
-    // Smooth scroll for tabs
+    // Yeni notu listeye ekle
+    function addNoteToList(note) {
+        const noteTypeEmojis = {
+            'note': '📝',
+            'call': '📞',
+            'meeting': '👥',
+            'email': '📧',
+            'sms': '💬'
+        };
+
+        const emoji = noteTypeEmojis[note.note_type] || '📝';
+
+        const nextActionBadge = note.next_action_date ?
+            `<div class="mb-2">
+                <span class="badge bg-warning text-dark">
+                    <i class="bi bi-calendar-event me-1"></i>
+                    Sonraki işlem: ${note.next_action_date}
+                </span>
+            </div>` : '';
+
+        const noteHtml = `
+            <div class="timeline-item new-note" data-note-id="${note.id}" style="animation: slideInDown 0.5s;">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge badge-modern bg-light text-dark border">
+                        ${emoji} ${note.note_type_label}
+                    </span>
+                    <small class="text-muted">
+                        <span class="badge bg-success">YENİ</span>
+                        ${note.created_at}
+                    </small>
+                </div>
+                <p class="mb-2 text-dark">${escapeHtml(note.note)}</p>
+                ${nextActionBadge}
+                <small class="text-muted">
+                    <i class="bi bi-person-circle me-1"></i>
+                    <strong>${note.user_name}</strong>
+                </small>
+            </div>
+        `;
+
+        // Listeye en üste ekle
+        $('#notesList').prepend(noteHtml);
+
+        // 3 saniye sonra "YENİ" badge'ini kaldır
+        setTimeout(function() {
+            $('.new-note .badge-success').fadeOut(function() {
+                $(this).remove();
+            });
+        }, 3000);
+    }
+
+    function showNoteAlert(message, type = 'info') {
+        const icons = {
+            'success': 'check-circle-fill',
+            'danger': 'exclamation-triangle-fill',
+            'warning': 'exclamation-circle-fill',
+            'info': 'info-circle-fill'
+        };
+
+        const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                <i class="bi bi-${icons[type]} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+
+        $('#noteAlertContainer').html(alertHtml);
+
+        setTimeout(function() {
+            $('#noteAlertContainer .alert').fadeOut(function() {
+                $(this).remove();
+            });
+        }, 5000);
+
+        $('html, body').animate({
+            scrollTop: $('#noteAlertContainer').offset().top - 100
+        }, 300);
+    }
+
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+
     $('.nav-tabs-modern .nav-link').on('click', function() {
         $('html, body').animate({
             scrollTop: $('.nav-tabs-modern').offset().top - 100
         }, 300);
     });
 });
+
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .timeline-item {
+        padding: 1rem;
+        border-left: 3px solid #e2e8f0;
+        margin-bottom: 1rem;
+        background: #f8fafc;
+        border-radius: 0 8px 8px 0;
+        transition: all 0.3s ease;
+    }
+
+    .timeline-item:hover {
+        border-left-color: #3b82f6;
+        background: #eff6ff;
+        transform: translateX(5px);
+    }
+
+    .timeline-item.new-note {
+        border-left-color: #10b981;
+        background: linear-gradient(90deg, #f0fdf4 0%, #f8fafc 100%);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #cbd5e1;
+        margin-bottom: 1rem;
+    }
+`;
+document.head.appendChild(style);
 </script>
 @endpush
