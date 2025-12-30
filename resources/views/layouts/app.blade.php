@@ -964,16 +964,6 @@
         }
     </style>
 
-    <script type="application/ld+json">
-        {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Sigorta Yönetim Sistemi",
-        "url": "https://sigortayonetimsistemi.com",
-        "logo": "https://sigortayonetimsistemi.com/logosysnew.png"
-        }
-    </script>
-
     @stack('styles')
 </head>
 <body>
