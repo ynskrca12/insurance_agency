@@ -906,10 +906,12 @@
                         $isUrgent = $daysLeft > 7 && $daysLeft <= 30;
 
                         $rowClass = '';
-                        if ($isOverdue) {
-                            $rowClass = 'table-danger';
-                        } elseif ($isCritical) {
-                            $rowClass = 'table-warning';
+                        if ($renewal->status !== 'renewed') {
+                            if ($isOverdue) {
+                                $rowClass = 'table-danger';
+                            } elseif ($isCritical) {
+                                $rowClass = 'table-warning';
+                            }
                         }
                     @endphp
                     <tr class="{{ $rowClass }}" data-days="{{ $daysLeft }}">
@@ -965,10 +967,14 @@
                         </td>
                         <td data-order="{{ $daysLeft }}">
                             @if($isOverdue)
-                                <span class="badge bg-danger">
-                                    <i class="bi bi-exclamation-triangle me-1"></i>
-                                    {{ abs($daysLeft) }} gün geçti
-                                </span>
+                                @if ($renewal->status == 'renewed')
+                                     <span class="badge bg-success">Yenilendi</span>
+                                @else
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>
+                                        {{ abs($daysLeft) }} gün geçti
+                                    </span>
+                                @endif
                             @elseif($isCritical)
                                 <span class="badge bg-warning text-dark">
                                     <i class="bi bi-clock me-1"></i>

@@ -1041,15 +1041,6 @@
 
                 <!-- Divider -->
                 <div class="navbar-divider"></div>
-
-                <!-- Logout Button -->
-                <!-- <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
-                    @csrf
-                    <button type="submit" class="logout-btn hover-lift">
-                        <i class="bi bi-box-arrow-right"></i>
-                        <span>Çıkış Yap</span>
-                    </button>
-                </form> -->
             </div>
         </div>
     </nav>
@@ -1068,13 +1059,21 @@
                             </a>
                         </li>
 
+                        @php
+                            $user = auth()->user();
+                            $isAdmin = in_array($user->role, ['owner', 'manager']);
+                        @endphp
+
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('customers.*') ? 'active' : '' }}"
                                href="{{ route('customers.index') }}">
                                 <i class="bi bi-people"></i>
                                 Müşteriler
                                 @php
-                                    $allCustomers = \App\Models\Customer::where('created_by', auth()->id())->count();
+                                    $allCustomers = \App\Models\Customer::count();
+                                    if (! $isAdmin) {
+                                        $allCustomers = \App\Models\Customer::where('created_by', $user->id)->count();
+                                    }
                                 @endphp
                                     <span class="badge bg-light text-dark ms-auto">{{ $allCustomers }}</span>
                             </a>
@@ -1086,7 +1085,10 @@
                                 <i class="bi bi-file-earmark-text"></i>
                                 Poliçeler
                                 @php
-                                    $allPolicies = \App\Models\Policy::where('created_by', auth()->id())->count();
+                                    $allPolicies = \App\Models\Policy::count();
+                                    if (! $isAdmin) {
+                                        $allPolicies = \App\Models\Policy::where('created_by', $user->id)->count();
+                                    }
                                 @endphp
                                     <span class="badge bg-light text-dark ms-auto">{{ $allPolicies }}</span>
                             </a>
@@ -1097,7 +1099,10 @@
                                 <i class="bi bi-file-earmark-plus"></i>
                                 Teklifler
                                 @php
-                                    $draftQuotations = \App\Models\Quatation::where('status', 'draft')->count();
+                                    $draftQuotations = \App\Models\Quotation::count();
+                                    if (! $isAdmin) {
+                                        $draftQuotations = \App\Models\Quotation::where('created_by', $user->id)->count();
+                                    }
                                 @endphp
                                     <span class="badge bg-light text-dark ms-auto">{{ $draftQuotations }}</span>
                             </a>
