@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('installments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('payment_id')->nullable()->constrained('payments')->nullOnDelete();
             $table->foreignId('payment_plan_id')->constrained('payment_plans')->cascadeOnDelete();
             $table->integer('created_by')->nullable();
 

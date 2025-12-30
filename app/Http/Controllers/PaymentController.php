@@ -10,6 +10,8 @@ use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+
 
 class PaymentController extends Controller
 {
@@ -201,6 +203,11 @@ class PaymentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Payment store error', [
+                'installment_id' => $validated['installment_id'] ?? null,
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ]);
             return back()->withInput()
                 ->with('error', 'Ödeme kaydedilirken bir hata oluştu: ' . $e->getMessage());
         }
@@ -243,6 +250,11 @@ class PaymentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Payment cancellation error', [
+                'payment_id' => $payment->id,
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ]);
             return back()->with('error', 'Ödeme iptal edilirken bir hata oluştu: ' . $e->getMessage());
         }
     }

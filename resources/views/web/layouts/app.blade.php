@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="@yield('meta_description', 'Sigorta acentenizi dijitalleştirin. Modern, güçlü ve kolay kullanımlı sigorta yönetim sistemi.')">
     <meta name="keywords" content="@yield('meta_keywords', 'sigorta yönetim sistemi, crm, acente yazılımı, poliçe takip')">
-    <title>@yield('title', 'Anasayfa') - Sigorta Yönetim Sistemi</title>
+    <title>@yield('title', 'Acentenizi Dijitalleştirin') - Sigorta Yönetim Sistemi</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('logosysnew.png') }}">
@@ -21,6 +21,16 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('web/css/style.css') }}">
+
+        <script type="application/ld+json">
+            {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Sigorta Yönetim Sistemi",
+            "url": "https://sigortayonetimsistemi.com",
+            "logo": "https://sigortayonetimsistemi.com/logosysnew.png"
+            }
+        </script>
 
     @stack('styles')
 </head>

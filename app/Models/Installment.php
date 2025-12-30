@@ -106,6 +106,7 @@ class Installment extends Model
         $this->update([
             'status' => 'paid',
             'paid_date' => $paidDate,
+            'payment_id' => $paymentId,
             'payment_method' => $paymentMethod,
         ]);
     }

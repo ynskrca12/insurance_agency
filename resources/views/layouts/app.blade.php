@@ -435,13 +435,15 @@
             font-size: 18px;
         }
 
-        /* Badge Styling */
         .badge {
             padding: 3px 8px;
             border-radius: 6px;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 700;
-            letter-spacing: 0.02em;
+        }
+
+        .bg-light {
+            background: transparent;
         }
 
         /* ============================================
@@ -551,416 +553,426 @@
     </style>
 
     <style>
-    /* ============================================
-    MOBİL OPTİMİZASYON - PROFESYONEL
-    ============================================ */
+        /* ============================================
+        MOBİL OPTİMİZASYON - PROFESYONEL
+        ============================================ */
 
-    /* Mobile Menu Toggle Button */
-    .mobile-menu-toggle {
-        display: none;
-        position: fixed;
-        top: 2px;
-        right: 16px;
-        z-index: 1050;
-        background: white;
-        border: 2px solid var(--neutral-200);
-        border-radius: 10px;
-        padding: 10px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .mobile-menu-toggle:hover {
-        background: var(--neutral-50);
-        border-color: var(--primary);
-    }
-
-    .mobile-menu-toggle span {
-        display: block;
-        width: 22px;
-        height: 2px;
-        background: var(--neutral-800);
-        margin: 4px 0;
-        transition: all 0.3s ease;
-        border-radius: 2px;
-    }
-
-    .mobile-menu-toggle.active span:nth-child(1) {
-        transform: rotate(45deg) translate(5px, 5px);
-    }
-
-    .mobile-menu-toggle.active span:nth-child(2) {
-        opacity: 0;
-    }
-
-    .mobile-menu-toggle.active span:nth-child(3) {
-        transform: rotate(-45deg) translate(7px, -7px);
-    }
-
-    /* Mobile Sidebar Overlay */
-    .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(4px);
-        z-index: 1020;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .sidebar-overlay.show {
-        display: block;
-        opacity: 1;
-    }
-
-    @media (max-width: 768px) {
-        .top-navbar {
-            height: 60px;
-            padding: 0 !important;
-        }
-
-        .navbar-container {
-            grid-template-columns: auto 1fr auto;
-            gap: 8px;
-            padding: 0 60px 0 16px !important;
-        }
-
-        .navbar-logo {
-            gap: 10px;
-        }
-
-        .logo-image-wrapper {
-            width: 36px;
-            height: 36px;
-        }
-
-        .navbar-logo img {
-            width: 28px;
-            height: 28px;
-        }
-
-        .navbar-logo-text {
-            display: none !important;
-        }
-
-        .navbar-actions {
-            gap: 8px;
-        }
-
-        .user-info-card {
-            padding: 4px;
-            gap: 0;
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            font-size: 13px;
-        }
-
-        .user-details {
-            display: none !important;
-        }
-
-        .navbar-divider {
-            display: none !important;
-        }
-
-        .logout-btn {
-            padding: 8px 12px;
-            gap: 0;
-        }
-
-        .logout-btn i {
-            font-size: 18px;
-            margin: 0;
-        }
+        /* Mobile Menu Toggle Button */
         .mobile-menu-toggle {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .sidebar {
+            display: none;
             position: fixed;
-            top: -65px;
-            left: -280px;
-            bottom: 0;
-            width: 280px;
-            z-index: 1040;
-            padding: 80px 0 24px;
-            transform: translateX(-100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+            top: 2px;
+            right: 16px;
+            z-index: 1050;
+            background: white;
+            border: 2px solid var(--neutral-200);
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .sidebar.show {
-            transform: translateX(280px);
-            left: -280px;
-        }
-
-        .sidebar-sticky {
-            height: calc(100vh - 80px);
-            padding: 0 12px;
-        }
-
-        .sidebar .nav-link {
-            font-size: 15px;
-            padding: 14px 16px;
-            margin-bottom: 6px;
-        }
-
-        .sidebar .nav-link i {
-            font-size: 20px;
-            margin-right: 14px;
-        }
-
-        .sidebar hr {
-            margin: 16px 12px !important;
-        }
-
-        .sidebar .dropdown-menu {
-            position: static !important;
-            transform: none !important;
-            box-shadow: none;
-            border: none;
+        .mobile-menu-toggle:hover {
             background: var(--neutral-50);
-            margin: 4px 0 8px 0;
-            border-radius: 8px;
-        }
-
-        .sidebar .dropdown-item {
-            padding: 10px 16px 10px 48px;
-            font-size: 14px;
-        }
-
-        .sidebar .dropdown-toggle::after {
-            margin-left: auto;
-        }
-
-        main {
-            margin-left: 0 !important;
-            padding-top: 60px !important;
-        }
-
-        .breadcrumb {
-            font-size: 12px;
-            padding: 8px 0;
-            margin-bottom: 16px;
-        }
-
-        .breadcrumb-item {
-            max-width: 120px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .alert {
-            font-size: 13px;
-            padding: 12px;
-            margin-bottom: 16px;
-        }
-
-        .card {
-            margin-bottom: 16px;
-            border-radius: 12px;
-        }
-
-        .card-body {
-            padding: 16px;
-        }
-
-        .btn {
-            font-size: 13px;
-            padding: 10px 16px;
-        }
-
-        .btn-sm {
-            font-size: 12px;
-            padding: 6px 12px;
-        }
-
-        .table-responsive {
-            margin: 0 -16px;
-            border-radius: 0;
-        }
-
-        .table {
-            font-size: 13px;
-        }
-
-        .table th,
-        .table td {
-            padding: 10px 8px;
-        }
-
-        .dataTables_wrapper .dataTables_length,
-        .dataTables_wrapper .dataTables_filter {
-            margin-bottom: 12px;
-        }
-
-        .dataTables_wrapper .dataTables_length select {
-            font-size: 13px;
-            padding: 6px 8px;
-        }
-
-        .dataTables_wrapper .dataTables_filter input {
-            font-size: 13px;
-            padding: 6px 12px;
-        }
-
-        .dataTables_wrapper .dt-buttons {
-            margin-bottom: 12px;
-        }
-
-        .dataTables_wrapper .dt-buttons .btn {
-            font-size: 12px;
-            padding: 6px 10px;
-            margin: 2px;
-        }
-
-        .form-label {
-            font-size: 13px;
-            margin-bottom: 6px;
-        }
-
-        .form-control,
-        .form-select {
-            font-size: 14px;
-            padding: 10px 12px;
-        }
-
-        .form-text {
-            font-size: 11px;
-        }
-
-        .modal-dialog {
-            margin: 10px;
-        }
-
-        .modal-content {
-            border-radius: 16px;
-        }
-
-        .modal-header,
-        .modal-footer {
-            padding: 16px;
-        }
-
-        .modal-body {
-            padding: 20px 16px;
-        }
-
-        .stat-card {
-            margin-bottom: 12px;
-            padding: 16px;
-            border-radius: 12px;
-        }
-
-        .stat-card h3 {
-            font-size: 24px;
-        }
-
-        .stat-card p {
-            font-size: 13px;
-        }
-
-        .page-header {
-            margin-bottom: 20px;
-        }
-
-        .page-header h1 {
-            font-size: 22px;
-            margin-bottom: 8px;
-        }
-
-        .page-header .btn {
-            width: 100%;
-            margin-top: 12px;
-        }
-    }
-    @media (max-width: 374px) {
-        .navbar-container {
-            padding: 0 50px 0 12px !important;
-        }
-
-        .mobile-menu-toggle {
-            left: 12px;
-            padding: 8px;
+            border-color: var(--primary);
         }
 
         .mobile-menu-toggle span {
-            width: 20px;
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--neutral-800);
+            margin: 4px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
         }
 
-        .sidebar {
-            width: 260px;
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
         }
 
-        .sidebar.show {
-            transform: translateX(260px);
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
         }
 
-        .logout-btn {
-            padding: 6px 10px;
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
         }
 
-        .user-info-card {
-            padding: 2px;
+        /* Mobile Sidebar Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1020;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .user-avatar {
-            width: 28px;
-            height: 28px;
-            font-size: 12px;
-        }
-    }
-
-    @media (max-width: 768px) and (orientation: landscape) {
-        .sidebar {
-            width: 260px;
+        .sidebar-overlay.show {
+            display: block;
+            opacity: 1;
         }
 
-        .sidebar.show {
-            transform: translateX(260px);
+        @media (max-width: 768px) {
+            .top-navbar {
+                height: 60px;
+                padding: 0 !important;
+            }
+
+            .navbar-container {
+                grid-template-columns: auto 1fr auto;
+                gap: 8px;
+                padding: 0 60px 0 16px !important;
+            }
+
+            .navbar-logo {
+                gap: 10px;
+            }
+
+            .logo-image-wrapper {
+                width: 36px;
+                height: 36px;
+            }
+
+            .navbar-logo img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .navbar-logo-text {
+                display: none !important;
+            }
+
+            .navbar-actions {
+                gap: 8px;
+            }
+
+            .user-info-card {
+                padding: 4px;
+                gap: 0;
+            }
+
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 13px;
+            }
+
+            .user-details {
+                display: none !important;
+            }
+
+            .navbar-divider {
+                display: none !important;
+            }
+
+            .logout-btn {
+                padding: 8px 12px;
+                gap: 0;
+            }
+
+            .logout-btn i {
+                font-size: 18px;
+                margin: 0;
+            }
+            .mobile-menu-toggle {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: -65px;
+                left: -280px;
+                bottom: 0;
+                width: 280px;
+                z-index: 1040;
+                padding: 80px 0 24px;
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+            }
+
+            .sidebar.show {
+                transform: translateX(280px);
+                left: -280px;
+            }
+
+            .sidebar-sticky {
+                height: calc(100vh - 80px);
+                padding: 0 12px;
+            }
+
+            .sidebar .nav-link {
+                font-size: 15px;
+                padding: 14px 16px;
+                margin-bottom: 6px;
+            }
+
+            .sidebar .nav-link i {
+                font-size: 20px;
+                margin-right: 14px;
+            }
+
+            .sidebar hr {
+                margin: 16px 12px !important;
+            }
+
+            .sidebar .dropdown-menu {
+                position: static !important;
+                transform: none !important;
+                box-shadow: none;
+                border: none;
+                background: var(--neutral-50);
+                margin: 4px 0 8px 0;
+                border-radius: 8px;
+            }
+
+            .sidebar .dropdown-item {
+                padding: 10px 16px 10px 48px;
+                font-size: 14px;
+            }
+
+            .sidebar .dropdown-toggle::after {
+                margin-left: auto;
+            }
+
+            main {
+                margin-left: 0 !important;
+                padding-top: 60px !important;
+            }
+
+            .breadcrumb {
+                font-size: 12px;
+                padding: 8px 0;
+                margin-bottom: 16px;
+            }
+
+            .breadcrumb-item {
+                max-width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .alert {
+                font-size: 13px;
+                padding: 12px;
+                margin-bottom: 16px;
+            }
+
+            .card {
+                margin-bottom: 16px;
+                border-radius: 12px;
+            }
+
+            .card-body {
+                padding: 16px;
+            }
+
+            .btn {
+                font-size: 13px;
+                padding: 10px 16px;
+            }
+
+            .btn-sm {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            .table-responsive {
+                margin: 0 -16px;
+                border-radius: 0;
+            }
+
+            .table {
+                font-size: 13px;
+            }
+
+            .table th,
+            .table td {
+                padding: 10px 8px;
+            }
+
+            .dataTables_wrapper .dataTables_length,
+            .dataTables_wrapper .dataTables_filter {
+                margin-bottom: 12px;
+            }
+
+            .dataTables_wrapper .dataTables_length select {
+                font-size: 13px;
+                padding: 6px 8px;
+            }
+
+            .dataTables_wrapper .dataTables_filter input {
+                font-size: 13px;
+                padding: 6px 12px;
+            }
+
+            .dataTables_wrapper .dt-buttons {
+                margin-bottom: 12px;
+            }
+
+            .dataTables_wrapper .dt-buttons .btn {
+                font-size: 12px;
+                padding: 6px 10px;
+                margin: 2px;
+            }
+
+            .form-label {
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+
+            .form-control,
+            .form-select {
+                font-size: 14px;
+                padding: 10px 12px;
+            }
+
+            .form-text {
+                font-size: 11px;
+            }
+
+            .modal-dialog {
+                margin: 10px;
+            }
+
+            .modal-content {
+                border-radius: 16px;
+            }
+
+            .modal-header,
+            .modal-footer {
+                padding: 16px;
+            }
+
+            .modal-body {
+                padding: 20px 16px;
+            }
+
+            .stat-card {
+                margin-bottom: 12px;
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .stat-card h3 {
+                font-size: 24px;
+            }
+
+            .stat-card p {
+                font-size: 13px;
+            }
+
+            .page-header {
+                margin-bottom: 20px;
+            }
+
+            .page-header h1 {
+                font-size: 22px;
+                margin-bottom: 8px;
+            }
+
+            .page-header .btn {
+                width: 100%;
+                margin-top: 12px;
+            }
+        }
+        @media (max-width: 374px) {
+            .navbar-container {
+                padding: 0 50px 0 12px !important;
+            }
+
+            .mobile-menu-toggle {
+                left: 12px;
+                padding: 8px;
+            }
+
+            .mobile-menu-toggle span {
+                width: 20px;
+            }
+
+            .sidebar {
+                width: 260px;
+            }
+
+            .sidebar.show {
+                transform: translateX(260px);
+            }
+
+            .logout-btn {
+                padding: 6px 10px;
+            }
+
+            .user-info-card {
+                padding: 2px;
+            }
+
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
         }
 
-        .sidebar-sticky {
-            height: calc(100vh - 60px);
-            padding-top: 60px;
-        }
-    }
+        @media (max-width: 768px) and (orientation: landscape) {
+            .sidebar {
+                width: 260px;
+            }
 
-    @media (min-width: 769px) and (max-width: 992px) {
-        .navbar-container {
-            grid-template-columns: 180px 1fr 280px;
-            padding: 0 24px;
-        }
+            .sidebar.show {
+                transform: translateX(260px);
+            }
 
-        .demo-banner-item {
-            padding: 11px 24px;
-            font-size: 12px;
+            .sidebar-sticky {
+                height: calc(100vh - 60px);
+                padding-top: 60px;
+            }
         }
 
-        .sidebar {
-            width: 240px;
-        }
+        @media (min-width: 769px) and (max-width: 992px) {
+            .navbar-container {
+                grid-template-columns: 180px 1fr 280px;
+                padding: 0 24px;
+            }
 
-        main {
-            margin-left: 240px;
-        }
+            .demo-banner-item {
+                padding: 11px 24px;
+                font-size: 12px;
+            }
 
-        .content-wrapper {
-            padding: 10px 0;
+            .sidebar {
+                width: 240px;
+            }
+
+            main {
+                margin-left: 240px;
+            }
+
+            .content-wrapper {
+                padding: 10px 0;
+            }
         }
-    }
     </style>
+
+    <script type="application/ld+json">
+        {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Sigorta Yönetim Sistemi",
+        "url": "https://sigortayonetimsistemi.com",
+        "logo": "https://sigortayonetimsistemi.com/logosysnew.png"
+        }
+    </script>
 
     @stack('styles')
 </head>
@@ -1074,7 +1086,7 @@
                                 @php
                                     $allCustomers = \App\Models\Customer::where('created_by', auth()->id())->count();
                                 @endphp
-                                    <span class="badge bg-success ms-auto">{{ $allCustomers }}</span>
+                                    <span class="badge bg-light text-dark ms-auto">{{ $allCustomers }}</span>
                             </a>
                         </li>
 
@@ -1086,7 +1098,7 @@
                                 @php
                                     $allPolicies = \App\Models\Policy::where('created_by', auth()->id())->count();
                                 @endphp
-                                    <span class="badge bg-success ms-auto">{{ $allPolicies }}</span>
+                                    <span class="badge bg-light text-dark ms-auto">{{ $allPolicies }}</span>
                             </a>
                         </li>
 
@@ -1097,7 +1109,7 @@
                                 @php
                                     $draftQuotations = \App\Models\Quatation::where('status', 'draft')->count();
                                 @endphp
-                                    <span class="badge bg-info ms-auto">{{ $draftQuotations }}</span>
+                                    <span class="badge bg-light text-dark ms-auto">{{ $draftQuotations }}</span>
                             </a>
                         </li>
 
@@ -1109,9 +1121,9 @@
                                 @php
                                     $criticalCount = \App\Models\PolicyRenewal::critical()->count();
                                 @endphp
-                                {{-- @if($criticalCount > 0) --}}
+
                                     <span class="badge bg-danger ms-auto">{{ $criticalCount }}</span>
-                                {{-- @endif --}}
+
                             </a>
                         </li>
 
@@ -1137,9 +1149,9 @@
                                         ->whereNotIn('status', ['completed', 'cancelled'])
                                         ->count();
                                 @endphp
-                                @if($myOpenTasks > 0)
-                                    <span class="badge bg-info ms-auto">{{ $myOpenTasks }}</span>
-                                @endif
+
+                                    <span class="badge bg-light text-dark ms-auto">{{ $myOpenTasks }}</span>
+
                             </a>
                         </li>
 
@@ -1151,9 +1163,9 @@
                                 @php
                                     $draftCampaigns = \App\Models\Campaign::where('status', 'draft')->count();
                                 @endphp
-                                @if($draftCampaigns > 0)
-                                    <span class="badge bg-info ms-auto">{{ $draftCampaigns }}</span>
-                                @endif
+
+                                    <span class="badge bg-light text-dark ms-auto">{{ $draftCampaigns }}</span>
+
                             </a>
                         </li>
 
@@ -1173,9 +1185,9 @@
                                 @php
                                     $activeCompanies = \App\Models\InsuranceCompany::where('is_active', true)->count();
                                 @endphp
-                                @if($activeCompanies > 0)
-                                    <span class="badge bg-success ms-auto">{{ $activeCompanies }}</span>
-                                @endif
+
+                                    <span class="badge bg-light text-dark ms-auto">{{ $activeCompanies }}</span>
+
                             </a>
                         </li>
 
