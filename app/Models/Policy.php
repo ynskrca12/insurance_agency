@@ -100,9 +100,13 @@ class Policy extends Model
         return $query->where('status', 'active');
     }
 
-    public function scopeExpiringSoon($query)
+    public function scopeExpiringSoon($query, $days = 90)
     {
-        return $query->where('status', 'expiring_soon');
+        return $query->where('status', 'active')
+                    ->whereBetween('end_date', [
+                        now(),
+                        now()->addDays($days)
+                    ]);
     }
 
     public function scopeCritical($query)

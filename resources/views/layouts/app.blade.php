@@ -443,7 +443,7 @@
         }
 
         .bg-light {
-            background: transparent;
+            background: transparent !important;
         }
 
         /* ============================================
@@ -521,6 +521,10 @@
 
             .logout-btn {
                 padding: 10px 14px;
+            }
+
+            .content-wrapper {
+                padding: 10px 0px;
             }
         }
 
@@ -909,6 +913,7 @@
                 transform: translateX(260px);
             }
 
+
             .logout-btn {
                 padding: 6px 10px;
             }
@@ -959,7 +964,7 @@
             }
 
             .content-wrapper {
-                padding: 10px 0;
+                padding: 24px;
             }
         }
     </style>
@@ -1059,23 +1064,12 @@
                             </a>
                         </li>
 
-                        @php
-                            $user = auth()->user();
-                            $isAdmin = in_array($user->role, ['owner', 'manager']);
-                        @endphp
-
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('customers.*') ? 'active' : '' }}"
                                href="{{ route('customers.index') }}">
                                 <i class="bi bi-people"></i>
                                 Müşteriler
-                                @php
-                                    $allCustomers = \App\Models\Customer::count();
-                                    if (! $isAdmin) {
-                                        $allCustomers = \App\Models\Customer::where('created_by', $user->id)->count();
-                                    }
-                                @endphp
-                                    <span class="badge bg-light text-dark ms-auto">{{ $allCustomers }}</span>
+                                <span class="badge bg-light text-dark ms-auto">{{ $sidebarCounts['customers'] ?? 0 }}</span>
                             </a>
                         </li>
 
@@ -1084,13 +1078,7 @@
                                href="{{ route('policies.index') }}">
                                 <i class="bi bi-file-earmark-text"></i>
                                 Poliçeler
-                                @php
-                                    $allPolicies = \App\Models\Policy::count();
-                                    if (! $isAdmin) {
-                                        $allPolicies = \App\Models\Policy::where('created_by', $user->id)->count();
-                                    }
-                                @endphp
-                                    <span class="badge bg-light text-dark ms-auto">{{ $allPolicies }}</span>
+                                <span class="badge bg-light text-dark ms-auto">{{ $sidebarCounts['policies'] }}</span>
                             </a>
                         </li>
 
@@ -1098,13 +1086,7 @@
                             <a class="nav-link" href="{{ route('quotations.index') }}">
                                 <i class="bi bi-file-earmark-plus"></i>
                                 Teklifler
-                                @php
-                                    $draftQuotations = \App\Models\Quotation::count();
-                                    if (! $isAdmin) {
-                                        $draftQuotations = \App\Models\Quotation::where('created_by', $user->id)->count();
-                                    }
-                                @endphp
-                                    <span class="badge bg-light text-dark ms-auto">{{ $draftQuotations }}</span>
+                                <span class="badge bg-light text-dark ms-auto">{{ $sidebarCounts['quotations'] }}</span>
                             </a>
                         </li>
 
@@ -1113,12 +1095,7 @@
                             href="{{ route('renewals.index') }}">
                                 <i class="bi bi-arrow-repeat"></i>
                                 Yenilemeler
-                                @php
-                                    $criticalCount = \App\Models\PolicyRenewal::critical()->count();
-                                @endphp
-
-                                    <span class="badge bg-danger ms-auto">{{ $criticalCount }}</span>
-
+                                <span class="badge bg-danger ms-auto">{{ $sidebarCounts['renewals'] }}</span>
                             </a>
                         </li>
 
@@ -1127,10 +1104,7 @@
                             href="{{ route('payments.installments') }}">
                                 <i class="bi bi-credit-card"></i>
                                 Ödemeler
-                                 @php
-                                    $payments = \App\Models\Payment::completed()->count();
-                                @endphp
-                                    <span class="badge bg-success ms-auto">{{ $payments }}</span>
+                                <span class="badge bg-success ms-auto">{{ $sidebarCounts['payments'] }}</span>
                             </a>
                         </li>
 
@@ -1139,13 +1113,7 @@
                             href="{{ route('tasks.index') }}">
                                 <i class="bi bi-check2-square"></i>
                                 Görevler
-                                @php
-                                    $myOpenTasks = \App\Models\Task::where('assigned_to', auth()->id())
-                                        ->whereNotIn('status', ['completed', 'cancelled'])
-                                        ->count();
-                                @endphp
-
-                                    <span class="badge bg-light text-dark ms-auto">{{ $myOpenTasks }}</span>
+                                <span class="badge bg-light text-dark ms-auto">{{ $sidebarCounts['tasks'] }}</span>
 
                             </a>
                         </li>
@@ -1155,11 +1123,17 @@
                             href="{{ route('campaigns.index') }}">
                                 <i class="bi bi-megaphone"></i>
                                 Kampanyalar
-                                @php
-                                    $draftCampaigns = \App\Models\Campaign::where('status', 'draft')->count();
-                                @endphp
+                                <span class="badge bg-light text-dark ms-auto">{{ $sidebarCounts['campaigns'] }}</span>
 
-                                    <span class="badge bg-light text-dark ms-auto">{{ $draftCampaigns }}</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('insurance-companies.*') ? 'active' : '' }}"
+                            href="{{ route('insurance-companies.index') }}">
+                                <i class="bi bi-building"></i>
+                                Sigorta Şirketleri
+                                <span class="badge bg-light text-dark ms-auto">{{ $sidebarCounts['companies'] }}</span>
 
                             </a>
                         </li>
@@ -1169,20 +1143,6 @@
                             href="{{ route('reports.index') }}">
                                 <i class="bi bi-graph-up"></i>
                                 Raporlar
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('insurance-companies.*') ? 'active' : '' }}"
-                            href="{{ route('insurance-companies.index') }}">
-                                <i class="bi bi-building"></i>
-                                Sigorta Şirketleri
-                                @php
-                                    $activeCompanies = \App\Models\InsuranceCompany::where('is_active', true)->count();
-                                @endphp
-
-                                    <span class="badge bg-light text-dark ms-auto">{{ $activeCompanies }}</span>
-
                             </a>
                         </li>
 
