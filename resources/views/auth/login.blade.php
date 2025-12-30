@@ -32,10 +32,10 @@
         <div class="login-card">
             <div class="login-header">
                 <div class="login-logo">
-                    <i class="bi bi-shield-check"></i>
+                    <img src="{{asset('logosysnew.png')}}" alt="">
                 </div>
                 <h1>Giriş Yap</h1>
-                <p>Demo hesabınıza giriş yapın</p>
+                <p>14 günlük demo hesabınıza giriş yapın</p>
             </div>
 
             @if(session('success'))
