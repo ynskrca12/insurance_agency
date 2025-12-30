@@ -1149,10 +1149,16 @@
                         </td>
                         <td data-order="{{ $daysUntilDue }}">
                             @if($isOverdue)
-                                <span class="days-badge overdue">
-                                    <i class="bi bi-exclamation-triangle-fill"></i>
-                                    {{ abs($daysUntilDue) }} gün geçti
-                                </span>
+                                 @if ($installment->status == 'paid')
+                                     <span class="badge badge-modern bg-success }}">
+                                        Ödendi
+                                    </span>
+                                @else
+                                    <span class="days-badge overdue">
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                        {{ abs($daysUntilDue) }} gün geçti
+                                    </span>
+                                @endif
                             @elseif($isDueToday)
                                 <span class="days-badge today">
                                     <i class="bi bi-clock-fill"></i>

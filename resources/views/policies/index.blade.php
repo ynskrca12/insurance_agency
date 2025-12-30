@@ -859,6 +859,7 @@
                             <th>Bitiş Tarihi</th>
                             <th>Prim Tutarı</th>
                             <th>Durum</th>
+                            <th>Ekleyen Kişi</th>
                             <th width="150">İşlemler</th>
                     </tr>
                 </thead>
@@ -927,6 +928,8 @@
                                     <i class="bi bi-{{ $config['icon'] }}"></i>
                                     {{ $config['label'] }}
                                 </span>
+                            </td>
+                                <span class="text-muted">{{ $policy->createdBy->name ?? '-' }}</span>
                             </td>
                             <td>
                                 <div class="d-flex justify-content-center gap-1">

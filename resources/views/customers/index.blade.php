@@ -604,6 +604,7 @@
                     <th>Şehir</th>
                     <th>Poliçe Sayısı</th>
                     <th>Durum</th>
+                    <th>Ekleyen Kişi</th>
                     <th>Kayıt Tarihi</th>
                     <th width="150">İşlemler</th>
                 </tr>
@@ -639,6 +640,7 @@
                             {{ $map[$customer->status][1] }}
                         </span>
                     </td>
+                    <td>{{ $customer->createdBy->name ?? '-' }}</td>
                     <td data-sort="{{ $customer->created_at->format('Y-m-d') }}">
                         {{ $customer->created_at->format('d.m.Y') }}
                     </td>

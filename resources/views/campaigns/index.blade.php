@@ -1100,6 +1100,7 @@
                         <th>Alıcı Sayısı</th>
                         <th>Tarih</th>
                         <th>Durum</th>
+                        <th>Oluşturan Kişi</th>
                         <th width="120" class="text-end">İşlemler</th>
                     </tr>
                 </thead>
@@ -1176,6 +1177,9 @@
                             <span class="badge badge-modern bg-{{ $status['color'] }}">
                                 {{ $status['label'] }}
                             </span>
+                        </td>
+                        <td>
+                            <span class="text-muted">{{ $campaign->createdBy->name }}</span>
                         </td>
                         <td class="text-end">
                             <div class="action-buttons">

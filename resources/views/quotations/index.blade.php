@@ -901,6 +901,7 @@
                         <th>Geçerlilik</th>
                         <th>Görüntülenme</th>
                         <th>Durum</th>
+                        <th>Oluşturan Kişi</th>
                         <th width="150">İşlemler</th>
                     </tr>
                 </thead>
@@ -966,6 +967,9 @@
                             <span class="badge badge-modern bg-{{ $config['color'] }}">
                                 {{ $config['label'] }}
                             </span>
+                        </td>
+                        <td>
+                            <span class="text-muted">{{ $quotation->createdBy->name }}</span>
                         </td>
                         <td>
                             <div class="action-buttons">
