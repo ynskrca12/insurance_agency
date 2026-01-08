@@ -200,97 +200,351 @@
         }
     }
 </style>
+
+<style>
+    /* ========================================
+   DASHBOARD - COLORED STAT CARDS
+======================================== */
+
+.stat-card {
+    position: relative;
+    border-radius: 16px;
+    padding: 1.75rem;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+}
+
+/* Icon Wrapper */
+.stat-icon-wrapper {
+    flex-shrink: 0;
+}
+
+.stat-card .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Stat Info */
+.stat-info {
+    flex: 1;
+}
+
+.stat-card .stat-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 0.5rem;
+}
+
+.stat-card .stat-value {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+    margin-bottom: 0.75rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card .stat-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.813rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.stat-card .stat-trend i {
+    font-size: 1rem;
+}
+
+/* Background Icon */
+.stat-card-bg {
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    font-size: 180px;
+    color: rgba(255, 255, 255, 0.08);
+    z-index: 1;
+    line-height: 1;
+    pointer-events: none;
+    transform: rotate(-15deg);
+    transition: all 0.4s ease;
+}
+
+.stat-card:hover .stat-card-bg {
+    transform: rotate(-10deg) scale(1.1);
+    color: rgba(255, 255, 255, 0.12);
+}
+
+/* ========================================
+   COLOR VARIANTS
+======================================== */
+
+/* Primary - Mavi */
+.stat-card-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.stat-card-primary:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+/* Purple - Mor */
+.stat-card-purple {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.stat-card-purple:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+}
+
+/* Warning - Turuncu */
+.stat-card-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.stat-card-warning:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+}
+
+/* Success - Yeşil */
+.stat-card-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.stat-card-success:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+/* Danger - Kırmızı (opsiyonel) */
+.stat-card-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.stat-card-danger:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+/* Info - Cyan (opsiyonel) */
+.stat-card-info {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.stat-card-info:hover {
+    background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 1200px) {
+    .stat-card .stat-value {
+        font-size: 2rem;
+    }
+
+    .stat-card-bg {
+        font-size: 140px;
+    }
+}
+
+@media (max-width: 768px) {
+    .stat-card {
+        padding: 1.5rem;
+    }
+
+    .stat-card .stat-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
+    }
+
+    .stat-card .stat-value {
+        font-size: 1.75rem;
+    }
+
+    .stat-card-bg {
+        font-size: 120px;
+        bottom: -15px;
+        right: -15px;
+    }
+}
+
+@media (max-width: 576px) {
+    .stat-card .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .stat-card .stat-label {
+        font-size: 0.75rem;
+    }
+
+    .stat-card-bg {
+        font-size: 100px;
+    }
+}
+
+/* ========================================
+   ANIMATION
+======================================== */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }
+</style>
 @endpush
 
 @section('content')
 <div class="container-fluid">
 
-    <!-- İstatistik Kartları -->
-    <div class="row g-4 mb-4">
-        <!-- Toplam Müşteri -->
-        <div class="col-lg-3 col-md-6">
-            <div class="stat-card card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <div class="stat-label mb-2">Toplam Müşteri</div>
-                            <div class="stat-value">{{ number_format($stats['total_customers']) }}</div>
-                            <div class="stat-trend text-success">
-                                <i class="bi bi-arrow-up me-1"></i>
-                                <span>Aktif sistem</span>
-                            </div>
-                        </div>
-                        <div class="stat-icon bg-primary bg-opacity-10 text-primary">
-                            <i class="bi bi-people"></i>
-                        </div>
+<!-- İstatistik Kartları -->
+<div class="row g-4 mb-4">
+    <!-- Toplam Müşteri - MAVİ -->
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card stat-card-primary">
+            <div class="stat-card-content">
+                <div class="stat-icon-wrapper">
+                    <div class="stat-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-label">Toplam Müşteri</div>
+                    <div class="stat-value">{{ number_format($stats['total_customers']) }}</div>
+                    <div class="stat-trend">
+                        <i class="bi bi-arrow-up"></i>
+                        <span>Aktif sistem</span>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Toplam Poliçe -->
-        <div class="col-lg-3 col-md-6">
-            <div class="stat-card card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <div class="stat-label mb-2">Toplam Poliçe</div>
-                            <div class="stat-value">{{ number_format($stats['total_policies']) }}</div>
-                            <div class="stat-trend text-muted">
-                                <i class="bi bi-graph-up me-1"></i>
-                                <span>Tüm poliçeler</span>
-                            </div>
-                        </div>
-                        <div class="stat-icon bg-success bg-opacity-10 text-success">
-                            <i class="bi bi-file-earmark-text"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Süresi Yaklaşan -->
-        <div class="col-lg-3 col-md-6">
-            <div class="stat-card card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <div class="stat-label mb-2">Süresi Yaklaşan</div>
-                            <div class="stat-value">{{ number_format($stats['expiring_soon']) }}</div>
-                            <div class="stat-trend text-warning">
-                                <i class="bi bi-exclamation-circle me-1"></i>
-                                <span>Dikkat gerekli</span>
-                            </div>
-                        </div>
-                        <div class="stat-icon bg-warning bg-opacity-10 text-warning">
-                            <i class="bi bi-clock-history"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bekleyen Görevler -->
-        <div class="col-lg-3 col-md-6">
-            <div class="stat-card card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <div class="stat-label mb-2">Bekleyen Görev</div>
-                            <div class="stat-value">{{ number_format($stats['pending_tasks']) }}</div>
-                            <div class="stat-trend text-danger">
-                                <i class="bi bi-list-check me-1"></i>
-                                <span>Yapılacaklar</span>
-                            </div>
-                        </div>
-                        <div class="stat-icon bg-danger bg-opacity-10 text-danger">
-                            <i class="bi bi-check-square"></i>
-                        </div>
-                    </div>
-                </div>
+            <div class="stat-card-bg">
+                <i class="bi bi-people"></i>
             </div>
         </div>
     </div>
+
+    <!-- Toplam Poliçe - MOR -->
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card stat-card-purple">
+            <div class="stat-card-content">
+                <div class="stat-icon-wrapper">
+                    <div class="stat-icon">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </div>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-label">Toplam Poliçe</div>
+                    <div class="stat-value">{{ number_format($stats['total_policies']) }}</div>
+                    <div class="stat-trend">
+                        <i class="bi bi-graph-up"></i>
+                        <span>Tüm poliçeler</span>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card-bg">
+                <i class="bi bi-file-earmark-text"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Süresi Yaklaşan - TURUNCU -->
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card stat-card-warning">
+            <div class="stat-card-content">
+                <div class="stat-icon-wrapper">
+                    <div class="stat-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-label">Süresi Yaklaşan</div>
+                    <div class="stat-value">{{ number_format($stats['expiring_soon']) }}</div>
+                    <div class="stat-trend">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <span>Dikkat gerekli</span>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card-bg">
+                <i class="bi bi-clock-history"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bekleyen Görevler - YEŞİL -->
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card stat-card-success">
+            <div class="stat-card-content">
+                <div class="stat-icon-wrapper">
+                    <div class="stat-icon">
+                        <i class="bi bi-check-square"></i>
+                    </div>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-label">Bekleyen Görev</div>
+                    <div class="stat-value">{{ number_format($stats['pending_tasks']) }}</div>
+                    <div class="stat-trend">
+                        <i class="bi bi-list-check"></i>
+                        <span>Yapılacaklar</span>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card-bg">
+                <i class="bi bi-check-square"></i>
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- İçerik Kartları -->
     <div class="row g-4">
