@@ -819,6 +819,282 @@
         }
     }
 </style>
+
+{{-- INSTALLMENTS PAGE - STAT CARDS --}}
+<style>
+
+.installment-stat-card {
+    position: relative;
+    border-radius: 14px;
+    padding: 24px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    gap: 0.875rem;
+    cursor: pointer;
+}
+
+.installment-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Content */
+.installment-stat-content {
+    z-index: 2;
+    position: relative;
+}
+
+.installment-stat-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.installment-stat-label {
+    font-size: 0.813rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 0.25rem;
+}
+
+.installment-stat-sublabel {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: 0.5rem;
+}
+
+.installment-stat-sublabel i {
+    font-size: 1rem;
+}
+
+/* Background Icon */
+.installment-stat-bg {
+    position: absolute;
+    bottom: -15px;
+    right: -15px;
+    font-size: 130px;
+    color: rgba(255, 255, 255, 0.08);
+    z-index: 1;
+    line-height: 1;
+    pointer-events: none;
+    transform: rotate(-15deg);
+    transition: all 0.4s ease;
+}
+
+.installment-stat-card:hover .installment-stat-bg {
+    transform: rotate(-10deg) scale(1.05);
+    color: rgba(255, 255, 255, 0.12);
+}
+
+/* Pulse Badge (Gecikmiş için) */
+.installment-stat-pulse {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 12px;
+    height: 12px;
+    background: #ffffff;
+    border-radius: 50%;
+    z-index: 3;
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+        box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
+    }
+}
+
+/* ========================================
+   COLOR VARIANTS
+======================================== */
+
+/* Warning - Turuncu (Bekleyen) */
+.installment-stat-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.installment-stat-warning:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+}
+
+/* Danger - Kırmızı (Gecikmiş) */
+.installment-stat-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.installment-stat-danger:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+/* Info - Cyan (Bugün) */
+.installment-stat-info {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.installment-stat-info:hover {
+    background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+}
+
+/* Primary - Mavi (7 Gün) */
+.installment-stat-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.installment-stat-primary:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 1200px) {
+    .installment-stat-value {
+        font-size: 1.5rem;
+    }
+
+    .installment-stat-bg {
+        font-size: 110px;
+    }
+}
+
+@media (max-width: 992px) {
+    .installment-stat-card {
+        padding: 1.25rem;
+    }
+
+    .installment-stat-value {
+        font-size: 1.375rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .installment-stat-value {
+        font-size: 1.25rem;
+    }
+
+    .installment-stat-label {
+        font-size: 0.75rem;
+    }
+
+    .installment-stat-sublabel {
+        font-size: 0.813rem;
+    }
+
+    .installment-stat-bg {
+        font-size: 90px;
+        bottom: -10px;
+        right: -10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .installment-stat-card {
+        padding: 1rem;
+    }
+
+    .installment-stat-value {
+        font-size: 1.125rem;
+    }
+
+    .installment-stat-label {
+        font-size: 0.688rem;
+    }
+
+    .installment-stat-sublabel {
+        font-size: 0.75rem;
+    }
+
+    .installment-stat-bg {
+        font-size: 75px;
+    }
+}
+
+/* ========================================
+   ANIMATION
+======================================== */
+
+@keyframes slideInTop {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.installment-stat-card {
+    animation: slideInTop 0.5s ease-out;
+}
+
+.installment-stat-card:nth-child(1) { animation-delay: 0s; }
+.installment-stat-card:nth-child(2) { animation-delay: 0.05s; }
+.installment-stat-card:nth-child(3) { animation-delay: 0.1s; }
+.installment-stat-card:nth-child(4) { animation-delay: 0.15s; }
+
+/* ========================================
+   CLICK EFFECT
+======================================== */
+
+.installment-stat-card:active {
+    transform: translateY(-2px) scale(0.98);
+}
+
+/* Hover overlay */
+.installment-stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0);
+    transition: all 0.3s ease;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.installment-stat-card:hover::after {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================
+   SHAKE EFFECT (Gecikmiş için)
+======================================== */
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+.installment-stat-danger:hover {
+    animation: shake 0.5s ease;
+}
+</style>
 @endpush
 
 @section('content')
@@ -847,29 +1123,62 @@
 
     <!-- İstatistik Kartları -->
     <div class="row g-3 mb-4">
+        <!-- Bekleyen Toplam -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-warning">{{ number_format($stats['total_pending'], 2) }} ₺</div>
-                <div class="stat-label">Bekleyen Toplam</div>
+            <div class="installment-stat-card installment-stat-warning">
+                <div class="installment-stat-content">
+                    <div class="installment-stat-value">{{ number_format($stats['total_pending'], 2) }} ₺</div>
+                    <div class="installment-stat-label">Bekleyen Toplam</div>
+                </div>
+                <div class="installment-stat-bg">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Gecikmiş Taksitler -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-danger">{{ number_format($stats['overdue_count']) }}</div>
-                <div class="stat-label">Gecikmiş Taksitler</div>
-                <div class="stat-sublabel">{{ number_format($stats['overdue_amount'], 2) }} ₺</div>
+            <div class="installment-stat-card installment-stat-danger">
+                <div class="installment-stat-content">
+                    <div class="installment-stat-value">{{ number_format($stats['overdue_count']) }}</div>
+                    <div class="installment-stat-label">Gecikmiş Taksitler</div>
+                    <div class="installment-stat-sublabel">
+                        <i class="bi bi-arrow-down-circle"></i>
+                        {{ number_format($stats['overdue_amount'], 2) }} ₺
+                    </div>
+                </div>
+                <div class="installment-stat-bg">
+                    <i class="bi bi-exclamation-octagon"></i>
+                </div>
+                @if($stats['overdue_count'] > 0)
+                    <span class="installment-stat-pulse"></span>
+                @endif
             </div>
         </div>
+
+        <!-- Bugün Vadesi Dolan -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-info">{{ number_format($stats['due_today_count']) }}</div>
-                <div class="stat-label">Bugün Vadesi Dolan</div>
+            <div class="installment-stat-card installment-stat-info">
+                <div class="installment-stat-content">
+                    <div class="installment-stat-value">{{ number_format($stats['due_today_count']) }}</div>
+                    <div class="installment-stat-label">Bugün Vadesi Dolan</div>
+                </div>
+                <div class="installment-stat-bg">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
             </div>
         </div>
+
+        <!-- 7 Gün İçinde -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-primary">{{ number_format($stats['upcoming_7_count']) }}</div>
-                <div class="stat-label">7 Gün İçinde</div>
+            <div class="installment-stat-card installment-stat-primary">
+                <div class="installment-stat-content">
+                    <div class="installment-stat-value">{{ number_format($stats['upcoming_7_count']) }}</div>
+                    <div class="installment-stat-label">7 Gün İçinde</div>
+                </div>
+                <div class="installment-stat-bg">
+                    <i class="bi bi-calendar-range"></i>
+                </div>
             </div>
         </div>
     </div>

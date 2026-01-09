@@ -676,6 +676,258 @@
         }
     }
 </style>
+
+{{-- PAYMENTS PAGE - STAT CARDS --}}
+<style>
+    .payment-stat-card {
+        position: relative;
+        border-radius: 14px;
+        padding: 1.5rem;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        display: flex;
+        gap: 0.875rem;
+        cursor: pointer;
+    }
+
+    .payment-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Content */
+    .payment-stat-content {
+        z-index: 2;
+        position: relative;
+    }
+
+    .payment-stat-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1.1;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .payment-stat-label {
+        font-size: 0.813rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* Background Icon */
+    .payment-stat-bg {
+        position: absolute;
+        bottom: -15px;
+        right: -15px;
+        font-size: 130px;
+        color: rgba(255, 255, 255, 0.08);
+        z-index: 1;
+        line-height: 1;
+        pointer-events: none;
+        transform: rotate(-15deg);
+        transition: all 0.4s ease;
+    }
+
+    .payment-stat-card:hover .payment-stat-bg {
+        transform: rotate(-10deg) scale(1.05);
+        color: rgba(255, 255, 255, 0.12);
+    }
+
+    /* ========================================
+    COLOR VARIANTS
+    ======================================== */
+
+    /* Success - Yeşil (Toplam Tahsilat) */
+    .payment-stat-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .payment-stat-success:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    /* Primary - Mavi (Tamamlanan) */
+    .payment-stat-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .payment-stat-primary:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    }
+
+    /* Warning - Turuncu (Bekleyen) */
+    .payment-stat-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .payment-stat-warning:hover {
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    }
+
+    /* Danger - Kırmızı (Başarısız) */
+    .payment-stat-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .payment-stat-danger:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    }
+
+    /* ========================================
+    CURRENCY SYMBOL
+    ======================================== */
+
+    .payment-stat-value {
+        display: flex;
+        align-items: baseline;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+    }
+
+    /* ========================================
+    RESPONSIVE
+    ======================================== */
+
+    @media (max-width: 1200px) {
+        .payment-stat-value {
+            font-size: 1.5rem;
+        }
+
+        .payment-stat-bg {
+            font-size: 110px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .payment-stat-card {
+            padding: 1.25rem;
+        }
+
+        .payment-stat-value {
+            font-size: 1.375rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .payment-stat-value {
+            font-size: 1.25rem;
+        }
+
+        .payment-stat-label {
+            font-size: 0.75rem;
+        }
+
+        .payment-stat-bg {
+            font-size: 90px;
+            bottom: -10px;
+            right: -10px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .payment-stat-card {
+            padding: 1rem;
+        }
+
+        .payment-stat-value {
+            font-size: 1.125rem;
+        }
+
+        .payment-stat-label {
+            font-size: 0.688rem;
+        }
+
+        .payment-stat-bg {
+            font-size: 75px;
+        }
+    }
+
+    /* ========================================
+    ANIMATION
+    ======================================== */
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .payment-stat-card {
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    .payment-stat-card:nth-child(1) { animation-delay: 0s; }
+    .payment-stat-card:nth-child(2) { animation-delay: 0.05s; }
+    .payment-stat-card:nth-child(3) { animation-delay: 0.1s; }
+    .payment-stat-card:nth-child(4) { animation-delay: 0.15s; }
+
+    /* ========================================
+    CLICK EFFECT
+    ======================================== */
+
+    .payment-stat-card:active {
+        transform: translateY(-2px) scale(0.98);
+    }
+
+    /* Hover overlay */
+    .payment-stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0);
+        transition: all 0.3s ease;
+        z-index: 3;
+        pointer-events: none;
+    }
+
+    .payment-stat-card:hover::after {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ========================================
+    SHINE EFFECT (Success Card için)
+    ======================================== */
+
+    @keyframes shine {
+        0% {
+            left: -100%;
+        }
+        100% {
+            left: 100%;
+        }
+    }
+
+    .payment-stat-success::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        z-index: 2;
+        transition: left 0.5s ease;
+    }
+
+    .payment-stat-success:hover::before {
+        animation: shine 1s ease;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -697,30 +949,57 @@
         </div>
     </div>
 
-    <!-- İstatistik Kartları -->
+       <!-- İstatistik Kartları -->
     <div class="row g-3 mb-4">
+        <!-- Toplam Tahsilat -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-success">{{ number_format($stats['total'], 2) }} ₺</div>
-                <div class="stat-label">Toplam Tahsilat</div>
+            <div class="payment-stat-card payment-stat-success">
+                <div class="payment-stat-content">
+                    <div class="payment-stat-value">{{ number_format($stats['total'], 2) }} ₺</div>
+                    <div class="payment-stat-label">Toplam Tahsilat</div>
+                </div>
+                <div class="payment-stat-bg">
+                    <i class="bi bi-wallet2"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Tamamlanan -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-primary">{{ number_format($stats['completed'], 2) }} ₺</div>
-                <div class="stat-label">Tamamlanan</div>
+            <div class="payment-stat-card payment-stat-primary">
+                <div class="payment-stat-content">
+                    <div class="payment-stat-value">{{ number_format($stats['completed'], 2) }} ₺</div>
+                    <div class="payment-stat-label">Tamamlanan</div>
+                </div>
+                <div class="payment-stat-bg">
+                    <i class="bi bi-check-circle"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Bekleyen -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-warning">{{ number_format($stats['pending'], 2) }} ₺</div>
-                <div class="stat-label">Bekleyen</div>
+            <div class="payment-stat-card payment-stat-warning">
+                <div class="payment-stat-content">
+                    <div class="payment-stat-value">{{ number_format($stats['pending'], 2) }} ₺</div>
+                    <div class="payment-stat-label">Bekleyen</div>
+                </div>
+                <div class="payment-stat-bg">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Başarısız -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-danger">{{ number_format($stats['failed'], 2) }} ₺</div>
-                <div class="stat-label">Başarısız</div>
+            <div class="payment-stat-card payment-stat-danger">
+                <div class="payment-stat-content">
+                    <div class="payment-stat-value">{{ number_format($stats['failed'], 2) }} ₺</div>
+                    <div class="payment-stat-label">Başarısız</div>
+                </div>
+                <div class="payment-stat-bg">
+                    <i class="bi bi-x-circle"></i>
+                </div>
             </div>
         </div>
     </div>

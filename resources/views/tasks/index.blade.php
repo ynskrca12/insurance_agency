@@ -800,6 +800,288 @@
         }
     }
 </style>
+
+    {{-- TASKS PAGE - STAT CARDS --}}
+<style>
+    .task-stat-card {
+        position: relative;
+        border-radius: 12px;
+        padding: 1.125rem;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        display: flex;
+        gap: 0.625rem;
+        cursor: pointer;
+    }
+
+    .task-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Content */
+    .task-stat-content {
+        z-index: 2;
+        position: relative;
+    }
+
+    .task-stat-value {
+        font-size: 1.625rem;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1;
+        margin-bottom: 0.375rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .task-stat-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* Background Icon */
+    .task-stat-bg {
+        position: absolute;
+        bottom: -12px;
+        right: -12px;
+        font-size: 100px;
+        color: rgba(255, 255, 255, 0.08);
+        z-index: 1;
+        line-height: 1;
+        pointer-events: none;
+        transform: rotate(-15deg);
+        transition: all 0.4s ease;
+    }
+
+    .task-stat-card:hover .task-stat-bg {
+        transform: rotate(-10deg) scale(1.05);
+        color: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Pulse Badge (Gecikmiş için) */
+    .task-stat-pulse {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 10px;
+        height: 10px;
+        background: #ffffff;
+        border-radius: 50%;
+        z-index: 3;
+        animation: taskPulse 2s infinite;
+    }
+
+    @keyframes taskPulse {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+        }
+        50% {
+            opacity: 0.7;
+            transform: scale(1.1);
+            box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
+        }
+    }
+
+    /* ========================================
+    COLOR VARIANTS
+    ======================================== */
+
+    /* Primary - Mavi (Toplam) */
+    .task-stat-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .task-stat-primary:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    }
+
+    /* Warning - Turuncu (Bekliyor) */
+    .task-stat-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .task-stat-warning:hover {
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    }
+
+    /* Info - Cyan (Devam Ediyor) */
+    .task-stat-info {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    }
+
+    .task-stat-info:hover {
+        background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+    }
+
+    /* Success - Yeşil (Tamamlandı) */
+    .task-stat-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .task-stat-success:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    /* Danger - Kırmızı (Gecikmiş) */
+    .task-stat-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .task-stat-danger:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    }
+
+    /* Dark - Koyu Gri (Benim) */
+    .task-stat-dark {
+        background: linear-gradient(135deg, #475569 0%, #334155 100%);
+    }
+
+    .task-stat-dark:hover {
+        background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+    }
+
+    /* ========================================
+    RESPONSIVE
+    ======================================== */
+
+    @media (max-width: 1400px) {
+        .task-stat-value {
+            font-size: 1.5rem;
+        }
+
+        .task-stat-bg {
+            font-size: 90px;
+        }
+    }
+
+    @media (max-width: 1200px) {
+        .task-stat-value {
+            font-size: 1.375rem;
+        }
+
+        .task-stat-bg {
+            font-size: 80px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .task-stat-card {
+            padding: 1rem;
+        }
+
+        .task-stat-value {
+            font-size: 1.25rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .task-stat-value {
+            font-size: 1.125rem;
+        }
+
+        .task-stat-label {
+            font-size: 0.688rem;
+        }
+
+        .task-stat-bg {
+            font-size: 70px;
+            bottom: -10px;
+            right: -10px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .task-stat-card {
+            padding: 0.875rem;
+        }
+
+        .task-stat-value {
+            font-size: 1rem;
+        }
+
+        .task-stat-label {
+            font-size: 0.625rem;
+        }
+
+        .task-stat-bg {
+            font-size: 60px;
+        }
+    }
+
+    /* ========================================
+    ANIMATION
+    ======================================== */
+
+    @keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .task-stat-card {
+        animation: scaleIn 0.4s ease-out;
+    }
+
+    .task-stat-card:nth-child(1) { animation-delay: 0s; }
+    .task-stat-card:nth-child(2) { animation-delay: 0.05s; }
+    .task-stat-card:nth-child(3) { animation-delay: 0.1s; }
+    .task-stat-card:nth-child(4) { animation-delay: 0.15s; }
+    .task-stat-card:nth-child(5) { animation-delay: 0.2s; }
+    .task-stat-card:nth-child(6) { animation-delay: 0.25s; }
+
+    /* ========================================
+    CLICK EFFECT
+    ======================================== */
+
+    .task-stat-card:active {
+        transform: translateY(-2px) scale(0.98);
+    }
+
+    /* Hover overlay */
+    .task-stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0);
+        transition: all 0.3s ease;
+        z-index: 3;
+        pointer-events: none;
+    }
+
+    .task-stat-card:hover::after {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ========================================
+    SHAKE EFFECT (Gecikmiş için)
+    ======================================== */
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-1px); }
+        20%, 40%, 60%, 80% { transform: translateX(1px); }
+    }
+
+    .task-stat-danger:hover {
+        animation: shake 0.5s ease;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -828,40 +1110,84 @@
 
     <!-- İstatistik Kartları -->
     <div class="row g-3 mb-4">
+        <!-- Toplam -->
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="stat-card">
-                <div class="stat-value text-primary">{{ number_format($stats['total']) }}</div>
-                <div class="stat-label">Toplam</div>
+            <div class="task-stat-card task-stat-primary">
+                <div class="task-stat-content">
+                    <div class="task-stat-value">{{ number_format($stats['total']) }}</div>
+                    <div class="task-stat-label">Toplam</div>
+                </div>
+                <div class="task-stat-bg">
+                    <i class="bi bi-list-task"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Bekliyor -->
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="stat-card">
-                <div class="stat-value text-warning">{{ number_format($stats['pending']) }}</div>
-                <div class="stat-label">Bekliyor</div>
+            <div class="task-stat-card task-stat-warning">
+                <div class="task-stat-content">
+                    <div class="task-stat-value">{{ number_format($stats['pending']) }}</div>
+                    <div class="task-stat-label">Bekliyor</div>
+                </div>
+                <div class="task-stat-bg">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Devam Ediyor -->
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="stat-card">
-                <div class="stat-value text-info">{{ number_format($stats['in_progress']) }}</div>
-                <div class="stat-label">Devam Ediyor</div>
+            <div class="task-stat-card task-stat-info">
+                <div class="task-stat-content">
+                    <div class="task-stat-value">{{ number_format($stats['in_progress']) }}</div>
+                    <div class="task-stat-label">Devam Ediyor</div>
+                </div>
+                <div class="task-stat-bg">
+                    <i class="bi bi-arrow-repeat"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Tamamlandı -->
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="stat-card">
-                <div class="stat-value text-success">{{ number_format($stats['completed']) }}</div>
-                <div class="stat-label">Tamamlandı</div>
+            <div class="task-stat-card task-stat-success">
+                <div class="task-stat-content">
+                    <div class="task-stat-value">{{ number_format($stats['completed']) }}</div>
+                    <div class="task-stat-label">Tamamlandı</div>
+                </div>
+                <div class="task-stat-bg">
+                    <i class="bi bi-check-circle"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Gecikmiş -->
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="stat-card">
-                <div class="stat-value text-danger">{{ number_format($stats['overdue']) }}</div>
-                <div class="stat-label">Gecikmiş</div>
+            <div class="task-stat-card task-stat-danger">
+                <div class="task-stat-content">
+                    <div class="task-stat-value">{{ number_format($stats['overdue']) }}</div>
+                    <div class="task-stat-label">Gecikmiş</div>
+                </div>
+                <div class="task-stat-bg">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                @if($stats['overdue'] > 0)
+                    <span class="task-stat-pulse"></span>
+                @endif
             </div>
         </div>
+
+        <!-- Benim -->
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="stat-card">
-                <div class="stat-value text-dark">{{ number_format($stats['my_tasks']) }}</div>
-                <div class="stat-label">Benim</div>
+            <div class="task-stat-card task-stat-dark">
+                <div class="task-stat-content">
+                    <div class="task-stat-value">{{ number_format($stats['my_tasks']) }}</div>
+                    <div class="task-stat-label">Benim</div>
+                </div>
+                <div class="task-stat-bg">
+                    <i class="bi bi-person-check"></i>
+                </div>
             </div>
         </div>
     </div>

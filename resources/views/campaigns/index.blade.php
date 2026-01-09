@@ -809,6 +809,278 @@
         }
     }
 </style>
+<style>
+    /* ========================================
+   CAMPAIGNS PAGE - STAT CARDS
+======================================== */
+
+.campaign-stat-card {
+    position: relative;
+    border-radius: 14px;
+    padding: 1.5rem;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    gap: 0.875rem;
+    cursor: pointer;
+}
+
+.campaign-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Content */
+.campaign-stat-content {
+    z-index: 2;
+    position: relative;
+}
+
+.campaign-stat-value {
+    font-size: 1.875rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.campaign-stat-label {
+    font-size: 0.813rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Background Icon */
+.campaign-stat-bg {
+    position: absolute;
+    bottom: -15px;
+    right: -15px;
+    font-size: 130px;
+    color: rgba(255, 255, 255, 0.08);
+    z-index: 1;
+    line-height: 1;
+    pointer-events: none;
+    transform: rotate(-15deg);
+    transition: all 0.4s ease;
+}
+
+.campaign-stat-card:hover .campaign-stat-bg {
+    transform: rotate(-10deg) scale(1.05);
+    color: rgba(255, 255, 255, 0.12);
+}
+
+/* Badge (Zamanlanmış için) */
+.campaign-stat-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    min-width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    color: #ffffff;
+    padding: 0 0.5rem;
+    border-radius: 14px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    animation: badgePulse 2s infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* ========================================
+   COLOR VARIANTS
+======================================== */
+
+/* Primary - Mavi (Toplam) */
+.campaign-stat-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.campaign-stat-primary:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+/* Warning - Turuncu (Taslak) */
+.campaign-stat-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.campaign-stat-warning:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+}
+
+/* Info - Cyan (Zamanlanmış) */
+.campaign-stat-info {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.campaign-stat-info:hover {
+    background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+}
+
+/* Success - Yeşil (Gönderildi) */
+.campaign-stat-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.campaign-stat-success:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 1200px) {
+    .campaign-stat-value {
+        font-size: 1.625rem;
+    }
+
+    .campaign-stat-bg {
+        font-size: 110px;
+    }
+}
+
+@media (max-width: 992px) {
+    .campaign-stat-card {
+        padding: 1.25rem;
+    }
+    .campaign-stat-value {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .campaign-stat-value {
+        font-size: 1.375rem;
+    }
+
+    .campaign-stat-label {
+        font-size: 0.75rem;
+    }
+
+    .campaign-stat-bg {
+        font-size: 90px;
+        bottom: -10px;
+        right: -10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .campaign-stat-card {
+        padding: 1rem;
+    }
+    .campaign-stat-value {
+        font-size: 1.25rem;
+    }
+
+    .campaign-stat-label {
+        font-size: 0.688rem;
+    }
+
+    .campaign-stat-bg {
+        font-size: 75px;
+    }
+}
+
+/* ========================================
+   ANIMATION
+======================================== */
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.campaign-stat-card {
+    animation: slideUp 0.5s ease-out;
+}
+
+.campaign-stat-card:nth-child(1) { animation-delay: 0s; }
+.campaign-stat-card:nth-child(2) { animation-delay: 0.05s; }
+.campaign-stat-card:nth-child(3) { animation-delay: 0.1s; }
+.campaign-stat-card:nth-child(4) { animation-delay: 0.15s; }
+
+/* ========================================
+   CLICK EFFECT
+======================================== */
+
+.campaign-stat-card:active {
+    transform: translateY(-2px) scale(0.98);
+}
+
+/* Hover overlay */
+.campaign-stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0);
+    transition: all 0.3s ease;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.campaign-stat-card:hover::after {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================
+   WAVE EFFECT (Gönderildi için)
+======================================== */
+
+.campaign-stat-success::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    z-index: 2;
+}
+
+.campaign-stat-success:hover::before {
+    animation: wave 2s ease-in-out infinite;
+}
+
+@keyframes wave {
+    0%, 100% {
+        transform: scaleX(1);
+        opacity: 0.3;
+    }
+    50% {
+        transform: scaleX(1.1);
+        opacity: 0.5;
+    }
+}
+</style>
 @endpush
 
 @section('content')
@@ -835,30 +1107,60 @@
         </div>
     </div>
 
-    <!-- İstatistik Kartları -->
+        <!-- İstatistik Kartları -->
     <div class="row g-3 mb-4">
+        <!-- Toplam Kampanya -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-primary">{{ number_format($stats['total']) }}</div>
-                <div class="stat-label">Toplam Kampanya</div>
+            <div class="campaign-stat-card campaign-stat-primary">
+                <div class="campaign-stat-content">
+                    <div class="campaign-stat-value">{{ number_format($stats['total']) }}</div>
+                    <div class="campaign-stat-label">Toplam Kampanya</div>
+                </div>
+                <div class="campaign-stat-bg">
+                    <i class="bi bi-megaphone"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Taslak -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-warning">{{ number_format($stats['draft']) }}</div>
-                <div class="stat-label">Taslak</div>
+            <div class="campaign-stat-card campaign-stat-warning">
+                <div class="campaign-stat-content">
+                    <div class="campaign-stat-value">{{ number_format($stats['draft']) }}</div>
+                    <div class="campaign-stat-label">Taslak</div>
+                </div>
+                <div class="campaign-stat-bg">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Zamanlanmış -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-info">{{ number_format($stats['scheduled']) }}</div>
-                <div class="stat-label">Zamanlanmış</div>
+            <div class="campaign-stat-card campaign-stat-info">
+                <div class="campaign-stat-content">
+                    <div class="campaign-stat-value">{{ number_format($stats['scheduled']) }}</div>
+                    <div class="campaign-stat-label">Zamanlanmış</div>
+                </div>
+                <div class="campaign-stat-bg">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                @if($stats['scheduled'] > 0)
+                    <span class="campaign-stat-badge">{{ $stats['scheduled'] }}</span>
+                @endif
             </div>
         </div>
+
+        <!-- Gönderildi -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-success">{{ number_format($stats['sent']) }}</div>
-                <div class="stat-label">Gönderildi</div>
+            <div class="campaign-stat-card campaign-stat-success">
+                <div class="campaign-stat-content">
+                    <div class="campaign-stat-value">{{ number_format($stats['sent']) }}</div>
+                    <div class="campaign-stat-label">Gönderildi</div>
+                </div>
+                <div class="campaign-stat-bg">
+                    <i class="bi bi-send-check"></i>
+                </div>
             </div>
         </div>
     </div>

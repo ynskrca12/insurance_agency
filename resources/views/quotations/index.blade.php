@@ -638,6 +638,290 @@
         }
     }
 </style>
+   {{-- QUOTATIONS PAGE - STAT CARDS --}}
+
+<style>
+
+    .quotation-stat-card {
+        position: relative;
+        border-radius: 14px;
+        padding: 1.25rem;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        display: flex;
+        gap: 0.75rem;
+        cursor: pointer;
+    }
+
+    .quotation-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Icon */
+    .quotation-stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        color: rgba(255, 255, 255, 0.95);
+        transition: all 0.3s ease;
+        z-index: 2;
+        position: relative;
+    }
+
+    .quotation-stat-card:hover .quotation-stat-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    /* Content */
+    .quotation-stat-content {
+        z-index: 2;
+        position: relative;
+    }
+
+    .quotation-stat-value {
+        font-size: 1.875rem;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .quotation-stat-label {
+        font-size: 0.813rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* Background Icon */
+    .quotation-stat-bg {
+        position: absolute;
+        bottom: -15px;
+        right: -15px;
+        font-size: 120px;
+        color: rgba(255, 255, 255, 0.08);
+        z-index: 1;
+        line-height: 1;
+        pointer-events: none;
+        transform: rotate(-15deg);
+        transition: all 0.4s ease;
+    }
+
+    .quotation-stat-card:hover .quotation-stat-bg {
+        transform: rotate(-10deg) scale(1.05);
+        color: rgba(255, 255, 255, 0.12);
+    }
+
+    /* ========================================
+    COLOR VARIANTS
+    ======================================== */
+
+    /* Primary - Mavi (Toplam) */
+    .quotation-stat-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .quotation-stat-primary:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    }
+
+    /* Info - Cyan (Gönderildi) */
+    .quotation-stat-info {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    }
+
+    .quotation-stat-info:hover {
+        background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+    }
+
+    /* Warning - Turuncu (Onaylandı) */
+    .quotation-stat-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .quotation-stat-warning:hover {
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    }
+
+    /* Success - Yeşil (Dönüştürüldü) */
+    .quotation-stat-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .quotation-stat-success:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    /* Danger - Kırmızı (Süresi Doldu) */
+    .quotation-stat-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .quotation-stat-danger:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    }
+
+    /* ========================================
+    RESPONSIVE
+    ======================================== */
+
+    @media (max-width: 1200px) {
+        .quotation-stat-value {
+            font-size: 1.625rem;
+        }
+
+        .quotation-stat-bg {
+            font-size: 100px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .quotation-stat-card {
+            padding: 1rem;
+        }
+
+        .quotation-stat-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+        }
+
+        .quotation-stat-value {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .quotation-stat-value {
+            font-size: 1.375rem;
+        }
+
+        .quotation-stat-label {
+            font-size: 0.75rem;
+        }
+
+        .quotation-stat-bg {
+            font-size: 80px;
+            bottom: -10px;
+            right: -10px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .quotation-stat-card {
+            padding: 0.875rem;
+        }
+
+        .quotation-stat-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+        }
+
+        .quotation-stat-value {
+            font-size: 1.25rem;
+        }
+
+        .quotation-stat-label {
+            font-size: 0.688rem;
+        }
+
+        .quotation-stat-bg {
+            font-size: 70px;
+        }
+
+        /* Mobilde 2'li sıralama */
+        .row.g-3 > .col-sm-6 {
+            flex: 0 0 48%;
+            max-width: 48%;
+        }
+
+        /* Son kart (5. kart) tam genişlik */
+        .row.g-3 > .col-sm-6:last-child:nth-child(odd) {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+
+    /* ========================================
+    ANIMATION
+    ======================================== */
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .quotation-stat-card {
+        animation: fadeInScale 0.5s ease-out;
+    }
+
+    .quotation-stat-card:nth-child(1) { animation-delay: 0s; }
+    .quotation-stat-card:nth-child(2) { animation-delay: 0.05s; }
+    .quotation-stat-card:nth-child(3) { animation-delay: 0.1s; }
+    .quotation-stat-card:nth-child(4) { animation-delay: 0.15s; }
+    .quotation-stat-card:nth-child(5) { animation-delay: 0.2s; }
+
+    /* ========================================
+    CLICK EFFECT
+    ======================================== */
+
+    .quotation-stat-card:active {
+        transform: translateY(-2px) scale(0.98);
+    }
+
+    /* Hover overlay */
+    .quotation-stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0);
+        transition: all 0.3s ease;
+        z-index: 3;
+        pointer-events: none;
+    }
+
+    .quotation-stat-card:hover::after {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ========================================
+    PULSE EFFECT (Yeni/Önemli Kartlar İçin)
+    ======================================== */
+
+    @keyframes pulse {
+        0%, 100% {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        50% {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+    }
+
+    /* Kritik durumlarda pulse efekti */
+    .quotation-stat-danger:hover {
+        animation: pulse 2s infinite;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -659,36 +943,85 @@
         </div>
     </div>
 
-    <!-- İstatistik Kartları -->
+        <!-- İstatistik Kartları -->
     <div class="row g-3 mb-4">
+        <!-- Toplam Teklif -->
         <div class="col-lg col-md-4 col-sm-6">
-            <div class="stat-card">
-                <div class="stat-value text-primary">{{ number_format($stats['total']) }}</div>
-                <div class="stat-label">Toplam Teklif</div>
+            <div class="quotation-stat-card quotation-stat-primary">
+                <div class="quotation-stat-icon">
+                    <i class="bi bi-file-earmark-plus"></i>
+                </div>
+                <div class="quotation-stat-content">
+                    <div class="quotation-stat-value">{{ number_format($stats['total']) }}</div>
+                    <div class="quotation-stat-label">Toplam Teklif</div>
+                </div>
+                <div class="quotation-stat-bg">
+                    <i class="bi bi-file-earmark-plus"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Gönderildi -->
         <div class="col-lg col-md-4 col-sm-6">
-            <div class="stat-card">
-                <div class="stat-value text-info">{{ number_format($stats['sent']) }}</div>
-                <div class="stat-label">Gönderildi</div>
+            <div class="quotation-stat-card quotation-stat-info">
+                <div class="quotation-stat-icon">
+                    <i class="bi bi-send"></i>
+                </div>
+                <div class="quotation-stat-content">
+                    <div class="quotation-stat-value">{{ number_format($stats['sent']) }}</div>
+                    <div class="quotation-stat-label">Gönderildi</div>
+                </div>
+                <div class="quotation-stat-bg">
+                    <i class="bi bi-send"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Onaylandı -->
         <div class="col-lg col-md-4 col-sm-6">
-            <div class="stat-card">
-                <div class="stat-value text-warning">{{ number_format($stats['approved']) }}</div>
-                <div class="stat-label">Onaylandı</div>
+            <div class="quotation-stat-card quotation-stat-warning">
+                <div class="quotation-stat-icon">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+                <div class="quotation-stat-content">
+                    <div class="quotation-stat-value">{{ number_format($stats['approved']) }}</div>
+                    <div class="quotation-stat-label">Onaylandı</div>
+                </div>
+                <div class="quotation-stat-bg">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Dönüştürüldü -->
         <div class="col-lg col-md-4 col-sm-6">
-            <div class="stat-card">
-                <div class="stat-value text-success">{{ number_format($stats['converted']) }}</div>
-                <div class="stat-label">Dönüştürüldü</div>
+            <div class="quotation-stat-card quotation-stat-success">
+                <div class="quotation-stat-icon">
+                    <i class="bi bi-arrow-repeat"></i>
+                </div>
+                <div class="quotation-stat-content">
+                    <div class="quotation-stat-value">{{ number_format($stats['converted']) }}</div>
+                    <div class="quotation-stat-label">Dönüştürüldü</div>
+                </div>
+                <div class="quotation-stat-bg">
+                    <i class="bi bi-arrow-repeat"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Süresi Doldu -->
         <div class="col-lg col-md-4 col-sm-6">
-            <div class="stat-card">
-                <div class="stat-value text-danger">{{ number_format($stats['expired']) }}</div>
-                <div class="stat-label">Süresi Doldu</div>
+            <div class="quotation-stat-card quotation-stat-danger">
+                <div class="quotation-stat-icon">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div class="quotation-stat-content">
+                    <div class="quotation-stat-value">{{ number_format($stats['expired']) }}</div>
+                    <div class="quotation-stat-label">Süresi Doldu</div>
+                </div>
+                <div class="quotation-stat-bg">
+                    <i class="bi bi-clock-history"></i>
+                </div>
             </div>
         </div>
     </div>

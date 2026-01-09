@@ -543,6 +543,309 @@
         }
     }
 </style>
+
+   {{-- RENEWALS PAGE - STAT CARDS --}}
+<style>
+
+.renewal-stat-card {
+    position: relative;
+    border-radius: 14px;
+    padding: 1.25rem;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.renewal-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Icon */
+.renewal-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    backdrop-filter: blur(10px);
+    color: rgba(255, 255, 255, 0.95);
+    transition: all 0.3s ease;
+    z-index: 2;
+    position: relative;
+}
+
+.renewal-stat-card:hover .renewal-stat-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* Content */
+.renewal-stat-content {
+    z-index: 2;
+    position: relative;
+}
+
+.renewal-stat-value {
+    font-size: 1.875rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.renewal-stat-label {
+    font-size: 0.813rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Background Icon */
+.renewal-stat-bg {
+    position: absolute;
+    bottom: -15px;
+    right: -15px;
+    font-size: 120px;
+    color: rgba(255, 255, 255, 0.08);
+    z-index: 1;
+    line-height: 1;
+    pointer-events: none;
+    transform: rotate(-15deg);
+    transition: all 0.4s ease;
+}
+
+.renewal-stat-card:hover .renewal-stat-bg {
+    transform: rotate(-10deg) scale(1.05);
+    color: rgba(255, 255, 255, 0.12);
+}
+
+/* ========================================
+   COLOR VARIANTS
+======================================== */
+
+/* Primary - Mavi (Toplam) */
+.renewal-stat-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.renewal-stat-primary:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+/* Info - Cyan (Bekliyor) */
+.renewal-stat-info {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.renewal-stat-info:hover {
+    background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+}
+
+/* Warning - Turuncu (İletişimde) */
+.renewal-stat-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.renewal-stat-warning:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+}
+
+/* Danger - Kırmızı (Kritik) */
+.renewal-stat-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.renewal-stat-danger:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+/* Success - Yeşil (Yenilendi) */
+.renewal-stat-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.renewal-stat-success:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+/* Secondary - Gri (Kaybedildi) */
+.renewal-stat-secondary {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+}
+
+.renewal-stat-secondary:hover {
+    background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 1200px) {
+    .renewal-stat-value {
+        font-size: 1.625rem;
+    }
+
+    .renewal-stat-bg {
+        font-size: 100px;
+    }
+}
+
+@media (max-width: 992px) {
+    .renewal-stat-card {
+        padding: 1rem;
+    }
+
+    .renewal-stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+
+    .renewal-stat-value {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .renewal-stat-value {
+        font-size: 1.375rem;
+    }
+
+    .renewal-stat-label {
+        font-size: 0.75rem;
+    }
+
+    .renewal-stat-bg {
+        font-size: 80px;
+        bottom: -10px;
+        right: -10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .renewal-stat-card {
+        padding: 0.875rem;
+    }
+
+    .renewal-stat-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+
+    .renewal-stat-value {
+        font-size: 1.25rem;
+    }
+
+    .renewal-stat-label {
+        font-size: 0.688rem;
+    }
+
+    .renewal-stat-bg {
+        font-size: 70px;
+    }
+}
+
+/* ========================================
+   ANIMATION
+======================================== */
+
+@keyframes bounceIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.renewal-stat-card {
+    animation: bounceIn 0.5s ease-out;
+}
+
+.renewal-stat-card:nth-child(1) { animation-delay: 0s; }
+.renewal-stat-card:nth-child(2) { animation-delay: 0.05s; }
+.renewal-stat-card:nth-child(3) { animation-delay: 0.1s; }
+.renewal-stat-card:nth-child(4) { animation-delay: 0.15s; }
+.renewal-stat-card:nth-child(5) { animation-delay: 0.2s; }
+.renewal-stat-card:nth-child(6) { animation-delay: 0.25s; }
+
+/* ========================================
+   CLICK EFFECT
+======================================== */
+
+.renewal-stat-card:active {
+    transform: translateY(-2px) scale(0.98);
+}
+
+/* Hover overlay */
+.renewal-stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0);
+    transition: all 0.3s ease;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.renewal-stat-card:hover::after {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================
+   PULSE EFFECT (Kritik Kartlar İçin)
+======================================== */
+
+@keyframes criticalPulse {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+    50% {
+        box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+    }
+}
+
+/* Kritik sayısı > 0 ise pulse efekti */
+.renewal-stat-danger:hover {
+    animation: criticalPulse 2s infinite;
+}
+
+/* ========================================
+   PROGRESS BAR (Opsiyonel)
+======================================== */
+
+.renewal-stat-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    z-index: 2;
+}
+
+.renewal-stat-progress-bar {
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: width 1s ease;
+}
+</style>
 @endpush
 
 @section('content')
@@ -583,57 +886,101 @@
 </div>
 
 
-    <div class="row mb-4">
-        <div class="col-lg col-md-4 col-6">
-            <div class="stat-card card">
-                <div class="card-body">
-                    <div class="stat-value text-primary">{{ number_format($stats['total']) }}</div>
-                    <div class="stat-label">Toplam</div>
+
+    <!-- İstatistik Kartları -->
+    <div class="row g-3 mb-4">
+        <!-- Toplam -->
+        <div class="col-lg col-md-4 col-12">
+            <div class="renewal-stat-card renewal-stat-primary">
+                <div class="renewal-stat-icon">
+                    <i class="bi bi-arrow-repeat"></i>
+                </div>
+                <div class="renewal-stat-content">
+                    <div class="renewal-stat-value">{{ number_format($stats['total']) }}</div>
+                    <div class="renewal-stat-label">Toplam</div>
+                </div>
+                <div class="renewal-stat-bg">
+                    <i class="bi bi-arrow-repeat"></i>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg col-md-4 col-6">
-            <div class="stat-card card">
-                <div class="card-body">
-                    <div class="stat-value text-success">{{ number_format($stats['pending']) }}</div>
-                    <div class="stat-label">Bekliyor</div>
+        <!-- Bekliyor -->
+        <div class="col-lg col-md-4 col-12">
+            <div class="renewal-stat-card renewal-stat-info">
+                <div class="renewal-stat-icon">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="renewal-stat-content">
+                    <div class="renewal-stat-value">{{ number_format($stats['pending']) }}</div>
+                    <div class="renewal-stat-label">Bekliyor</div>
+                </div>
+                <div class="renewal-stat-bg">
+                    <i class="bi bi-hourglass-split"></i>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg col-md-4 col-6">
-            <div class="stat-card card">
-                <div class="card-body">
-                    <div class="stat-value text-warning">{{ number_format($stats['contacted']) }}</div>
-                    <div class="stat-label">İletişimde</div>
+        <!-- İletişimde -->
+        <div class="col-lg col-md-4 col-12">
+            <div class="renewal-stat-card renewal-stat-warning">
+                <div class="renewal-stat-icon">
+                    <i class="bi bi-telephone"></i>
+                </div>
+                <div class="renewal-stat-content">
+                    <div class="renewal-stat-value">{{ number_format($stats['contacted']) }}</div>
+                    <div class="renewal-stat-label">İletişimde</div>
+                </div>
+                <div class="renewal-stat-bg">
+                    <i class="bi bi-telephone"></i>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg col-md-4 col-6">
-            <div class="stat-card card">
-                <div class="card-body">
-                    <div class="stat-value text-danger">{{ number_format($stats['critical']) }}</div>
-                    <div class="stat-label">Kritik</div>
+        <!-- Kritik -->
+        <div class="col-lg col-md-4 col-12">
+            <div class="renewal-stat-card renewal-stat-danger">
+                <div class="renewal-stat-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <div class="renewal-stat-content">
+                    <div class="renewal-stat-value">{{ number_format($stats['critical']) }}</div>
+                    <div class="renewal-stat-label">Kritik</div>
+                </div>
+                <div class="renewal-stat-bg">
+                    <i class="bi bi-exclamation-triangle"></i>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg col-md-4 col-6">
-            <div class="stat-card card">
-                <div class="card-body">
-                    <div class="stat-value text-secondary">{{ number_format($stats['renewed']) }}</div>
-                    <div class="stat-label">Yenilendi</div>
+        <!-- Yenilendi -->
+        <div class="col-lg col-md-4 col-12">
+            <div class="renewal-stat-card renewal-stat-success">
+                <div class="renewal-stat-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="renewal-stat-content">
+                    <div class="renewal-stat-value">{{ number_format($stats['renewed']) }}</div>
+                    <div class="renewal-stat-label">Yenilendi</div>
+                </div>
+                <div class="renewal-stat-bg">
+                    <i class="bi bi-check-circle"></i>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg col-md-4 col-6">
-            <div class="stat-card card">
-                <div class="card-body">
-                    <div class="stat-value text-secondary">{{ number_format($stats['lost']) }}</div>
-                    <div class="stat-label">Kaybedildi</div>
+        <!-- Kaybedildi -->
+        <div class="col-lg col-md-4 col-12">
+            <div class="renewal-stat-card renewal-stat-secondary">
+                <div class="renewal-stat-icon">
+                    <i class="bi bi-x-circle"></i>
+                </div>
+                <div class="renewal-stat-content">
+                    <div class="renewal-stat-value">{{ number_format($stats['lost']) }}</div>
+                    <div class="renewal-stat-label">Kaybedildi</div>
+                </div>
+                <div class="renewal-stat-bg">
+                    <i class="bi bi-x-circle"></i>
                 </div>
             </div>
         </div>

@@ -407,7 +407,7 @@
         .sidebar .nav-link {
             font-weight: 600;
             font-size: 14px;
-            color: var(--neutral-600);
+            color: #000;
             padding: 12px 16px;
             border-radius: 10px;
             margin-bottom: 4px;

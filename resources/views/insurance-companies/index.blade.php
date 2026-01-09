@@ -344,6 +344,240 @@
         }
     }
 </style>
+   {{-- COMPANIES PAGE - STAT CARDS --}}
+<style>
+    .company-stat-card {
+        position: relative;
+        border-radius: 14px;
+        padding: 1.5rem;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.875rem;
+        cursor: pointer;
+    }
+
+    .company-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Content */
+    .company-stat-content {
+        z-index: 2;
+        position: relative;
+    }
+
+    .company-stat-value {
+        font-size: 1.875rem;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .company-stat-label {
+        font-size: 0.813rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* Background Icon */
+    .company-stat-bg {
+        position: absolute;
+        bottom: -15px;
+        right: -15px;
+        font-size: 130px;
+        color: rgba(255, 255, 255, 0.08);
+        z-index: 1;
+        line-height: 1;
+        pointer-events: none;
+        transform: rotate(-15deg);
+        transition: all 0.4s ease;
+    }
+
+    .company-stat-card:hover .company-stat-bg {
+        transform: rotate(-10deg) scale(1.05);
+        color: rgba(255, 255, 255, 0.12);
+    }
+
+    /* ========================================
+    COLOR VARIANTS
+    ======================================== */
+
+    /* Primary - Mavi (Toplam) */
+    .company-stat-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .company-stat-primary:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    }
+
+    /* Success - Yeşil (Aktif) */
+    .company-stat-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .company-stat-success:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    /* Secondary - Gri (Pasif) */
+    .company-stat-secondary {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    }
+
+    .company-stat-secondary:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+    }
+
+    /* Info - Cyan (Toplam Poliçe) */
+    .company-stat-info {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    }
+
+    .company-stat-info:hover {
+        background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+    }
+
+    /* ========================================
+    RESPONSIVE
+    ======================================== */
+
+    @media (max-width: 1200px) {
+        .company-stat-value {
+            font-size: 1.625rem;
+        }
+
+        .company-stat-bg {
+            font-size: 110px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .company-stat-card {
+            padding: 1.25rem;
+        }
+
+        .company-stat-value {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .company-stat-value {
+            font-size: 1.375rem;
+        }
+
+        .company-stat-label {
+            font-size: 0.75rem;
+        }
+
+        .company-stat-bg {
+            font-size: 90px;
+            bottom: -10px;
+            right: -10px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .company-stat-card {
+            padding: 1rem;
+        }
+
+        .company-stat-value {
+            font-size: 1.25rem;
+        }
+
+        .company-stat-label {
+            font-size: 0.688rem;
+        }
+
+        .company-stat-bg {
+            font-size: 75px;
+        }
+    }
+
+    /* ========================================
+    ANIMATION
+    ======================================== */
+
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .company-stat-card {
+        animation: fadeInLeft 0.5s ease-out;
+    }
+
+    .company-stat-card:nth-child(1) { animation-delay: 0s; }
+    .company-stat-card:nth-child(2) { animation-delay: 0.05s; }
+    .company-stat-card:nth-child(3) { animation-delay: 0.1s; }
+    .company-stat-card:nth-child(4) { animation-delay: 0.15s; }
+
+    /* ========================================
+    CLICK EFFECT
+    ======================================== */
+
+    .company-stat-card:active {
+        transform: translateY(-2px) scale(0.98);
+    }
+
+    /* Hover overlay */
+    .company-stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0);
+        transition: all 0.3s ease;
+        z-index: 3;
+        pointer-events: none;
+    }
+
+    .company-stat-card:hover::after {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ========================================
+    GLOW EFFECT (Aktif için)
+    ======================================== */
+
+    .company-stat-success::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        z-index: 1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .company-stat-success:hover::before {
+        opacity: 1;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -365,28 +599,55 @@
 
     <!-- İstatistik Kartları -->
     <div class="row g-3 mb-4">
+        <!-- Toplam Şirket -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-primary">{{ number_format($stats['total']) }}</div>
-                <div class="stat-label">Toplam Şirket</div>
+            <div class="company-stat-card company-stat-primary">
+                <div class="company-stat-content">
+                    <div class="company-stat-value">{{ number_format($stats['total']) }}</div>
+                    <div class="company-stat-label">Toplam Şirket</div>
+                </div>
+                <div class="company-stat-bg">
+                    <i class="bi bi-building"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Aktif -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-success">{{ number_format($stats['active']) }}</div>
-                <div class="stat-label">Aktif</div>
+            <div class="company-stat-card company-stat-success">
+                <div class="company-stat-content">
+                    <div class="company-stat-value">{{ number_format($stats['active']) }}</div>
+                    <div class="company-stat-label">Aktif</div>
+                </div>
+                <div class="company-stat-bg">
+                    <i class="bi bi-check-circle"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Pasif -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-secondary">{{ number_format($stats['inactive']) }}</div>
-                <div class="stat-label">Pasif</div>
+            <div class="company-stat-card company-stat-secondary">
+                <div class="company-stat-content">
+                    <div class="company-stat-value">{{ number_format($stats['inactive']) }}</div>
+                    <div class="company-stat-label">Pasif</div>
+                </div>
+                <div class="company-stat-bg">
+                    <i class="bi bi-pause-circle"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Toplam Poliçe -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-info">{{ number_format($stats['total_policies']) }}</div>
-                <div class="stat-label">Toplam Poliçe</div>
+            <div class="company-stat-card company-stat-info">
+                <div class="company-stat-content">
+                    <div class="company-stat-value">{{ number_format($stats['total_policies']) }}</div>
+                    <div class="company-stat-label">Toplam Poliçe</div>
+                </div>
+                <div class="company-stat-bg">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
             </div>
         </div>
     </div>
