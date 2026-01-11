@@ -139,6 +139,29 @@ class Policy extends Model
     {
         return now()->diffInDays($this->end_date, false);
     }
+    public function getStatusAttribute($value)
+    {
+        if (in_array($value, ['renewed', 'cancelled'])) {
+            return $value;
+        }
+
+        $daysUntilExpiry = $this->days_until_expiry;
+
+        if ($daysUntilExpiry < 0) {
+            return 'expired'; // Süresi dolmuş
+        } elseif ($daysUntilExpiry <= 7) {
+            return 'critical'; // 7 gün veya daha az
+        } elseif ($daysUntilExpiry <= 90) {
+            return 'expiring_soon'; // 90 gün içinde
+        } else {
+            return 'active'; // Normal aktif
+        }
+    }
+
+    public function getRawStatusAttribute()
+    {
+        return $this->attributes['status'];
+    }
 
     /**
      * Poliçe aktif mi?

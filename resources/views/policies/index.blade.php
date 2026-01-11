@@ -1075,12 +1075,14 @@
                         <div class="policy-info-label">Bitiş Tarihi</div>
                         <div class="policy-info-value {{ $daysLeft <= 30 ? 'text-danger' : '' }}">
                             {{ $policy->end_date->format('d.m.Y') }}
-                            @if($daysLeft > 0)
-                                <small>{{ $daysLeft }} gün</small>
-                            @elseif($daysLeft === 0)
-                                <small class="text-danger">Bugün!</small>
-                            @else
-                                <small class="text-danger">{{ abs($daysLeft) }} gün önce</small>
+                            @if ($policy->status != 'renewed')
+                                @if($daysLeft > 0)
+                                    <small>{{ $daysLeft }} gün</small>
+                                @elseif($daysLeft === 0)
+                                    <small class="text-danger">Bugün!</small>
+                                @else
+                                    <small class="text-danger">{{ abs($daysLeft) }} gün önce</small>
+                                @endif
                             @endif
                         </div>
                     </div>
@@ -1195,12 +1197,14 @@
                                 @php
                                     $daysLeft = $policy->days_until_expiry;
                                 @endphp
-                                @if($daysLeft > 0)
-                                    <small class="text-muted">{{ $daysLeft }} gün kaldı</small>
-                                @elseif($daysLeft === 0)
-                                    <small class="text-danger fw-semibold">Bugün bitiyor!</small>
-                                @else
-                                    <small class="text-danger">{{ abs($daysLeft) }} gün önce</small>
+                                @if ($policy->status != 'renewed')
+                                    @if($daysLeft > 0)
+                                        <small class="text-muted">{{ $daysLeft }} gün kaldı</small>
+                                    @elseif($daysLeft === 0)
+                                        <small class="text-danger fw-semibold">Bugün bitiyor!</small>
+                                    @else
+                                        <small class="text-danger">{{ abs($daysLeft) }} gün önce</small>
+                                    @endif
                                 @endif
                             </td>
                             <td data-order="{{ $policy->premium_amount }}">

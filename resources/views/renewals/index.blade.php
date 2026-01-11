@@ -547,304 +547,378 @@
    {{-- RENEWALS PAGE - STAT CARDS --}}
 <style>
 
-.renewal-stat-card {
-    position: relative;
-    border-radius: 14px;
-    padding: 1.25rem;
-    overflow: hidden;
-    border: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    height: 100%;
-    display: flex;
-    gap: 0.75rem;
-    cursor: pointer;
-}
-
-.renewal-stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-}
-
-/* Icon */
-.renewal-stat-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    backdrop-filter: blur(10px);
-    color: rgba(255, 255, 255, 0.95);
-    transition: all 0.3s ease;
-    z-index: 2;
-    position: relative;
-}
-
-.renewal-stat-card:hover .renewal-stat-icon {
-    transform: scale(1.1) rotate(5deg);
-}
-
-/* Content */
-.renewal-stat-content {
-    z-index: 2;
-    position: relative;
-}
-
-.renewal-stat-value {
-    font-size: 1.875rem;
-    font-weight: 800;
-    color: #ffffff;
-    line-height: 1;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.renewal-stat-label {
-    font-size: 0.813rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: rgba(255, 255, 255, 0.85);
-}
-
-/* Background Icon */
-.renewal-stat-bg {
-    position: absolute;
-    bottom: -15px;
-    right: -15px;
-    font-size: 120px;
-    color: rgba(255, 255, 255, 0.08);
-    z-index: 1;
-    line-height: 1;
-    pointer-events: none;
-    transform: rotate(-15deg);
-    transition: all 0.4s ease;
-}
-
-.renewal-stat-card:hover .renewal-stat-bg {
-    transform: rotate(-10deg) scale(1.05);
-    color: rgba(255, 255, 255, 0.12);
-}
-
-/* ========================================
-   COLOR VARIANTS
-======================================== */
-
-/* Primary - Mavi (Toplam) */
-.renewal-stat-primary {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-}
-
-.renewal-stat-primary:hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-}
-
-/* Info - Cyan (Bekliyor) */
-.renewal-stat-info {
-    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-}
-
-.renewal-stat-info:hover {
-    background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
-}
-
-/* Warning - Turuncu (İletişimde) */
-.renewal-stat-warning {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-}
-
-.renewal-stat-warning:hover {
-    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-}
-
-/* Danger - Kırmızı (Kritik) */
-.renewal-stat-danger {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.renewal-stat-danger:hover {
-    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-}
-
-/* Success - Yeşil (Yenilendi) */
-.renewal-stat-success {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-}
-
-.renewal-stat-success:hover {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
-}
-
-/* Secondary - Gri (Kaybedildi) */
-.renewal-stat-secondary {
-    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-}
-
-.renewal-stat-secondary:hover {
-    background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
-}
-
-/* ========================================
-   RESPONSIVE
-======================================== */
-
-@media (max-width: 1200px) {
-    .renewal-stat-value {
-        font-size: 1.625rem;
-    }
-
-    .renewal-stat-bg {
-        font-size: 100px;
-    }
-}
-
-@media (max-width: 992px) {
     .renewal-stat-card {
+        position: relative;
+        border-radius: 14px;
+        padding: 1.25rem;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        display: flex;
+        gap: 0.75rem;
+        cursor: pointer;
+    }
+
+    .renewal-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Icon */
+    .renewal-stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        backdrop-filter: blur(10px);
+        color: rgba(255, 255, 255, 0.95);
+        transition: all 0.3s ease;
+        z-index: 2;
+        position: relative;
+    }
+
+    .renewal-stat-card:hover .renewal-stat-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    /* Content */
+    .renewal-stat-content {
+        z-index: 2;
+        position: relative;
+    }
+
+    .renewal-stat-value {
+        font-size: 1.875rem;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .renewal-stat-label {
+        font-size: 0.813rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* Background Icon */
+    .renewal-stat-bg {
+        position: absolute;
+        bottom: -15px;
+        right: -15px;
+        font-size: 120px;
+        color: rgba(255, 255, 255, 0.08);
+        z-index: 1;
+        line-height: 1;
+        pointer-events: none;
+        transform: rotate(-15deg);
+        transition: all 0.4s ease;
+    }
+
+    .renewal-stat-card:hover .renewal-stat-bg {
+        transform: rotate(-10deg) scale(1.05);
+        color: rgba(255, 255, 255, 0.12);
+    }
+
+    /* ========================================
+    COLOR VARIANTS
+    ======================================== */
+
+    /* Primary - Mavi (Toplam) */
+    .renewal-stat-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .renewal-stat-primary:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    }
+
+    /* Info - Cyan (Bekliyor) */
+    .renewal-stat-info {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    }
+
+    .renewal-stat-info:hover {
+        background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+    }
+
+    /* Warning - Turuncu (İletişimde) */
+    .renewal-stat-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .renewal-stat-warning:hover {
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    }
+
+    /* Danger - Kırmızı (Kritik) */
+    .renewal-stat-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .renewal-stat-danger:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    }
+
+    /* Success - Yeşil (Yenilendi) */
+    .renewal-stat-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .renewal-stat-success:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    /* Secondary - Gri (Kaybedildi) */
+    .renewal-stat-secondary {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    }
+
+    .renewal-stat-secondary:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+    }
+
+    /* ========================================
+    RESPONSIVE
+    ======================================== */
+
+    @media (max-width: 1200px) {
+        .renewal-stat-value {
+            font-size: 1.625rem;
+        }
+
+        .renewal-stat-bg {
+            font-size: 100px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .renewal-stat-card {
+            padding: 1rem;
+        }
+
+        .renewal-stat-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+        }
+
+        .renewal-stat-value {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .renewal-stat-value {
+            font-size: 1.375rem;
+        }
+
+        .renewal-stat-label {
+            font-size: 0.75rem;
+        }
+
+        .renewal-stat-bg {
+            font-size: 80px;
+            bottom: -10px;
+            right: -10px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .renewal-stat-card {
+            padding: 0.875rem;
+        }
+
+        .renewal-stat-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+        }
+
+        .renewal-stat-value {
+            font-size: 1.25rem;
+        }
+
+        .renewal-stat-label {
+            font-size: 0.688rem;
+        }
+
+        .renewal-stat-bg {
+            font-size: 70px;
+        }
+    }
+
+    /* ========================================
+    ANIMATION
+    ======================================== */
+
+    @keyframes bounceIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .renewal-stat-card {
+        animation: bounceIn 0.5s ease-out;
+    }
+
+    .renewal-stat-card:nth-child(1) { animation-delay: 0s; }
+    .renewal-stat-card:nth-child(2) { animation-delay: 0.05s; }
+    .renewal-stat-card:nth-child(3) { animation-delay: 0.1s; }
+    .renewal-stat-card:nth-child(4) { animation-delay: 0.15s; }
+    .renewal-stat-card:nth-child(5) { animation-delay: 0.2s; }
+    .renewal-stat-card:nth-child(6) { animation-delay: 0.25s; }
+
+    /* ========================================
+    CLICK EFFECT
+    ======================================== */
+
+    .renewal-stat-card:active {
+        transform: translateY(-2px) scale(0.98);
+    }
+
+    /* Hover overlay */
+    .renewal-stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0);
+        transition: all 0.3s ease;
+        z-index: 3;
+        pointer-events: none;
+    }
+
+    .renewal-stat-card:hover::after {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ========================================
+    PULSE EFFECT (Kritik Kartlar İçin)
+    ======================================== */
+
+    @keyframes criticalPulse {
+        0%, 100% {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        50% {
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+        }
+    }
+
+    /* Kritik sayısı > 0 ise pulse efekti */
+    .renewal-stat-danger:hover {
+        animation: criticalPulse 2s infinite;
+    }
+
+    /* ========================================
+    PROGRESS BAR (Opsiyonel)
+    ======================================== */
+
+    .renewal-stat-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.2);
+        z-index: 2;
+    }
+
+    .renewal-stat-progress-bar {
+        height: 100%;
+        background: rgba(255, 255, 255, 0.5);
+        transition: width 1s ease;
+    }
+</style>
+
+<style>
+    /* Renewal Days Status Badge (Yenilendi/Kaybedildi için) */
+    .renewal-days-status-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         padding: 1rem;
     }
 
-    .renewal-stat-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
+    /* Days Alert Container */
+    .renewal-days-alert {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
     }
 
-    .renewal-stat-value {
+    .renewal-days-alert.overdue {
+        background: rgba(239, 68, 68, 0.1);
+        border: 2px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .renewal-days-alert.critical {
+        background: rgba(245, 158, 11, 0.1);
+        border: 2px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .renewal-days-alert.urgent {
+        background: rgba(14, 165, 233, 0.1);
+        border: 2px solid rgba(14, 165, 233, 0.3);
+    }
+
+    .renewal-days-alert.normal {
+        background: rgba(100, 116, 139, 0.05);
+        border: 2px solid rgba(100, 116, 139, 0.15);
+    }
+
+    .renewal-days-icon {
         font-size: 1.5rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .renewal-stat-value {
-        font-size: 1.375rem;
+        flex-shrink: 0;
     }
 
-    .renewal-stat-label {
+    .renewal-days-content {
+        flex: 1;
+    }
+
+    .renewal-days-value {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .renewal-days-label {
         font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
     }
 
-    .renewal-stat-bg {
-        font-size: 80px;
-        bottom: -10px;
-        right: -10px;
-    }
-}
-
-@media (max-width: 576px) {
-    .renewal-stat-card {
-        padding: 0.875rem;
+    /* Badge boyutları */
+    .renewal-card-mobile .badge {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
     }
 
-    .renewal-stat-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 16px;
+    /* Disabled action button */
+    .renewal-action-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
     }
-
-    .renewal-stat-value {
-        font-size: 1.25rem;
-    }
-
-    .renewal-stat-label {
-        font-size: 0.688rem;
-    }
-
-    .renewal-stat-bg {
-        font-size: 70px;
-    }
-}
-
-/* ========================================
-   ANIMATION
-======================================== */
-
-@keyframes bounceIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.renewal-stat-card {
-    animation: bounceIn 0.5s ease-out;
-}
-
-.renewal-stat-card:nth-child(1) { animation-delay: 0s; }
-.renewal-stat-card:nth-child(2) { animation-delay: 0.05s; }
-.renewal-stat-card:nth-child(3) { animation-delay: 0.1s; }
-.renewal-stat-card:nth-child(4) { animation-delay: 0.15s; }
-.renewal-stat-card:nth-child(5) { animation-delay: 0.2s; }
-.renewal-stat-card:nth-child(6) { animation-delay: 0.25s; }
-
-/* ========================================
-   CLICK EFFECT
-======================================== */
-
-.renewal-stat-card:active {
-    transform: translateY(-2px) scale(0.98);
-}
-
-/* Hover overlay */
-.renewal-stat-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0);
-    transition: all 0.3s ease;
-    z-index: 3;
-    pointer-events: none;
-}
-
-.renewal-stat-card:hover::after {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-/* ========================================
-   PULSE EFFECT (Kritik Kartlar İçin)
-======================================== */
-
-@keyframes criticalPulse {
-    0%, 100% {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-    50% {
-        box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
-    }
-}
-
-/* Kritik sayısı > 0 ise pulse efekti */
-.renewal-stat-danger:hover {
-    animation: criticalPulse 2s infinite;
-}
-
-/* ========================================
-   PROGRESS BAR (Opsiyonel)
-======================================== */
-
-.renewal-stat-progress {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.2);
-    z-index: 2;
-}
-
-.renewal-stat-progress-bar {
-    height: 100%;
-    background: rgba(255, 255, 255, 0.5);
-    transition: width 1s ease;
-}
 </style>
 @endpush
 
@@ -986,56 +1060,56 @@
         </div>
     </div>
 
-<!-- Filtreler -->
-<div class="card mb-3 border-0 shadow-sm">
-    <div class="card-body">
-        <div class="row g-3">
-            <!-- Durum -->
-            <div class="col-md-2">
-                <label class="form-label small text-muted mb-1">Durum</label>
-                <select id="filterStatus" class="form-select">
-                    <option value="">Tüm Durumlar</option>
-                    <option value="Bekliyor">Bekliyor</option>
-                    <option value="İletişimde">İletişimde</option>
-                    <option value="Yenilendi">Yenilendi</option>
-                    <option value="Kaybedildi">Kaybedildi</option>
-                </select>
-            </div>
+    <!-- Filtreler -->
+    <div class="card mb-3 border-0 shadow-sm">
+        <div class="card-body">
+            <div class="row g-3">
+                <!-- Durum -->
+                <div class="col-md-2">
+                    <label class="form-label small text-muted mb-1">Durum</label>
+                    <select id="filterStatus" class="form-select">
+                        <option value="">Tüm Durumlar</option>
+                        <option value="Bekliyor">Bekliyor</option>
+                        <option value="İletişimde">İletişimde</option>
+                        <option value="Yenilendi">Yenilendi</option>
+                        <option value="Kaybedildi">Kaybedildi</option>
+                    </select>
+                </div>
 
-            <!-- Öncelik -->
-            <div class="col-md-2">
-                <label class="form-label small text-muted mb-1">Öncelik</label>
-                <select id="filterPriority" class="form-select">
-                    <option value="">Tüm Öncelikler</option>
-                    <option value="Düşük">Düşük</option>
-                    <option value="Normal">Normal</option>
-                    <option value="Yüksek">Yüksek</option>
-                    <option value="Kritik">Kritik</option>
-                </select>
-            </div>
+                <!-- Öncelik -->
+                <div class="col-md-2">
+                    <label class="form-label small text-muted mb-1">Öncelik</label>
+                    <select id="filterPriority" class="form-select">
+                        <option value="">Tüm Öncelikler</option>
+                        <option value="Düşük">Düşük</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Yüksek">Yüksek</option>
+                        <option value="Kritik">Kritik</option>
+                    </select>
+                </div>
 
-            <!-- Başlangıç Tarihi -->
-            <div class="col-md-2">
-                <label class="form-label small text-muted mb-1">Başlangıç Tarihi</label>
-                <input type="date" id="filterDateFrom" class="form-control">
-            </div>
+                <!-- Başlangıç Tarihi -->
+                <div class="col-md-2">
+                    <label class="form-label small text-muted mb-1">Başlangıç Tarihi</label>
+                    <input type="date" id="filterDateFrom" class="form-control">
+                </div>
 
-            <!-- Bitiş Tarihi -->
-            <div class="col-md-2">
-                <label class="form-label small text-muted mb-1">Bitiş Tarihi</label>
-                <input type="date" id="filterDateTo" class="form-control">
-            </div>
+                <!-- Bitiş Tarihi -->
+                <div class="col-md-2">
+                    <label class="form-label small text-muted mb-1">Bitiş Tarihi</label>
+                    <input type="date" id="filterDateTo" class="form-control">
+                </div>
 
-            <!-- Temizle Butonu -->
-            <div class="col-md-1">
-                <label class="form-label small text-muted mb-1 d-none d-md-block">&nbsp;</label>
-                <button type="button" class="btn btn-secondary w-100" onclick="clearFilters()">
-                    <i class="bi bi-x-circle"></i>
-                </button>
+                <!-- Temizle Butonu -->
+                <div class="col-md-1">
+                    <label class="form-label small text-muted mb-1 d-none d-md-block">&nbsp;</label>
+                    <button type="button" class="btn btn-secondary w-100" onclick="clearFilters()">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 <!-- Mobile: Search Bar -->
 <div class="mobile-search-bar">
@@ -1043,188 +1117,242 @@
     <input type="text" id="mobileSearch" class="mobile-search-input" placeholder="Poliçe, müşteri ara...">
 </div>
 
-<!-- Mobile: Card Görünümü -->
-<div class="mobile-cards-container">
-    @forelse($renewals as $renewal)
-        @php
-            $daysLeft = $renewal->days_until_renewal;
-            $isOverdue = $daysLeft < 0;
-            $isCritical = $daysLeft >= 0 && $daysLeft <= 7;
-            $isUrgent = $daysLeft > 7 && $daysLeft <= 30;
+    <!-- Mobile: Card Görünümü -->
+    <div class="mobile-cards-container">
+        @forelse($renewals as $renewal)
+            @php
+                $daysLeft = $renewal->days_until_renewal;
+                $isOverdue = $daysLeft < 0;
+                $isCritical = $daysLeft >= 0 && $daysLeft <= 7;
+                $isUrgent = $daysLeft > 7 && $daysLeft <= 30;
 
-            // Days Alert Config
-            if ($isOverdue) {
-                $daysAlertClass = 'overdue';
-                $daysAlertIcon = 'bi-exclamation-triangle-fill';
-                $daysAlertColor = '#ef4444';
-                $daysAlertText = abs($daysLeft) . ' gün geçti';
-            } elseif ($isCritical) {
-                $daysAlertClass = 'critical';
-                $daysAlertIcon = 'bi-clock-fill';
-                $daysAlertColor = '#f59e0b';
-                $daysAlertText = $daysLeft . ' gün kaldı';
-            } elseif ($isUrgent) {
-                $daysAlertClass = 'urgent';
-                $daysAlertIcon = 'bi-calendar-check';
-                $daysAlertColor = '#0ea5e9';
-                $daysAlertText = $daysLeft . ' gün kaldı';
-            } else {
-                $daysAlertClass = 'normal';
-                $daysAlertIcon = 'bi-calendar';
-                $daysAlertColor = '#64748b';
-                $daysAlertText = $daysLeft . ' gün kaldı';
-            }
+                // Priority Config
+                $priorityConfig = [
+                    'low' => ['color' => 'secondary', 'label' => 'Düşük', 'stripe' => 'low'],
+                    'normal' => ['color' => 'info', 'label' => 'Normal', 'stripe' => 'normal'],
+                    'high' => ['color' => 'warning', 'label' => 'Yüksek', 'stripe' => 'high'],
+                    'critical' => ['color' => 'danger', 'label' => 'Kritik', 'stripe' => 'critical'],
+                ];
+                $priority = $priorityConfig[$renewal->priority] ?? ['color' => 'info', 'label' => 'Normal', 'stripe' => 'normal'];
 
-            // Priority Config
-            $priorityConfig = [
-                'low' => ['color' => 'secondary', 'label' => 'Düşük', 'stripe' => 'low'],
-                'normal' => ['color' => 'info', 'label' => 'Normal', 'stripe' => 'normal'],
-                'high' => ['color' => 'warning', 'label' => 'Yüksek', 'stripe' => 'high'],
-                'critical' => ['color' => 'danger', 'label' => 'Kritik', 'stripe' => 'critical'],
-            ];
-            $priority = $priorityConfig[$renewal->priority] ?? ['color' => 'info', 'label' => 'Normal', 'stripe' => 'normal'];
+                // Status Config
+                $statusConfig = [
+                    'pending' => ['color' => 'warning', 'label' => 'Bekliyor', 'ribbon' => '#f59e0b'],
+                    'contacted' => ['color' => 'info', 'label' => 'İletişimde', 'ribbon' => '#0ea5e9'],
+                    'renewed' => ['color' => 'success', 'label' => 'Yenilendi', 'ribbon' => '#10b981'],
+                    'lost' => ['color' => 'danger', 'label' => 'Kaybedildi', 'ribbon' => '#ef4444'],
+                ];
+                $status = $statusConfig[$renewal->status] ?? ['color' => 'secondary', 'label' => $renewal->status, 'ribbon' => '#6c757d'];
+            @endphp
 
-            // Status Config
-            $statusConfig = [
-                'pending' => ['color' => 'warning', 'label' => 'Bekliyor', 'ribbon' => '#f59e0b'],
-                'contacted' => ['color' => 'info', 'label' => 'İletişimde', 'ribbon' => '#0ea5e9'],
-                'renewed' => ['color' => 'success', 'label' => 'Yenilendi', 'ribbon' => '#10b981'],
-                'lost' => ['color' => 'danger', 'label' => 'Kaybedildi', 'ribbon' => '#ef4444'],
-            ];
-            $status = $statusConfig[$renewal->status] ?? ['color' => 'secondary', 'label' => $renewal->status, 'ribbon' => '#6c757d'];
-        @endphp
+            <div class="renewal-card-mobile" data-renewal-id="{{ $renewal->id }}">
+                <!-- Priority Stripe -->
+                <div class="renewal-card-stripe {{ $priority['stripe'] }}"></div>
 
-        <div class="renewal-card-mobile" data-renewal-id="{{ $renewal->id }}">
-            <!-- Priority Stripe -->
-            <div class="renewal-card-stripe {{ $priority['stripe'] }}"></div>
+                <!-- Status Ribbon -->
+                <div class="renewal-status-ribbon" style="background: {{ $status['ribbon'] }}">
+                    {{ $status['label'] }}
+                </div>
 
-            <!-- Status Ribbon -->
-            <div class="renewal-status-ribbon" style="background: {{ $status['ribbon'] }}">
-                {{ $status['label'] }}
-            </div>
+                <!-- Card Header -->
+                <div class="renewal-card-header">
+                    <div style="flex: 1; min-width: 0;">
+                        @if($renewal->policy)
+                            <div class="renewal-card-policy">{{ $renewal->policy->policy_number }}</div>
+                            @if($renewal->policy->customer)
+                                <div class="renewal-card-customer">{{ $renewal->policy->customer->name }}</div>
+                                <div class="renewal-card-phone">
+                                    <i class="bi bi-telephone"></i> {{ $renewal->policy->customer->phone }}
+                                </div>
+                            @endif
+                        @else
+                            <div class="text-muted">Poliçe bulunamadı</div>
+                        @endif
+                    </div>
+                    <div class="renewal-card-type">
+                        @if($renewal->policy && $renewal->policy->policy_type_label)
+                            <span class="badge rounded-pill bg-info">
+                                {{ $renewal->policy->policy_type_label }}
+                            </span>
+                        @endif
+                    </div>
+                </div>
 
-            <!-- Card Header -->
-            <div class="renewal-card-header">
-                <div style="flex: 1; min-width: 0;">
-                    @if($renewal->policy)
-                        <div class="renewal-card-policy">{{ $renewal->policy->policy_number }}</div>
-                        @if($renewal->policy->customer)
-                            <div class="renewal-card-customer">{{ $renewal->policy->customer->name }}</div>
-                            <div class="renewal-card-phone">
-                                <i class="bi bi-telephone"></i> {{ $renewal->policy->customer->phone }}
+                <!-- Days Left Alert -->
+                <div class="renewal-days-alert {{ $isOverdue ? 'overdue' : ($isCritical ? 'critical' : ($isUrgent ? 'urgent' : 'normal')) }}">
+                    @if($renewal->status == 'renewed')
+                        <!-- Yenilendi -->
+                        <div class="renewal-days-status-badge">
+                            <span class="badge bg-success" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                                <i class="bi bi-check-circle-fill me-1"></i>
+                                Yenilendi
+                            </span>
+                        </div>
+                    @elseif($renewal->status == 'lost')
+                        <!-- Kaybedildi -->
+                        <div class="renewal-days-status-badge">
+                            <span class="badge bg-danger" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                                <i class="bi bi-x-circle-fill me-1"></i>
+                                Kaybedildi
+                            </span>
+                        </div>
+                    @else
+                        <!-- Normal durum  -->
+                        @if($isOverdue)
+                            <!-- Gecikmiş -->
+                            <i class="bi bi-exclamation-triangle-fill renewal-days-icon" style="color: #ef4444; font-size: 1.5rem;"></i>
+                            <div class="renewal-days-content">
+                                <div class="renewal-days-value">
+                                    <span class="badge bg-danger" style="font-size: 1rem;">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>
+                                        {{ abs($daysLeft) }} gün geçti
+                                    </span>
+                                </div>
+                                <div class="renewal-days-label" style="color: #ef4444;">
+                                    Geçmiş Yenileme
+                                </div>
+                            </div>
+                        @elseif($isCritical)
+                            <!-- Kritik (7 gün) -->
+                            <i class="bi bi-clock-fill renewal-days-icon" style="color: #f59e0b; font-size: 1.5rem;"></i>
+                            <div class="renewal-days-content">
+                                <div class="renewal-days-value">
+                                    <span class="badge bg-warning text-dark" style="font-size: 1rem;">
+                                        <i class="bi bi-clock me-1"></i>
+                                        {{ $daysLeft }} gün
+                                    </span>
+                                </div>
+                                <div class="renewal-days-label" style="color: #f59e0b;">
+                                    Yenileme Tarihi
+                                </div>
+                            </div>
+                        @elseif($isUrgent)
+                            <!-- Acil (30 gün) -->
+                            <i class="bi bi-calendar-check renewal-days-icon" style="color: #0ea5e9; font-size: 1.5rem;"></i>
+                            <div class="renewal-days-content">
+                                <div class="renewal-days-value">
+                                    <span class="badge bg-info" style="font-size: 1rem;">
+                                        {{ $daysLeft }} gün
+                                    </span>
+                                </div>
+                                <div class="renewal-days-label" style="color: #0ea5e9;">
+                                    Yenileme Tarihi
+                                </div>
+                            </div>
+                        @else
+                            <!-- Normal -->
+                            <i class="bi bi-calendar renewal-days-icon" style="color: #64748b; font-size: 1.5rem;"></i>
+                            <div class="renewal-days-content">
+                                <div class="renewal-days-value">
+                                    <span class="text-muted" style="font-size: 1rem;">{{ $daysLeft }} gün</span>
+                                </div>
+                                <div class="renewal-days-label" style="color: #64748b;">
+                                    Yenileme Tarihi
+                                </div>
                             </div>
                         @endif
-                    @else
-                        <div class="text-muted">Poliçe bulunamadı</div>
                     @endif
                 </div>
-                <div class="renewal-card-type">
-                    @if($renewal->policy && $renewal->policy->policy_type_label)
-                        <span class="badge rounded-pill bg-info">
-                            {{ $renewal->policy->policy_type_label }}
-                        </span>
-                    @endif
-                </div>
-            </div>
 
-            <!-- Days Left Alert -->
-            <div class="renewal-days-alert {{ $daysAlertClass }}">
-                <i class="bi {{ $daysAlertIcon }} renewal-days-icon" style="color: {{ $daysAlertColor }}"></i>
-                <div class="renewal-days-content">
-                    <div class="renewal-days-value" style="color: {{ $daysAlertColor }}">
-                        {{ $daysAlertText }}
+                <!-- Card Body -->
+                <div class="renewal-card-body">
+                    <!-- Yenileme Tarihi -->
+                    <div class="renewal-info-item">
+                        <div class="renewal-info-label">Yenileme Tarihi</div>
+                        <div class="renewal-info-value">{{ $renewal->renewal_date->format('d.m.Y') }}</div>
                     </div>
-                    <div class="renewal-days-label" style="color: {{ $daysAlertColor }}">
-                        {{ $isOverdue ? 'Geçmiş Yenileme' : 'Yenileme Tarihi' }}
-                    </div>
-                </div>
-            </div>
 
-            <!-- Card Body -->
-            <div class="renewal-card-body">
-                <!-- Yenileme Tarihi -->
-                <div class="renewal-info-item">
-                    <div class="renewal-info-label">Yenileme Tarihi</div>
-                    <div class="renewal-info-value">{{ $renewal->renewal_date->format('d.m.Y') }}</div>
-                </div>
-
-                <!-- Sigorta Şirketi -->
-                <div class="renewal-info-item">
-                    <div class="renewal-info-label">Sigorta Şirketi</div>
-                    <div class="renewal-info-value">
-                        @if($renewal->policy && $renewal->policy->insuranceCompany)
-                            <span class="badge rounded-pill bg-info">
-                                {{ $renewal->policy->insuranceCompany->code }}
-                            </span>
-                        @else
-                            -
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Öncelik -->
-                <div class="renewal-info-item">
-                    <div class="renewal-info-label">Öncelik</div>
-                    <div class="renewal-info-value">
-                        <span class="priority-badge-mobile bg-{{ $priority['color'] }} text-white">
-                            @if($priority['stripe'] === 'critical')
-                                <i class="bi bi-exclamation-triangle-fill"></i>
-                            @elseif($priority['stripe'] === 'high')
-                                <i class="bi bi-exclamation-circle-fill"></i>
-                            @elseif($priority['stripe'] === 'normal')
-                                <i class="bi bi-info-circle-fill"></i>
+                    <!-- Sigorta Şirketi -->
+                    <div class="renewal-info-item">
+                        <div class="renewal-info-label">Sigorta Şirketi</div>
+                        <div class="renewal-info-value">
+                            @if($renewal->policy && $renewal->policy->insuranceCompany)
+                                <span class="badge rounded-pill bg-info">
+                                    {{ $renewal->policy->insuranceCompany->code }}
+                                </span>
                             @else
-                                <i class="bi bi-circle-fill"></i>
+                                -
                             @endif
-                            {{ $priority['label'] }}
-                        </span>
+                        </div>
+                    </div>
+
+                    <!-- Öncelik (Laptop ile aynı - Renewed/Lost için gizli) -->
+                    <div class="renewal-info-item">
+                        <div class="renewal-info-label">Öncelik</div>
+                        <div class="renewal-info-value">
+                            @if($renewal->status == 'renewed' || $renewal->status == 'lost')
+                                <span class="text-muted">-</span>
+                            @else
+                                <span class="badge bg-{{ $priority['color'] }}" style="font-size: 0.875rem; padding: 0.375rem 0.75rem;">
+                                    @if($priority['stripe'] === 'critical')
+                                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                    @elseif($priority['stripe'] === 'high')
+                                        <i class="bi bi-exclamation-circle-fill me-1"></i>
+                                    @elseif($priority['stripe'] === 'normal')
+                                        <i class="bi bi-info-circle-fill me-1"></i>
+                                    @else
+                                        <i class="bi bi-circle-fill me-1"></i>
+                                    @endif
+                                    {{ $priority['label'] }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Durum -->
+                    <div class="renewal-info-item">
+                        <div class="renewal-info-label">Durum</div>
+                        <div class="renewal-info-value">
+                            <span class="badge bg-{{ $status['color'] }}" style="font-size: 0.875rem; padding: 0.375rem 0.75rem;">
+                                {{ $status['label'] }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Son Hatırlatıcı -->
+                    <div class="renewal-info-item">
+                        <div class="renewal-info-label">Son Hatırlatıcı</div>
+                        <div class="renewal-info-value">
+                            @if($renewal->last_reminder_sent_at)
+                                <small>{{ $renewal->last_reminder_sent_at->diffForHumans() }}</small>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
 
-                <!-- Son İletişim -->
-                <div class="renewal-info-item">
-                    <div class="renewal-info-label">Son Hatırlatıcı</div>
-                    <div class="renewal-info-value">
-                        @if($renewal->last_reminder_sent_at)
-                            <small>{{ $renewal->last_reminder_sent_at->diffForHumans() }}</small>
-                        @else
-                            <span class="text-muted">-</span>
-                        @endif
-                    </div>
-                </div>
-            </div>
+                <!-- Card Actions -->
+                <div class="renewal-card-actions">
+                    <a href="{{ route('renewals.show', $renewal) }}" class="renewal-action-btn view">
+                        <i class="bi bi-eye"></i>
+                        <span>Detayları Gör</span>
+                    </a>
 
-            <!-- Card Actions -->
-            <div class="renewal-card-actions">
-                <a href="{{ route('renewals.show', $renewal) }}" class="renewal-action-btn view">
-                    <i class="bi bi-eye"></i>
-                    <span>Detayları Gör</span>
-                </a>
-
-                @if($renewal->status === 'pending')
-                    <form method="POST" action="{{ route('renewals.sendReminder', $renewal) }}" style="margin: 0;">
-                        @csrf
-                        <button type="submit" class="renewal-action-btn remind" style="width: 100%;">
+                    @if($renewal->status === 'pending' || $renewal->status === 'contacted')
+                        <form method="POST" action="{{ route('renewals.sendReminder', $renewal) }}" style="margin: 0;">
+                            @csrf
+                            <button type="submit" class="renewal-action-btn remind" style="width: 100%;">
+                                <i class="bi bi-send"></i>
+                                <span>Hatırlat</span>
+                            </button>
+                        </form>
+                    @else
+                        <div class="renewal-action-btn remind disabled" style="opacity: 0.5; cursor: not-allowed;">
                             <i class="bi bi-send"></i>
                             <span>Hatırlat</span>
-                        </button>
-                    </form>
-                @else
-                    <div class="renewal-action-btn remind disabled">
-                        <i class="bi bi-send"></i>
-                        <span>Hatırlat</span>
-                    </div>
-                @endif
+                        </div>
+                    @endif
+                </div>
             </div>
-        </div>
-    @empty
-        <div class="empty-state-mobile">
-            <i class="bi bi-arrow-repeat"></i>
-            <h3>Yenileme Bulunamadı</h3>
-            <p>Henüz yenileme kaydı bulunmamaktadır.</p>
-        </div>
-    @endforelse
-</div>
+        @empty
+            <div class="empty-state-mobile">
+                <i class="bi bi-arrow-repeat"></i>
+                <h3>Yenileme Bulunamadı</h3>
+                <p>Henüz yenileme kaydı bulunmamaktadır.</p>
+            </div>
+        @endforelse
+    </div>
 
 <!-- Desktop: Tablo Görünümü -->
     <div class="main-card card desktop-table-container">
@@ -1316,6 +1444,8 @@
                             @if($isOverdue)
                                 @if ($renewal->status == 'renewed')
                                      <span class="badge bg-success">Yenilendi</span>
+                                @elseif($renewal->status == 'lost')
+                                    <span class="badge bg-danger">Kaybedildi</span>
                                 @else
                                     <span class="badge bg-danger">
                                         <i class="bi bi-exclamation-triangle me-1"></i>
@@ -1345,9 +1475,13 @@
                                 ];
                                 $priority = $priorityConfig[$renewal->priority] ?? ['color' => 'secondary', 'label' => 'Normal'];
                             @endphp
-                            <span class="badge bg-{{ $priority['color'] }}">
-                                {{ $priority['label'] }}
-                            </span>
+                            @if($renewal->status == 'renewed' || $renewal->status == 'lost')
+                                <span>-</span>
+                            @else
+                                <span class="badge bg-{{ $priority['color'] }}">
+                                    {{ $priority['label'] }}
+                                </span>
+                            @endif
                         </td>
                         <td>
                             @php
