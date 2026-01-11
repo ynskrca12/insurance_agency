@@ -297,4 +297,16 @@ class InsuranceCompanyController extends Controller
             ], 500);
         }
     }
+    /**
+     * Tenant'a ait sigorta şirketi sayısını döndür (AJAX)
+     */
+    public function count()
+    {
+        $count = InsuranceCompany::count();
+
+        return response()->json([
+            'count' => $count,
+            'has_companies' => $count > 0
+        ]);
+    }
 }

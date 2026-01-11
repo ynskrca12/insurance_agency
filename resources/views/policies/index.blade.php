@@ -838,9 +838,9 @@
                     Toplam <strong>{{ number_format($policies->count()) }}</strong> poliçe listeleniyor
                 </p>
             </div>
-            <a href="{{ route('policies.create') }}" class="btn btn-primary action-btn">
+            <button type="button" class="btn btn-primary action-btn" onclick="checkInsuranceCompaniesBeforeCreate()">
                 <i class="bi bi-plus-circle me-2"></i>Yeni Poliçe Ekle
-            </a>
+            </button>
         </div>
     </div>
 
@@ -1451,5 +1451,82 @@ function clearFilters() {
 }
 
 // Existing deletePolicy function remains the same
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    /**
+    * Poliçe oluşturmadan önce sigorta şirketi kontrolü
+    */
+    function checkInsuranceCompaniesBeforeCreate() {
+        // AJAX ile sigorta şirketi sayısını kontrol et
+        $.ajax({
+            url: '{{ route("insurance-companies.count") }}',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response.count === 0) {
+                    // Sigorta şirketi yok - Uyarı göster
+                    Swal.fire({
+                        title: 'Sigorta Şirketi Bulunamadı!',
+                        html: `
+                            <div style="text-align: left; padding: 1rem;">
+                                <p style="font-size: 1rem; margin-bottom: 1rem;">
+                                    <i class="bi bi-exclamation-triangle text-warning" style="font-size: 1.5rem;"></i>
+                                    Poliçe oluşturabilmek için öncelikle çalıştığınız sigorta şirketlerini sisteme eklemelisiniz.
+                                </p>
+                                <ul style="margin-left: 1.5rem; color: #64748b;">
+                                    <li>Sigorta Şirketleri sayfasına gidip şirket ekleyin</li>
+                                    <li>En az 1 sigorta şirketi ekledikten sonra poliçe oluşturabilirsiniz</li>
+                                </ul>
+                            </div>
+                        `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        showDenyButton: true,
+                        confirmButtonText: '<i class="bi bi-building me-2"></i>Sigorta Şirketi Ekle',
+                        denyButtonText: '<i class="bi bi-arrow-right me-2"></i>Eklemeden Devam Et',
+                        cancelButtonText: '<i class="bi bi-x-circle me-2"></i>İptal',
+                        confirmButtonColor: '#3b82f6',
+                        denyButtonColor: '#f59e0b',
+                        cancelButtonColor: '#6c757d',
+                        reverseButtons: true,
+                        customClass: {
+                            confirmButton: 'btn btn-primary px-4 py-2',
+                            denyButton: 'btn btn-warning px-4 py-2',
+                            cancelButton: 'btn btn-secondary px-4 py-2'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '{{ route("insurance-companies.create") }}';
+                        } else if (result.isDenied) {
+                            window.location.href = '{{ route("policies.create") }}';
+                        }
+                    });
+                } else {
+                    // Sigorta şirketi var - Direkt poliçe ekleme sayfasına git
+                    window.location.href = '{{ route("policies.create") }}';
+                }
+            },
+            error: function(xhr) {
+                console.error('Sigorta şirketi kontrolü hatası:', xhr);
+
+                // Hata durumunda yine de devam et (fallback)
+                Swal.fire({
+                    title: 'Bir Hata Oluştu',
+                    text: 'Kontrol yapılamadı. Yine de devam etmek istiyor musunuz?',
+                    icon: 'error',
+                    showCancelButton: true,
+                    confirmButtonText: 'Evet, Devam Et',
+                    cancelButtonText: 'İptal',
+                    confirmButtonColor: '#3b82f6',
+                    cancelButtonColor: '#6c757d'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '{{ route("policies.create") }}';
+                    }
+                });
+            }
+        });
+    }
 </script>
 @endpush

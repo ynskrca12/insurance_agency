@@ -292,7 +292,7 @@ Route::get('/make-mailable', function () {
     return 'Mailable created successfully!';
 });
 
-
+Route::get('/insurance-companies/count', [InsuranceCompanyController::class, 'count'])->name('insurance-companies.count');
 // Route::get('/test-mail', function () {
 //     try {
 //         $testData = [
