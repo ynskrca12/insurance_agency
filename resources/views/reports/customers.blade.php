@@ -359,23 +359,6 @@
 
     <!-- Grafikler ve Tablolar -->
     <div class="row g-4">
-        <!-- Aylık Yeni Müşteri Trendi -->
-        <div class="col-lg-12">
-            <div class="chart-card card">
-                <div class="card-header">
-                    <h5 class="chart-title">
-                        <i class="bi bi-graph-up"></i>
-                        <span>Yeni Müşteri Trendi</span>
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="newCustomersChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Şehre Göre Dağılım -->
         <div class="col-lg-6">
             <div class="table-card card">
@@ -483,92 +466,5 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script>
-// Chart.js Global Ayarları
-Chart.defaults.font.family = 'Inter, system-ui, -apple-system, sans-serif';
-Chart.defaults.font.size = 13;
-Chart.defaults.color = '#495057';
 
-// Yeni Müşteri Trendi
-const newCustomersCtx = document.getElementById('newCustomersChart').getContext('2d');
-new Chart(newCustomersCtx, {
-    type: 'line',
-    data: {
-        labels: {!! json_encode($monthlyNewCustomers->pluck('month')) !!},
-        datasets: [{
-            label: 'Yeni Müşteri Sayısı',
-            data: {!! json_encode($monthlyNewCustomers->pluck('count')) !!},
-            borderColor: 'rgb(13, 110, 253)',
-            backgroundColor: 'rgba(13, 110, 253, 0.1)',
-            borderWidth: 3,
-            tension: 0.4,
-            fill: true,
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            pointBackgroundColor: '#ffffff',
-            pointBorderColor: 'rgb(13, 110, 253)',
-            pointBorderWidth: 3,
-            pointHoverBackgroundColor: 'rgb(13, 110, 253)',
-            pointHoverBorderColor: '#ffffff',
-            pointHoverBorderWidth: 3,
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            },
-            tooltip: {
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                padding: 12,
-                borderRadius: 8,
-                titleFont: {
-                    size: 13,
-                    weight: '600'
-                },
-                bodyFont: {
-                    size: 13
-                },
-                callbacks: {
-                    label: function(context) {
-                        return 'Yeni Müşteri: ' + context.parsed.y + ' kişi';
-                    }
-                }
-            }
-        },
-        scales: {
-            x: {
-                grid: {
-                    display: false
-                },
-                border: {
-                    display: false
-                }
-            },
-            y: {
-                beginAtZero: true,
-                grid: {
-                    color: 'rgba(0, 0, 0, 0.05)',
-                    drawBorder: false
-                },
-                border: {
-                    display: false
-                },
-                ticks: {
-                    stepSize: 1,
-                    callback: function(value) {
-                        return value + ' kişi';
-                    }
-                }
-            }
-        },
-        interaction: {
-            intersect: false,
-            mode: 'index'
-        }
-    }
-});
-</script>
 @endpush

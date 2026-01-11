@@ -345,9 +345,9 @@
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <button type="button" class="btn btn-success action-btn" data-bs-toggle="modal" data-bs-target="#exportModal">
+                <!-- <button type="button" class="btn btn-success action-btn" data-bs-toggle="modal" data-bs-target="#exportModal">
                     <i class="bi bi-file-earmark-excel me-2"></i>Excel'e Aktar
-                </button>
+                </button> -->
                 <a href="{{ route('reports.index') }}" class="btn btn-light action-btn">
                     <i class="bi bi-arrow-left me-2"></i>Geri
                 </a>
@@ -425,19 +425,54 @@
     <div class="row g-4 mb-4">
         <!-- Satış Trendi -->
         <div class="col-lg-8">
-            <div class="chart-card card">
+            <!-- Sigorta Şirketi Dağılımı Tablosu -->
+            <div class="table-card card mb-4">
                 <div class="card-header">
                     <h5 class="chart-title">
-                        <i class="bi bi-graph-up"></i>
-                        <span>Satış Trendi</span>
+                        <i class="bi bi-building"></i>
+                        <span>Sigorta Şirketlerine Göre Dağılım</span>
                     </h5>
                 </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="salesChart"></canvas>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-modern">
+                            <thead>
+                                <tr>
+                                    <th>Şirket Adı</th>
+                                    <th class="text-end">Poliçe Sayısı</th>
+                                    <th class="text-end">Toplam Prim</th>
+                                    <th class="text-end">Dağılım Oranı</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($companyDistribution as $company)
+                                <tr>
+                                    <td>
+                                        <span class="company-name">{{ $company->insuranceCompany->name ?? 'Bilinmiyor' }}</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong>{{ number_format($company->count) }}</strong>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong class="text-success">{{ number_format($company->total_premium, 2) }} ₺</strong>
+                                    </td>
+                                    <td class="text-end">
+                                        @php
+                                            $percentage = $stats['total_premium'] > 0 ? ($company->total_premium / $stats['total_premium']) * 100 : 0;
+                                        @endphp
+                                        <div class="progress-modern">
+                                            <div class="progress-bar-modern" style="width: {{ $percentage }}%">
+                                                {{ number_format($percentage, 1) }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
+    </div>
         </div>
 
         <!-- Poliçe Türü Dağılımı -->
@@ -454,55 +489,6 @@
                         <canvas id="policyTypeChart"></canvas>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sigorta Şirketi Dağılımı Tablosu -->
-    <div class="table-card card mb-4">
-        <div class="card-header">
-            <h5 class="chart-title">
-                <i class="bi bi-building"></i>
-                <span>Sigorta Şirketlerine Göre Dağılım</span>
-            </h5>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-modern">
-                    <thead>
-                        <tr>
-                            <th>Şirket Adı</th>
-                            <th class="text-end">Poliçe Sayısı</th>
-                            <th class="text-end">Toplam Prim</th>
-                            <th class="text-end">Dağılım Oranı</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($companyDistribution as $company)
-                        <tr>
-                            <td>
-                                <span class="company-name">{{ $company->insuranceCompany->name ?? 'Bilinmiyor' }}</span>
-                            </td>
-                            <td class="text-end">
-                                <strong>{{ number_format($company->count) }}</strong>
-                            </td>
-                            <td class="text-end">
-                                <strong class="text-success">{{ number_format($company->total_premium, 2) }} ₺</strong>
-                            </td>
-                            <td class="text-end">
-                                @php
-                                    $percentage = $stats['total_premium'] > 0 ? ($company->total_premium / $stats['total_premium']) * 100 : 0;
-                                @endphp
-                                <div class="progress-modern">
-                                    <div class="progress-bar-modern" style="width: {{ $percentage }}%">
-                                        {{ number_format($percentage, 1) }}%
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
@@ -599,124 +585,6 @@ Chart.defaults.font.family = 'Inter, system-ui, -apple-system, sans-serif';
 Chart.defaults.font.size = 13;
 Chart.defaults.color = '#495057';
 
-// Satış Trendi Grafiği
-const salesCtx = document.getElementById('salesChart').getContext('2d');
-new Chart(salesCtx, {
-    type: 'line',
-    data: {
-        labels: {!! json_encode($timeSeriesData->pluck('period')) !!},
-        datasets: [{
-            label: 'Prim Tutarı (₺)',
-            data: {!! json_encode($timeSeriesData->pluck('total_premium')) !!},
-            borderColor: 'rgb(13, 110, 253)',
-            backgroundColor: 'rgba(13, 110, 253, 0.1)',
-            borderWidth: 3,
-            tension: 0.4,
-            fill: true,
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            pointBackgroundColor: '#ffffff',
-            pointBorderColor: 'rgb(13, 110, 253)',
-            pointBorderWidth: 3,
-            pointHoverBackgroundColor: 'rgb(13, 110, 253)',
-            pointHoverBorderColor: '#ffffff',
-            pointHoverBorderWidth: 3,
-            yAxisID: 'y'
-        }, {
-            label: 'Poliçe Sayısı',
-            data: {!! json_encode($timeSeriesData->pluck('policy_count')) !!},
-            borderColor: 'rgb(220, 53, 69)',
-            backgroundColor: 'rgba(220, 53, 69, 0.1)',
-            borderWidth: 3,
-            tension: 0.4,
-            fill: true,
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            pointBackgroundColor: '#ffffff',
-            pointBorderColor: 'rgb(220, 53, 69)',
-            pointBorderWidth: 3,
-            pointHoverBackgroundColor: 'rgb(220, 53, 69)',
-            pointHoverBorderColor: '#ffffff',
-            pointHoverBorderWidth: 3,
-            yAxisID: 'y1'
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-            mode: 'index',
-            intersect: false,
-        },
-        plugins: {
-            legend: {
-                position: 'top',
-                labels: {
-                    padding: 15,
-                    font: {
-                        size: 13,
-                        weight: '500'
-                    },
-                    usePointStyle: true,
-                    pointStyle: 'circle'
-                }
-            },
-            tooltip: {
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                padding: 12,
-                borderRadius: 8,
-                titleFont: {
-                    size: 13,
-                    weight: '600'
-                },
-                bodyFont: {
-                    size: 13
-                }
-            }
-        },
-        scales: {
-            y: {
-                type: 'linear',
-                display: true,
-                position: 'left',
-                grid: {
-                    color: 'rgba(0, 0, 0, 0.05)',
-                    drawBorder: false
-                },
-                border: {
-                    display: false
-                },
-                ticks: {
-                    callback: function(value) {
-                        return value.toLocaleString('tr-TR') + ' ₺';
-                    }
-                }
-            },
-            y1: {
-                type: 'linear',
-                display: true,
-                position: 'right',
-                grid: {
-                    drawOnChartArea: false,
-                },
-                border: {
-                    display: false
-                },
-                ticks: {
-                    stepSize: 1
-                }
-            },
-            x: {
-                grid: {
-                    display: false
-                },
-                border: {
-                    display: false
-                }
-            }
-        }
-    }
-});
 
 // Poliçe Türü Grafiği
 const policyTypeCtx = document.getElementById('policyTypeChart').getContext('2d');

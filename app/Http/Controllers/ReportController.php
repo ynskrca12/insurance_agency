@@ -26,41 +26,75 @@ class ReportController extends Controller
      */
     public function sales(Request $request)
     {
-        $startDate = $request->get('start_date', now()->startOfMonth()->format('Y-m-d'));
-        $endDate = $request->get('end_date', now()->endOfMonth()->format('Y-m-d'));
-        $groupBy = $request->get('group_by', 'day'); // day, week, month, year
-        $policyType = $request->get('policy_type', 'all');
+        // Varsayılan olarak TÜM VERİLER (filtresiz)
+        $startDate = $request->get('start_date', null);
+        $endDate = $request->get('end_date', null);
+        $groupBy = $request->get('group_by', 'month'); // Varsayılan aylık
+
+        // Eğer tarih belirtilmemişse, tüm zamanlar
+        $query = Policy::query();
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $query->where('created_at', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->where('created_at', '<=', $endDate);
+        }
+
+        // Display için tarih formatı
+        if (!$startDate || !$endDate) {
+            // İlk ve son poliçe tarihlerini al
+            $firstPolicy = Policy::orderBy('created_at', 'asc')->first();
+            $lastPolicy = Policy::orderBy('created_at', 'desc')->first();
+
+            $displayStartDate = $firstPolicy ? $firstPolicy->created_at->format('Y-m-d') : now()->subYear()->format('Y-m-d');
+            $displayEndDate = $lastPolicy ? $lastPolicy->created_at->format('Y-m-d') : now()->format('Y-m-d');
+        } else {
+            $displayStartDate = $startDate;
+            $displayEndDate = $endDate;
+        }
 
         // Genel İstatistikler
+        $statsQuery = clone $query;
         $stats = [
-            'total_policies' => Policy::whereBetween('created_at', [$startDate, $endDate])->count(),
-            'total_premium' => Policy::whereBetween('created_at', [$startDate, $endDate])->sum('premium_amount'),
-            'total_commission' => Policy::whereBetween('created_at', [$startDate, $endDate])->sum('commission_amount'),
-            'average_premium' => Policy::whereBetween('created_at', [$startDate, $endDate])->avg('premium_amount'),
+            'total_policies' => $statsQuery->count(),
+            'total_premium' => $statsQuery->sum('premium_amount') ?? 0,
+            'total_commission' => $statsQuery->sum('commission_amount') ?? 0,
+            'average_premium' => $statsQuery->avg('premium_amount') ?? 0,
         ];
 
         // Poliçe türüne göre dağılım
-        $policyTypeDistribution = Policy::whereBetween('created_at', [$startDate, $endDate])
+        $policyTypeQuery = clone $query;
+        $policyTypeDistribution = $policyTypeQuery
             ->select('policy_type', DB::raw('COUNT(*) as count'), DB::raw('SUM(premium_amount) as total_premium'))
             ->groupBy('policy_type')
+            ->orderByDesc('count')
             ->get();
 
         // Sigorta şirketine göre dağılım
-        $companyDistribution = Policy::whereBetween('created_at', [$startDate, $endDate])
+        $companyQuery = clone $query;
+        $companyDistribution = $companyQuery
             ->with('insuranceCompany')
             ->select('insurance_company_id', DB::raw('COUNT(*) as count'), DB::raw('SUM(premium_amount) as total_premium'))
             ->groupBy('insurance_company_id')
+            ->orderByDesc('total_premium')
             ->get();
 
         // Zaman serisi verileri (Grafik için)
-        $timeSeriesData = $this->getTimeSeriesData($startDate, $endDate, $groupBy);
+        $timeSeriesData = $this->getTimeSeriesData(
+            $startDate ?? $displayStartDate,
+            $endDate ?? $displayEndDate,
+            $groupBy
+        );
 
         // En iyi performans gösteren poliçe türleri
-        $topPolicyTypes = Policy::whereBetween('created_at', [$startDate, $endDate])
+        $topPolicyTypesQuery = clone $query;
+        $topPolicyTypes = $topPolicyTypesQuery
             ->select('policy_type', DB::raw('COUNT(*) as count'), DB::raw('SUM(premium_amount) as total_premium'))
             ->groupBy('policy_type')
             ->orderByDesc('total_premium')
-            ->limit(5)
+            ->limit(6)
             ->get();
 
         return view('reports.sales', compact(
@@ -72,7 +106,71 @@ class ReportController extends Controller
             'startDate',
             'endDate',
             'groupBy'
-        ));
+        ))->with([
+            'displayStartDate' => $displayStartDate,
+            'displayEndDate' => $displayEndDate,
+        ]);
+    }
+
+    /**
+     * Zaman serisi verilerini hazırla
+     */
+    private function getTimeSeriesData($startDate, $endDate, $groupBy)
+    {
+        $query = Policy::whereBetween('created_at', [$startDate, $endDate]);
+
+        switch ($groupBy) {
+            case 'day':
+                $data = $query->selectRaw('DATE(created_at) as period, COUNT(*) as policy_count, SUM(premium_amount) as total_premium')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get()
+                    ->map(function($item) {
+                        $item->period = \Carbon\Carbon::parse($item->period)->format('d.m.Y');
+                        return $item;
+                    });
+                break;
+
+            case 'week':
+                $data = $query->selectRaw('YEARWEEK(created_at, 1) as yearweek, MIN(DATE(created_at)) as period, COUNT(*) as policy_count, SUM(premium_amount) as total_premium')
+                    ->groupBy('yearweek')
+                    ->orderBy('yearweek')
+                    ->get()
+                    ->map(function($item) {
+                        $item->period = \Carbon\Carbon::parse($item->period)->format('d.m.Y') . ' - Hafta';
+                        return $item;
+                    });
+                break;
+
+            case 'month':
+                $data = $query->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as period, COUNT(*) as policy_count, SUM(premium_amount) as total_premium')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get()
+                    ->map(function($item) {
+                        $months = [
+                            '01' => 'Oca', '02' => 'Şub', '03' => 'Mar', '04' => 'Nis',
+                            '05' => 'May', '06' => 'Haz', '07' => 'Tem', '08' => 'Ağu',
+                            '09' => 'Eyl', '10' => 'Eki', '11' => 'Kas', '12' => 'Ara'
+                        ];
+                        $parts = explode('-', $item->period);
+                        $item->period = $months[$parts[1]] . ' ' . $parts[0];
+                        return $item;
+                    });
+                break;
+
+            case 'year':
+                $data = $query->selectRaw('YEAR(created_at) as period, COUNT(*) as policy_count, SUM(premium_amount) as total_premium')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+                break;
+
+            default:
+                $data = collect();
+        }
+
+        return $data;
     }
 
     /**
@@ -80,39 +178,72 @@ class ReportController extends Controller
      */
     public function commission(Request $request)
     {
-        $startDate = $request->get('start_date', now()->startOfMonth()->format('Y-m-d'));
-        $endDate = $request->get('end_date', now()->endOfMonth()->format('Y-m-d'));
+        // Varsayılan olarak TÜM VERİLER (filtresiz)
+        $startDate = $request->get('start_date', null);
+        $endDate = $request->get('end_date', null);
+
+        // Ana sorgu
+        $query = Policy::query();
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $query->where('created_at', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->where('created_at', '<=', $endDate);
+        }
+
+        // Display için tarih formatı
+        if (!$startDate || !$endDate) {
+            // İlk ve son poliçe tarihlerini al
+            $firstPolicy = Policy::orderBy('created_at', 'asc')->first();
+            $lastPolicy = Policy::orderBy('created_at', 'desc')->first();
+
+            $displayStartDate = $firstPolicy ? $firstPolicy->created_at->format('Y-m-d') : now()->subYear()->format('Y-m-d');
+            $displayEndDate = $lastPolicy ? $lastPolicy->created_at->format('Y-m-d') : now()->format('Y-m-d');
+        } else {
+            $displayStartDate = $startDate;
+            $displayEndDate = $endDate;
+        }
 
         // Genel İstatistikler
+        $statsQuery = clone $query;
         $stats = [
-            'total_commission' => Policy::whereBetween('created_at', [$startDate, $endDate])->sum('commission_amount'),
-            'total_policies' => Policy::whereBetween('created_at', [$startDate, $endDate])->count(),
-            'average_commission' => Policy::whereBetween('created_at', [$startDate, $endDate])->avg('commission_amount'),
+            'total_commission' => $statsQuery->sum('commission_amount') ?? 0,
+            'total_policies' => $statsQuery->count(),
+            'average_commission' => $statsQuery->avg('commission_amount') ?? 0,
             'commission_rate' => 0,
         ];
 
         // Komisyon oranı hesapla
-        $totalPremium = Policy::whereBetween('created_at', [$startDate, $endDate])->sum('premium_amount');
+        $totalPremiumQuery = clone $query;
+        $totalPremium = $totalPremiumQuery->sum('premium_amount') ?? 0;
         if ($totalPremium > 0) {
             $stats['commission_rate'] = ($stats['total_commission'] / $totalPremium) * 100;
         }
 
         // Sigorta şirketine göre komisyon
-        $commissionByCompany = Policy::whereBetween('created_at', [$startDate, $endDate])
+        $companyQuery = clone $query;
+        $commissionByCompany = $companyQuery
             ->with('insuranceCompany')
             ->select(
                 'insurance_company_id',
                 DB::raw('COUNT(*) as policy_count'),
                 DB::raw('SUM(premium_amount) as total_premium'),
                 DB::raw('SUM(commission_amount) as total_commission'),
-                DB::raw('AVG((commission_amount / premium_amount) * 100) as avg_commission_rate')
+                DB::raw('CASE
+                    WHEN SUM(premium_amount) > 0
+                    THEN (SUM(commission_amount) / SUM(premium_amount)) * 100
+                    ELSE 0
+                END as avg_commission_rate')
             )
             ->groupBy('insurance_company_id')
             ->orderByDesc('total_commission')
             ->get();
 
         // Poliçe türüne göre komisyon
-        $commissionByType = Policy::whereBetween('created_at', [$startDate, $endDate])
+        $typeQuery = clone $query;
+        $commissionByType = $typeQuery
             ->select(
                 'policy_type',
                 DB::raw('COUNT(*) as policy_count'),
@@ -124,7 +255,8 @@ class ReportController extends Controller
             ->get();
 
         // Aylık komisyon trendi
-        $monthlyCommission = Policy::whereBetween('created_at', [$startDate, $endDate])
+        $monthlyQuery = clone $query;
+        $monthlyCommission = $monthlyQuery
             ->select(
                 DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
                 DB::raw('SUM(commission_amount) as total_commission'),
@@ -132,7 +264,17 @@ class ReportController extends Controller
             )
             ->groupBy('month')
             ->orderBy('month')
-            ->get();
+            ->get()
+            ->map(function($item) {
+                $months = [
+                    '01' => 'Oca', '02' => 'Şub', '03' => 'Mar', '04' => 'Nis',
+                    '05' => 'May', '06' => 'Haz', '07' => 'Tem', '08' => 'Ağu',
+                    '09' => 'Eyl', '10' => 'Eki', '11' => 'Kas', '12' => 'Ara'
+                ];
+                $parts = explode('-', $item->month);
+                $item->month_label = $months[$parts[1]] . ' ' . $parts[0];
+                return $item;
+            });
 
         return view('reports.commission', compact(
             'stats',
@@ -141,7 +283,10 @@ class ReportController extends Controller
             'monthlyCommission',
             'startDate',
             'endDate'
-        ));
+        ))->with([
+            'displayStartDate' => $displayStartDate,
+            'displayEndDate' => $displayEndDate,
+        ]);
     }
 
     /**
@@ -149,64 +294,114 @@ class ReportController extends Controller
      */
     public function customers(Request $request)
     {
-        $startDate = $request->get('start_date', now()->startOfYear()->format('Y-m-d'));
-        $endDate = $request->get('end_date', now()->endOfYear()->format('Y-m-d'));
+        // Varsayılan olarak TÜM VERİLER (filtresiz)
+        $startDate = $request->get('start_date', null);
+        $endDate = $request->get('end_date', null);
 
+        // Display için tarih formatı
+        if (!$startDate || !$endDate) {
+            // İlk ve son müşteri tarihlerini al
+            $firstCustomer = Customer::orderBy('created_at', 'asc')->first();
+            $lastCustomer = Customer::orderBy('created_at', 'desc')->first();
+
+            $displayStartDate = $firstCustomer ? $firstCustomer->created_at->format('Y-m-d') : now()->subYear()->format('Y-m-d');
+            $displayEndDate = $lastCustomer ? $lastCustomer->created_at->format('Y-m-d') : now()->format('Y-m-d');
+        } else {
+            $displayStartDate = $startDate;
+            $displayEndDate = $endDate;
+        }
+
+        // Genel İstatistikler
         $stats = [
             'total_customers' => Customer::count(),
             'active_customers' => Customer::where('status', 'active')->count(),
-            'new_customers' => Customer::whereBetween('created_at', [$startDate, $endDate])->count(),
+            'new_customers' => 0,
             'customers_with_policies' => Customer::has('policies')->count(),
         ];
 
+        // Yeni müşteriler (tarih filtresine göre)
+        if ($startDate && $endDate) {
+            $stats['new_customers'] = Customer::whereBetween('created_at', [$startDate, $endDate])->count();
+        } else {
+            // Filtresiz ise tüm müşteriler yeni kabul edilebilir veya son 1 yıl
+            $stats['new_customers'] = Customer::where('created_at', '>=', now()->subYear())->count();
+        }
+
+        // Şehre göre müşteri dağılımı
         $customersByCity = Customer::select('city', DB::raw('COUNT(*) as count'))
             ->whereNotNull('city')
+            ->where('city', '!=', '')
             ->groupBy('city')
             ->orderByDesc('count')
             ->limit(10)
             ->get();
 
         // Müşteri başına ortalama poliçe sayısı
-        $avgPoliciesPerCustomer = Policy::count() / max(Customer::count(), 1);
+        $totalCustomers = Customer::count();
+        $totalPolicies = Policy::count();
+        $avgPoliciesPerCustomer = $totalCustomers > 0 ? $totalPolicies / $totalCustomers : 0;
 
-        // En değerli müşteriler
-        $topCustomers = Customer::select('customers.id', 'customers.name', 'customers.phone', 'customers.email', 'customers.city')
+        // En değerli müşteriler (Tüm zamanlar)
+        $topCustomers = Customer::select(
+                'customers.id',
+                'customers.name',
+                'customers.phone',
+                'customers.email',
+                'customers.city'
+            )
             ->join('policies', 'customers.id', '=', 'policies.customer_id')
             ->selectRaw('SUM(policies.premium_amount) as total_premium')
+            ->selectRaw('COUNT(policies.id) as policy_count')
             ->groupBy('customers.id', 'customers.name', 'customers.phone', 'customers.email', 'customers.city')
             ->orderByDesc('total_premium')
             ->limit(10)
             ->get();
 
-        // Poliçe sayısını ayrıca çek
-        foreach ($topCustomers as $customer) {
-            $customer->policy_count = Policy::where('customer_id', $customer->id)->count();
+        // Aylık yeni müşteri trendi
+        $monthlyQuery = Customer::query();
+
+        if ($startDate && $endDate) {
+            $monthlyQuery->whereBetween('created_at', [$startDate, $endDate]);
+        } else {
+            // Filtresiz ise son 12 ay
+            $monthlyQuery->where('created_at', '>=', now()->subYear());
         }
 
-        // Aylık yeni müşteri trendi
-        $monthlyNewCustomers = Customer::whereBetween('created_at', [$startDate, $endDate])
+        $monthlyNewCustomers = $monthlyQuery
             ->select(
                 DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
                 DB::raw('COUNT(*) as count')
             )
             ->groupBy('month')
             ->orderBy('month')
-            ->get();
+            ->get()
+            ->map(function($item) {
+                $months = [
+                    '01' => 'Oca', '02' => 'Şub', '03' => 'Mar', '04' => 'Nis',
+                    '05' => 'May', '06' => 'Haz', '07' => 'Tem', '08' => 'Ağu',
+                    '09' => 'Eyl', '10' => 'Eki', '11' => 'Kas', '12' => 'Ara'
+                ];
+                $parts = explode('-', $item->month);
+                $item->month_label = $months[$parts[1]] . ' ' . $parts[0];
+                return $item;
+            });
 
-        // $customersByAge = Customer::whereNotNull('date_of_birth')
-        //     ->selectRaw('
-        //         CASE
-        //             WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 25 THEN "18-24"
-        //             WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 25 AND 34 THEN "25-34"
-        //             WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 35 AND 44 THEN "35-44"
-        //             WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 45 AND 54 THEN "45-54"
-        //             WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 55 AND 64 THEN "55-64"
-        //             ELSE "65+"
-        //         END as age_group,
-        //         COUNT(*) as count
-        //     ')
-        //     ->groupBy('age_group')
-        //     ->get();
+        // Yaş grubuna göre dağılım (opsiyonel)
+        $customersByAge = Customer::whereNotNull('birth_date')
+            ->selectRaw('
+                CASE
+                    WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) < 25 THEN "18-24"
+                    WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 25 AND 34 THEN "25-34"
+                    WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 35 AND 44 THEN "35-44"
+                    WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 45 AND 54 THEN "45-54"
+                    WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 55 AND 64 THEN "55-64"
+                    ELSE "65+"
+                END as age_group,
+                COUNT(*) as count
+            ')
+            ->groupBy('age_group')
+            ->orderByRaw('FIELD(age_group, "18-24", "25-34", "35-44", "45-54", "55-64", "65+")')
+            ->get();
 
         return view('reports.customers', compact(
             'stats',
@@ -214,10 +409,13 @@ class ReportController extends Controller
             'avgPoliciesPerCustomer',
             'topCustomers',
             'monthlyNewCustomers',
-            // 'customersByAge',
+            'customersByAge',
             'startDate',
             'endDate'
-        ));
+        ))->with([
+            'displayStartDate' => $displayStartDate,
+            'displayEndDate' => $displayEndDate,
+        ]);
     }
 
     /**
@@ -363,30 +561,5 @@ class ReportController extends Controller
         // Maatwebsite/Excel paketi kullanılabilir
 
         return back()->with('info', 'Excel export özelliği yakında eklenecek.');
-    }
-
-    /**
-     * Zaman serisi verileri oluştur
-     */
-    private function getTimeSeriesData($startDate, $endDate, $groupBy)
-    {
-        $dateFormat = match($groupBy) {
-            'day' => '%Y-%m-%d',
-            'week' => '%Y-%u',
-            'month' => '%Y-%m',
-            'year' => '%Y',
-            default => '%Y-%m-%d',
-        };
-
-        return Policy::whereBetween('created_at', [$startDate, $endDate])
-            ->select(
-                DB::raw("DATE_FORMAT(created_at, '{$dateFormat}') as period"),
-                DB::raw('COUNT(*) as policy_count'),
-                DB::raw('SUM(premium_amount) as total_premium'),
-                DB::raw('SUM(commission_amount) as total_commission')
-            )
-            ->groupBy('period')
-            ->orderBy('period')
-            ->get();
     }
 }
