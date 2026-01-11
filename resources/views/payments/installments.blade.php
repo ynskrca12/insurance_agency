@@ -1247,33 +1247,6 @@
             $isDueToday = $daysUntilDue === 0;
             $isCritical = $daysUntilDue > 0 && $daysUntilDue <= 7;
 
-            // Stripe & Alert Config
-            if ($isOverdue) {
-                $stripeClass = 'overdue';
-                $alertClass = 'overdue';
-                $alertIcon = 'bi-exclamation-triangle-fill';
-                $alertColor = '#ef4444';
-                $alertText = abs($daysUntilDue) . ' gün geçti';
-            } elseif ($isDueToday) {
-                $stripeClass = 'today';
-                $alertClass = 'today';
-                $alertIcon = 'bi-clock-fill';
-                $alertColor = '#f59e0b';
-                $alertText = 'Bugün';
-            } elseif ($isCritical) {
-                $stripeClass = 'critical';
-                $alertClass = 'critical';
-                $alertIcon = 'bi-exclamation-circle-fill';
-                $alertColor = '#ff9800';
-                $alertText = $daysUntilDue . ' gün kaldı';
-            } else {
-                $stripeClass = 'normal';
-                $alertClass = 'normal';
-                $alertIcon = 'bi-calendar-check';
-                $alertColor = '#64748b';
-                $alertText = $daysUntilDue . ' gün kaldı';
-            }
-
             // Status Config
             $statusConfig = [
                 'pending' => ['color' => 'warning', 'label' => 'Bekliyor'],
@@ -1285,7 +1258,7 @@
 
         <div class="installment-card-mobile" data-installment-id="{{ $installment->id }}" data-days="{{ $daysUntilDue }}">
             <!-- Status Stripe -->
-            <div class="installment-card-stripe {{ $stripeClass }}"></div>
+            <div class="installment-card-stripe {{ $installment->status == 'paid' ? 'paid' : ($isOverdue ? 'overdue' : ($isDueToday ? 'today' : ($isCritical ? 'critical' : 'normal'))) }}"></div>
 
             <!-- Card Header -->
             <div class="installment-card-header">
@@ -1311,22 +1284,77 @@
                 </div>
                 <div class="installment-amount-content">
                     <div class="installment-amount-label">Taksit Tutarı</div>
-                    <div class="installment-amount-value">{{ number_format($installment->amount, 2) }}₺</div>
+                    <div class="installment-amount-value">{{ number_format($installment->amount, 2) }} ₺</div>
                 </div>
             </div>
 
-            <!-- Due Date Alert -->
-            <div class="installment-due-alert {{ $alertClass }}">
-                <i class="bi {{ $alertIcon }}" style="color: {{ $alertColor }}; font-size: 22px;"></i>
-                <div class="installment-due-content">
-                    <div class="installment-due-text" style="color: {{ $alertColor }}">
-                        {{ $alertText }}
-                    </div>
-                    <div class="installment-due-date" style="color: {{ $alertColor }}">
-                        Vade: {{ $installment->due_date->format('d.m.Y') }}
+            <!-- Due Date Alert / Paid Info -->
+            @if($installment->status == 'paid')
+                <!-- ÖDENDİ - Ödeme Tarihi Göster -->
+                <div class="installment-due-alert paid">
+                    <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 22px;"></i>
+                    <div class="installment-due-content">
+                        <div class="installment-due-text" style="color: #10b981; font-weight: 600;">
+                            Ödeme Tamamlandı
+                        </div>
+                        @if($installment->paid_date)
+                            <div class="installment-due-date" style="color: #10b981;">
+                                {{ $installment->paid_date->format('d.m.Y') }} tarihinde ödendi
+                            </div>
+                        @endif
+                        @if($installment->payment_method)
+                            <div class="installment-payment-method" style="color: #059669; font-size: 0.875rem; margin-top: 0.25rem;">
+                                <i class="bi bi-credit-card"></i>
+                                @php
+                                    $methodLabels = [
+                                        'cash' => 'Nakit',
+                                        'credit_card' => 'Kredi Kartı',
+                                        'bank_transfer' => 'Havale/EFT',
+                                        'check' => 'Çek',
+                                    ];
+                                @endphp
+                                {{ $methodLabels[$installment->payment_method] ?? $installment->payment_method }}
+                            </div>
+                        @endif
                     </div>
                 </div>
-            </div>
+            @else
+                <!-- BEKLEMEDE - Kalan Gün Göster -->
+                @php
+                    if ($isOverdue) {
+                        $alertClass = 'overdue';
+                        $alertIcon = 'bi-exclamation-triangle-fill';
+                        $alertColor = '#ef4444';
+                        $alertText = abs($daysUntilDue) . ' gün geçti';
+                    } elseif ($isDueToday) {
+                        $alertClass = 'today';
+                        $alertIcon = 'bi-clock-fill';
+                        $alertColor = '#f59e0b';
+                        $alertText = 'Bugün';
+                    } elseif ($isCritical) {
+                        $alertClass = 'critical';
+                        $alertIcon = 'bi-exclamation-circle-fill';
+                        $alertColor = '#ff9800';
+                        $alertText = $daysUntilDue . ' gün kaldı';
+                    } else {
+                        $alertClass = 'normal';
+                        $alertIcon = 'bi-calendar-check';
+                        $alertColor = '#64748b';
+                        $alertText = $daysUntilDue . ' gün kaldı';
+                    }
+                @endphp
+                <div class="installment-due-alert {{ $alertClass }}">
+                    <i class="bi {{ $alertIcon }}" style="color: {{ $alertColor }}; font-size: 22px;"></i>
+                    <div class="installment-due-content">
+                        <div class="installment-due-text" style="color: {{ $alertColor }}">
+                            {{ $alertText }}
+                        </div>
+                        <div class="installment-due-date" style="color: {{ $alertColor }}">
+                            Vade: {{ $installment->due_date->format('d.m.Y') }}
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <!-- Card Body -->
             <div class="installment-card-body">
@@ -1334,7 +1362,7 @@
                 <div class="installment-info-item">
                     <div class="installment-info-label">Poliçe Numarası</div>
                     <div class="installment-info-value">
-                        <a href="{{ route('policies.show', $installment->paymentPlan->policy) }}">
+                        <a href="{{ route('policies.show', $installment->paymentPlan->policy) }}" class="text-primary">
                             {{ $installment->paymentPlan->policy->policy_number }}
                         </a>
                     </div>
@@ -1349,6 +1377,16 @@
                         </span>
                     </div>
                 </div>
+
+                <!-- Vade Tarihi (Ödenmemişler için) -->
+                @if($installment->status != 'paid')
+                    <div class="installment-info-item">
+                        <div class="installment-info-label">Vade Tarihi</div>
+                        <div class="installment-info-value">
+                            {{ $installment->due_date->format('d.m.Y') }}
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <!-- Card Actions -->
@@ -1378,11 +1416,12 @@
                     </a>
                 </div>
             @else
+                <!-- ÖDENDİ - Farklı Butonlar -->
                 <div class="installment-card-actions">
                     @if($installment->payment)
                         <a href="{{ route('payments.show', $installment->payment) }}"
                            class="installment-action-btn view">
-                            <i class="bi bi-eye"></i>
+                            <i class="bi bi-receipt"></i>
                             <span>Ödeme Detayı</span>
                         </a>
                     @endif
@@ -1392,6 +1431,17 @@
                         <i class="bi bi-person"></i>
                         <span>Müşteri</span>
                     </a>
+
+                    @if($installment->payment)
+                        <form method="POST" action="{{ route('payments.cancel', $installment->payment) }}" style="margin: 0;" onsubmit="return confirm('Ödemeyi iptal etmek istediğinizden emin misiniz?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="installment-action-btn cancel" style="width: 100%;">
+                                <i class="bi bi-x-circle"></i>
+                                <span>İptal Et</span>
+                            </button>
+                        </form>
+                    @endif
                 </div>
             @endif
         </div>
@@ -1457,29 +1507,37 @@
                             <div class="fw-semibold">{{ $installment->due_date->format('d.m.Y') }}</div>
                         </td>
                         <td data-order="{{ $daysUntilDue }}">
-                            @if($isOverdue)
-                                 @if ($installment->status == 'paid')
-                                     <span class="badge badge-modern bg-success }}">
+                            @if($installment->status == 'paid')
+                                <!-- Ödendi - Ödeme tarihi göster -->
+                                <div class="gap-2">
+                                    <p class="badge bg-success mb-0 p-2">
+                                        <i class="bi bi-check-circle-fill"></i>
                                         Ödendi
-                                    </span>
-                                @else
+                                    </p>
+                                    @if($installment->paid_date)
+                                        <p class="mt-0 "><small class="text-muted">{{ $installment->paid_date->format('d.m.Y') }}</small></p>
+                                    @endif
+                                </div>
+                            @else
+                                <!-- Ödenmedi - Normal kontroller -->
+                                @if($isOverdue)
                                     <span class="days-badge overdue">
                                         <i class="bi bi-exclamation-triangle-fill"></i>
                                         {{ abs($daysUntilDue) }} gün geçti
                                     </span>
+                                @elseif($isDueToday)
+                                    <span class="days-badge today">
+                                        <i class="bi bi-clock-fill"></i>
+                                        Bugün
+                                    </span>
+                                @elseif($isCritical)
+                                    <span class="days-badge critical">
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                        {{ $daysUntilDue }} gün
+                                    </span>
+                                @else
+                                    <span class="text-muted small">{{ $daysUntilDue }} gün</span>
                                 @endif
-                            @elseif($isDueToday)
-                                <span class="days-badge today">
-                                    <i class="bi bi-clock-fill"></i>
-                                    Bugün
-                                </span>
-                            @elseif($isCritical)
-                                <span class="days-badge critical">
-                                    <i class="bi bi-exclamation-circle-fill"></i>
-                                    {{ $daysUntilDue }} gün
-                                </span>
-                            @else
-                                <span class="text-muted small">{{ $daysUntilDue }} gün</span>
                             @endif
                         </td>
                         <td data-order="{{ $installment->amount }}">
