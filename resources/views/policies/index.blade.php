@@ -159,8 +159,6 @@
     }
 </style>
 <style>
-    /* ... Mevcut stiller ... */
-
     /* ============================================
        MOBILE OPTIMIZATION - PROFESSIONAL
     ============================================ */
@@ -588,25 +586,6 @@
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
 }
 
-/* Icon */
-.policy-stat-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size:26px;
-    color: rgba(255, 255, 255, 0.95);
-    transition: all 0.3s ease;
-    z-index: 2;
-    position: relative;
-}
-
-.policy-stat-card:hover .policy-stat-icon {
-    transform: scale(1.1) rotate(5deg);
-}
-
 /* Content */
 .policy-stat-content {
     z-index: 2;
@@ -717,12 +696,6 @@
         padding: 1rem;
     }
 
-    .policy-stat-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
-    }
-
     .policy-stat-value {
         font-size: 1.5rem;
     }
@@ -747,12 +720,6 @@
 @media (max-width: 576px) {
     .policy-stat-card {
         padding: 0.875rem;
-    }
-
-    .policy-stat-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 16px;
     }
 
     .policy-stat-value {
@@ -831,12 +798,7 @@
     <div class="page-header">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <h1 class="h4 mb-1 fw-bold text-dark">
-                    <i class="bi bi-file-earmark-text me-2"></i>Poliçe Yönetimi
-                </h1>
-                <p class="text-muted mb-0 small" id="policyCount">
-                    Toplam <strong>{{ number_format($policies->count()) }}</strong> poliçe listeleniyor
-                </p>
+                <h1 class="h4 mb-1 fw-bold text-dark">Poliçe Yönetimi</h1>
             </div>
             <button type="button" class="btn btn-primary action-btn" onclick="checkInsuranceCompaniesBeforeCreate()">
                 <i class="bi bi-plus-circle me-2"></i>Yeni Poliçe Ekle
@@ -849,9 +811,6 @@
         <!-- Toplam Poliçe -->
         <div class="col-lg col-md-4 col-6">
             <div class="policy-stat-card policy-stat-primary">
-                <div class="policy-stat-icon">
-                    <i class="bi bi-file-earmark-text"></i>
-                </div>
                 <div class="policy-stat-content">
                     <div class="policy-stat-value">{{ number_format($stats['total']) }}</div>
                     <div class="policy-stat-label">Toplam Poliçe</div>
@@ -865,9 +824,6 @@
         <!-- Aktif -->
         <div class="col-lg col-md-4 col-6">
             <div class="policy-stat-card policy-stat-success">
-                <div class="policy-stat-icon">
-                    <i class="bi bi-check-circle"></i>
-                </div>
                 <div class="policy-stat-content">
                     <div class="policy-stat-value">{{ number_format($stats['active']) }}</div>
                     <div class="policy-stat-label">Aktif</div>
@@ -881,9 +837,6 @@
         <!-- Süresi Yaklaşan -->
         <div class="col-lg col-md-4 col-6">
             <div class="policy-stat-card policy-stat-warning">
-                <div class="policy-stat-icon">
-                    <i class="bi bi-clock-history"></i>
-                </div>
                 <div class="policy-stat-content">
                     <div class="policy-stat-value">{{ number_format($stats['expiring_soon']) }}</div>
                     <div class="policy-stat-label">Süresi Yaklaşan</div>
@@ -897,9 +850,6 @@
         <!-- Kritik -->
         <div class="col-lg col-md-4 col-6">
             <div class="policy-stat-card policy-stat-danger">
-                <div class="policy-stat-icon">
-                    <i class="bi bi-exclamation-triangle"></i>
-                </div>
                 <div class="policy-stat-content">
                     <div class="policy-stat-value">{{ number_format($stats['critical']) }}</div>
                     <div class="policy-stat-label">Kritik</div>
@@ -913,9 +863,6 @@
         <!-- Süresi Dolmuş -->
         <div class="col-lg col-md-4 col-6">
             <div class="policy-stat-card policy-stat-secondary">
-                <div class="policy-stat-icon">
-                    <i class="bi bi-x-circle"></i>
-                </div>
                 <div class="policy-stat-content">
                     <div class="policy-stat-value">{{ number_format($stats['expired']) }}</div>
                     <div class="policy-stat-label">Süresi Dolmuş</div>
@@ -1226,7 +1173,7 @@
                                     <i class="bi bi-{{ $config['icon'] }}"></i>
                                     {{ $config['label'] }}
                                 </span>
-                            </td>
+                            <td>
                                 <span class="text-muted">{{ $policy->createdBy->name ?? '-' }}</span>
                             </td>
                             <td>
@@ -1266,206 +1213,78 @@
 
 @push('scripts')
 <script>
-$(document).ready(function() {
+$(document).ready(function () {
 
     const table = initDataTable('#policiesTable', {
-        pageLength: 10,
+        order: [[6, 'asc']],
+        pageLength: 25,
         columnDefs: [
-            { orderable: false, targets: [9] },
+            { orderable: false, searchable: false, targets: 0 },
+            { orderable: false, searchable: false, targets: [10] },
+            { targets: 6, type: 'date' },
+            { targets: 7, type: 'num' }
         ]
     });
 
-    // Filtreler
-    $('#filterPolicyType, #filterStatus, #filterCompany, #filterDateFrom, #filterDateTo').on('change', function() {
-        const policyType = $('#filterPolicyType').val();
+    $('#filterStatus, #filterPolicyType, #filterDateFrom, #filterDateTo').on('change', function () {
+
         const status = $('#filterStatus').val();
-        const company = $('#filterCompany').val();
+        const policyType = $('#filterPolicyType').val();
         const dateFrom = $('#filterDateFrom').val();
         const dateTo = $('#filterDateTo').val();
 
-        // Tüm custom filtreleri temizle
         $.fn.dataTable.ext.search = [];
 
-        // Poliçe türü filtresi
-        if (policyType) {
-            table.column(3).search(policyType);
-        } else {
-            table.column(3).search('');
-        }
-
-        // Durum filtresi
         if (status) {
             table.column(8).search(status);
         } else {
             table.column(8).search('');
         }
 
-        // Şirket filtresi
-        if (company) {
-            table.column(4).search(company);
+        if (policyType) {
+            table.column(3).search(policyType);
         } else {
-            table.column(4).search('');
+            table.column(3).search('');
         }
 
-        // Tarih filtresi
         if (dateFrom || dateTo) {
-            $.fn.dataTable.ext.search.push(
-                function(settings, data, dataIndex) {
-                    const dateStr = data[6]; // Tarih sütunu
-                    if (!dateStr || dateStr === '-') return true;
+            $.fn.dataTable.ext.search.push(function (settings, data) {
 
-                    // İlk satırdaki tarihi parse et
-                    const dateParts = dateStr.split('<br>')[0].trim().match(/\d{2}\.\d{2}\.\d{4}/);
-                    if (!dateParts) return true;
+                const dateStr = data[6];
+                if (!dateStr || dateStr === '-') return true;
 
-                    const parts = dateParts[0].split('.');
-                    const rowDate = new Date(parts[2], parts[1] - 1, parts[0]);
-                    const startDate = dateFrom ? new Date(dateFrom) : null;
-                    const endDate = dateTo ? new Date(dateTo) : null;
+                const match = dateStr.match(/\d{2}\.\d{2}\.\d{4}/);
+                if (!match) return true;
 
-                    if (startDate && rowDate < startDate) return false;
-                    if (endDate && rowDate > endDate) return false;
+                const parts = match[0].split('.');
+                const rowDate = new Date(parts[2], parts[1] - 1, parts[0]);
 
-                    return true;
-                }
-            );
+                const startDate = dateFrom ? new Date(dateFrom) : null;
+                const endDate = dateTo ? new Date(dateTo) : null;
+
+                if (startDate && rowDate < startDate) return false;
+                if (endDate && rowDate > endDate) return false;
+
+                return true;
+            });
         }
 
         table.draw();
     });
 
-    // Sayfa değişince toplam sayıyı güncelle
-    table.on('draw', function() {
-        const info = table.page.info();
-        $('#policyCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> poliçe`);
-    });
-
-    // İlk yüklemede toplam sayıyı güncelle
-    const info = table.page.info();
-    $('#policyCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> poliçe`);
 });
-
-function clearFilters() {
-    $('#filterPolicyType, #filterStatus, #filterCompany, #filterDateFrom, #filterDateTo').val('');
-
-    // Tüm custom filtreleri temizle
-    $.fn.dataTable.ext.search = [];
-
-    const table = $('#policiesTable').DataTable();
-    table.search('').columns().search('').draw();
-}
-
-function deletePolicy(policyId) {
-    if (confirm(' DİKKAT!\n\nBu poliçeyi silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!')) {
-        const form = document.getElementById('deleteForm');
-        form.action = '/panel/policies/' + policyId;
-        form.submit();
-    }
-}
 </script>
-<script>
-$(document).ready(function() {
-    // ... Mevcut DataTable kodu ...
 
-    // Mobile Search
-    $('#mobileSearch').on('keyup', function() {
-        const searchTerm = $(this).val().toLowerCase();
-        filterMobileCards(searchTerm);
-    });
 
-    // Mobile Filter Function
-    function filterMobileCards(searchTerm = '') {
-        const policyType = $('#filterPolicyType').val();
-        const status = $('#filterStatus').val();
-        const company = $('#filterCompany').val();
-
-        let visibleCount = 0;
-
-        $('.policy-card-mobile').each(function() {
-            const $card = $(this);
-            const cardText = $card.text().toLowerCase();
-            const cardStatus = $card.find('.policy-card-status-badge .badge').text().trim();
-            const cardType = $card.find('.badge-modern.bg-info').text().trim();
-            const cardCompany = $card.find('.policy-info-value').eq(1).text().trim();
-
-            let show = true;
-
-            // Search filter
-            if (searchTerm && !cardText.includes(searchTerm)) {
-                show = false;
-            }
-
-            // Policy type filter
-            if (policyType && cardType !== policyType) {
-                show = false;
-            }
-
-            // Status filter
-            if (status && cardStatus !== status) {
-                show = false;
-            }
-
-            // Company filter
-            if (company && cardCompany !== company) {
-                show = false;
-            }
-
-            if (show) {
-                $card.show();
-                visibleCount++;
-            } else {
-                $card.hide();
-            }
-        });
-
-        // Update count for mobile
-        if (window.innerWidth <= 768) {
-            $('#policyCount').html(`Gösterilen: <strong>${visibleCount}</strong> / <strong>{{ $policies->count() }}</strong> poliçe`);
-        }
-    }
-
-    // Filter change event for mobile
-    $('#filterPolicyType, #filterStatus, #filterCompany').on('change', function() {
-        if (window.innerWidth <= 768) {
-            filterMobileCards($('#mobileSearch').val().toLowerCase());
-        }
-    });
-});
-
-// Update clearFilters function
-function clearFilters() {
-    $('#filterPolicyType, #filterStatus, #filterCompany, #filterDateFrom, #filterDateTo').val('');
-    $('#mobileSearch').val('');
-
-    $.fn.dataTable.ext.search = [];
-
-    const table = $('#policiesTable').DataTable();
-    table.search('').columns().search('').draw();
-
-    // Reset mobile cards
-    $('.policy-card-mobile').show();
-
-    if (window.innerWidth <= 768) {
-        $('#policyCount').html(`Toplam <strong>{{ $policies->count() }}</strong> poliçe`);
-    }
-}
-
-// Existing deletePolicy function remains the same
-</script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    /**
-    * Poliçe oluşturmadan önce sigorta şirketi kontrolü
-    */
     function checkInsuranceCompaniesBeforeCreate() {
-        // AJAX ile sigorta şirketi sayısını kontrol et
         $.ajax({
             url: '{{ route("insurance-companies.count") }}',
             type: 'GET',
             dataType: 'json',
             success: function(response) {
                 if (response.count === 0) {
-                    // Sigorta şirketi yok - Uyarı göster
                     Swal.fire({
                         title: 'Sigorta Şirketi Bulunamadı!',
                         html: `
@@ -1503,14 +1322,10 @@ function clearFilters() {
                         }
                     });
                 } else {
-                    // Sigorta şirketi var - Direkt poliçe ekleme sayfasına git
                     window.location.href = '{{ route("policies.create") }}';
                 }
             },
             error: function(xhr) {
-                console.error('Sigorta şirketi kontrolü hatası:', xhr);
-
-                // Hata durumunda yine de devam et (fallback)
                 Swal.fire({
                     title: 'Bir Hata Oluştu',
                     text: 'Kontrol yapılamadı. Yine de devam etmek istiyor musunuz?',

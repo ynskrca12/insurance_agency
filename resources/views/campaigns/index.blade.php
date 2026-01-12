@@ -1089,12 +1089,7 @@
     <div class="page-header">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <h1 class="h4 mb-1 fw-bold text-dark">
-                    <i class="bi bi-megaphone me-2"></i>Kampanyalar
-                </h1>
-                <p class="text-muted mb-0 small" id="campaignCount">
-                    Toplam <strong>{{ $campaigns->count() }}</strong> kampanya kaydı bulundu
-                </p>
+                <h1 class="h4 mb-1 fw-bold text-dark">Kampanyalar</h1>
             </div>
             <div class="d-flex gap-2">
                 <a href="{{ route('campaigns.templates') }}" class="btn btn-info action-btn text-white">
@@ -1603,16 +1598,6 @@ $(document).ready(function() {
 
         table.draw();
     });
-
-    // Sayfa değişince toplam sayıyı güncelle
-    table.on('draw', function() {
-        const info = table.page.info();
-        $('#campaignCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> kampanya`);
-    });
-
-    // İlk yüklemede toplam sayıyı güncelle
-    const info = table.page.info();
-    $('#campaignCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> kampanya`);
 });
 
 function clearFilters() {
@@ -1684,11 +1669,6 @@ $(document).ready(function() {
                 $card.hide();
             }
         });
-
-        // Update count for mobile
-        if (window.innerWidth <= 768) {
-            $('#campaignCount').html(`Gösterilen: <strong>${visibleCount}</strong> / <strong>{{ $campaigns->count() }}</strong> kampanya`);
-        }
     }
 
     // Filter change event for mobile
@@ -1711,10 +1691,6 @@ function clearFilters() {
 
     // Reset mobile cards
     $('.campaign-card-mobile').show();
-
-    if (window.innerWidth <= 768) {
-        $('#campaignCount').html(`Toplam: <strong>{{ $campaigns->count() }}</strong> kampanya`);
-    }
 }
 </script>
 @endpush

@@ -15,18 +15,7 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Customer::withCount('policies')->orderby('created_at', 'desc');
-
-        // Arama
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                ->orWhere('phone', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%")
-                ->orWhere('id_number', 'like', "%{$search}%");
-            });
-        }
+        $query = Customer::withCount('policies')->orderBy('created_at', 'desc');
 
         // Durum filtresi
         if ($request->filled('status')) {
@@ -43,7 +32,15 @@ class CustomerController extends Controller
         // Şehirler (filtre için)
         $cities = Customer::distinct()->pluck('city')->filter()->sort()->values();
 
-        return view('customers.index', compact('customers', 'cities'));
+        // İstatistikler
+        $stats = [
+            'total_customers' => Customer::count(),
+            'active_customers' => Customer::where('status', 'active')->count(),
+            'potential_customers' => Customer::doesntHave('policies')->count(),
+            'total_policies' => Policy::count(),
+        ];
+
+        return view('customers.index', compact('customers', 'cities', 'stats'));
     }
 
     /**

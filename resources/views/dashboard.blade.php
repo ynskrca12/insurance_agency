@@ -21,17 +21,6 @@
         padding: 1.5rem;
     }
 
-    .stat-icon {
-        width: 3.5rem;
-        height: 3.5rem;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.75rem;
-        border: 1px solid #e8e8e8;
-    }
-
     .stat-value {
         font-size: 2rem;
         font-weight: 700;
@@ -189,12 +178,6 @@
             padding: 1.25rem;
         }
 
-        .stat-icon {
-            width: 3rem;
-            height: 3rem;
-            font-size: 1.5rem;
-        }
-
         .stat-value {
             font-size: 1.75rem;
         }
@@ -228,31 +211,6 @@
     display: flex;
     align-items: flex-start;
     gap: 1.25rem;
-}
-
-/* Icon Wrapper */
-.stat-icon-wrapper {
-    flex-shrink: 0;
-}
-
-.stat-card .stat-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(10px);
-    color: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.stat-card:hover .stat-icon {
-    transform: scale(1.1) rotate(5deg);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 /* Stat Info */
@@ -387,12 +345,6 @@
         padding: 1.5rem;
     }
 
-    .stat-card .stat-icon {
-        width: 48px;
-        height: 48px;
-        font-size: 22px;
-    }
-
     .stat-card .stat-value {
         font-size: 1.75rem;
     }
@@ -453,11 +405,6 @@
     <div class="col-lg-3 col-md-6">
         <div class="stat-card stat-card-primary">
             <div class="stat-card-content">
-                <div class="stat-icon-wrapper">
-                    <div class="stat-icon">
-                        <i class="bi bi-people"></i>
-                    </div>
-                </div>
                 <div class="stat-info">
                     <div class="stat-label">Toplam Müşteri</div>
                     <div class="stat-value">{{ number_format($stats['total_customers']) }}</div>
@@ -477,11 +424,6 @@
     <div class="col-lg-3 col-md-6">
         <div class="stat-card stat-card-purple">
             <div class="stat-card-content">
-                <div class="stat-icon-wrapper">
-                    <div class="stat-icon">
-                        <i class="bi bi-file-earmark-text"></i>
-                    </div>
-                </div>
                 <div class="stat-info">
                     <div class="stat-label">Toplam Poliçe</div>
                     <div class="stat-value">{{ number_format($stats['total_policies']) }}</div>
@@ -501,11 +443,6 @@
     <div class="col-lg-3 col-md-6">
         <div class="stat-card stat-card-warning">
             <div class="stat-card-content">
-                <div class="stat-icon-wrapper">
-                    <div class="stat-icon">
-                        <i class="bi bi-clock-history"></i>
-                    </div>
-                </div>
                 <div class="stat-info">
                     <div class="stat-label">Süresi Yaklaşan</div>
                     <div class="stat-value">{{ number_format($stats['expiring_soon']) }}</div>
@@ -525,11 +462,6 @@
     <div class="col-lg-3 col-md-6">
         <div class="stat-card stat-card-success">
             <div class="stat-card-content">
-                <div class="stat-icon-wrapper">
-                    <div class="stat-icon">
-                        <i class="bi bi-check-square"></i>
-                    </div>
-                </div>
                 <div class="stat-info">
                     <div class="stat-label">Bekleyen Görev</div>
                     <div class="stat-value">{{ number_format($stats['pending_tasks']) }}</div>
@@ -747,19 +679,6 @@ $(document).ready(function() {
             $(this).animate({opacity: 1}, 400);
         }, index * 100);
     });
-
-    // Kart hover efektleri
-    $('.stat-card').hover(
-        function() {
-            $(this).find('.stat-icon').css('transform', 'scale(1.1)');
-        },
-        function() {
-            $(this).find('.stat-icon').css('transform', 'scale(1)');
-        }
-    );
-
-    // İkon animasyonları
-    $('.stat-icon').css('transition', 'transform 0.3s ease');
 });
 </script>
 @endpush

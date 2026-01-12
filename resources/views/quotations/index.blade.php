@@ -638,10 +638,10 @@
         }
     }
 </style>
+
    {{-- QUOTATIONS PAGE - STAT CARDS --}}
 
 <style>
-
     .quotation-stat-card {
         position: relative;
         border-radius: 14px;
@@ -659,25 +659,6 @@
     .quotation-stat-card:hover {
         transform: translateY(-4px);
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-    }
-
-    /* Icon */
-    .quotation-stat-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 26px;
-        color: rgba(255, 255, 255, 0.95);
-        transition: all 0.3s ease;
-        z-index: 2;
-        position: relative;
-    }
-
-    .quotation-stat-card:hover .quotation-stat-icon {
-        transform: scale(1.1) rotate(5deg);
     }
 
     /* Content */
@@ -790,12 +771,6 @@
             padding: 1rem;
         }
 
-        .quotation-stat-icon {
-            width: 40px;
-            height: 40px;
-            font-size: 18px;
-        }
-
         .quotation-stat-value {
             font-size: 1.5rem;
         }
@@ -820,12 +795,6 @@
     @media (max-width: 576px) {
         .quotation-stat-card {
             padding: 0.875rem;
-        }
-
-        .quotation-stat-icon {
-            width: 36px;
-            height: 36px;
-            font-size: 16px;
         }
 
         .quotation-stat-value {
@@ -930,12 +899,7 @@
     <div class="page-header">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <h1 class="h4 mb-1 fw-bold text-dark">
-                    <i class="bi bi-file-earmark-text me-2"></i>Teklifler
-                </h1>
-                <p class="text-muted mb-0 small" id="quotationCount">
-                    Toplam <strong>{{ $quotations->count() }}</strong> teklif bulundu
-                </p>
+                <h1 class="h4 mb-1 fw-bold text-dark">Teklifler</h1>
             </div>
             <a href="{{ route('quotations.create') }}" class="btn btn-primary action-btn">
                 <i class="bi bi-plus-circle me-2"></i>Yeni Teklif Oluştur
@@ -948,9 +912,6 @@
         <!-- Toplam Teklif -->
         <div class="col-lg col-md-4 col-sm-6">
             <div class="quotation-stat-card quotation-stat-primary">
-                <div class="quotation-stat-icon">
-                    <i class="bi bi-file-earmark-plus"></i>
-                </div>
                 <div class="quotation-stat-content">
                     <div class="quotation-stat-value">{{ number_format($stats['total']) }}</div>
                     <div class="quotation-stat-label">Toplam Teklif</div>
@@ -964,9 +925,6 @@
         <!-- Gönderildi -->
         <div class="col-lg col-md-4 col-sm-6">
             <div class="quotation-stat-card quotation-stat-info">
-                <div class="quotation-stat-icon">
-                    <i class="bi bi-send"></i>
-                </div>
                 <div class="quotation-stat-content">
                     <div class="quotation-stat-value">{{ number_format($stats['sent']) }}</div>
                     <div class="quotation-stat-label">Gönderildi</div>
@@ -980,9 +938,6 @@
         <!-- Onaylandı -->
         <div class="col-lg col-md-4 col-sm-6">
             <div class="quotation-stat-card quotation-stat-warning">
-                <div class="quotation-stat-icon">
-                    <i class="bi bi-check2-circle"></i>
-                </div>
                 <div class="quotation-stat-content">
                     <div class="quotation-stat-value">{{ number_format($stats['approved']) }}</div>
                     <div class="quotation-stat-label">Onaylandı</div>
@@ -996,9 +951,6 @@
         <!-- Dönüştürüldü -->
         <div class="col-lg col-md-4 col-sm-6">
             <div class="quotation-stat-card quotation-stat-success">
-                <div class="quotation-stat-icon">
-                    <i class="bi bi-arrow-repeat"></i>
-                </div>
                 <div class="quotation-stat-content">
                     <div class="quotation-stat-value">{{ number_format($stats['converted']) }}</div>
                     <div class="quotation-stat-label">Dönüştürüldü</div>
@@ -1012,9 +964,6 @@
         <!-- Süresi Doldu -->
         <div class="col-lg col-md-4 col-sm-6">
             <div class="quotation-stat-card quotation-stat-danger">
-                <div class="quotation-stat-icon">
-                    <i class="bi bi-clock-history"></i>
-                </div>
                 <div class="quotation-stat-content">
                     <div class="quotation-stat-value">{{ number_format($stats['expired']) }}</div>
                     <div class="quotation-stat-label">Süresi Doldu</div>
@@ -1414,16 +1363,6 @@ $(document).ready(function() {
 
         table.draw();
     });
-
-    // Sayfa değişince toplam sayıyı güncelle
-    table.on('draw', function() {
-        const info = table.page.info();
-        $('#quotationCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> teklif`);
-    });
-
-    // İlk yüklemede toplam sayıyı güncelle
-    const info = table.page.info();
-    $('#quotationCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> teklif`);
 });
 
 function clearFilters() {
@@ -1508,11 +1447,6 @@ $(document).ready(function() {
                 $card.hide();
             }
         });
-
-        // Update count for mobile
-        if (window.innerWidth <= 768) {
-            $('#quotationCount').html(`Gösterilen: <strong>${visibleCount}</strong> / <strong>{{ $quotations->count() }}</strong> teklif`);
-        }
     }
 
     // Filter change event for mobile
@@ -1535,10 +1469,6 @@ function clearFilters() {
 
     // Reset mobile cards
     $('.quotation-card-mobile').show();
-
-    if (window.innerWidth <= 768) {
-        $('#quotationCount').html(`Toplam <strong>{{ $quotations->count() }}</strong> teklif`);
-    }
 }
 
 // Existing functions remain the same...

@@ -8,7 +8,6 @@
     .page-header h1 {
         font-size: 1.4rem;
         font-weight: 600;
-        color: #1f3c88;
     }
 
     .page-header p {
@@ -537,16 +536,297 @@
     }
 </style>
 
+{{-- customer card --}}
+<style>
+    /* ========================================
+    POLICIES PAGE - STAT CARDS
+    ======================================== */
+
+    .policy-stat-card {
+        position: relative;
+        border-radius: 14px;
+        padding: 1.25rem;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .policy-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Content */
+    .policy-stat-content {
+        z-index: 2;
+        position: relative;
+    }
+
+    .policy-stat-value {
+        font-size: 1.875rem;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .policy-stat-label {
+        font-size: 0.813rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* Background Icon */
+    .policy-stat-bg {
+        position: absolute;
+        bottom: -15px;
+        right: -15px;
+        font-size: 120px;
+        color: rgba(255, 255, 255, 0.08);
+        z-index: 1;
+        line-height: 1;
+        pointer-events: none;
+        transform: rotate(-15deg);
+        transition: all 0.4s ease;
+    }
+
+    .policy-stat-card:hover .policy-stat-bg {
+        transform: rotate(-10deg) scale(1.05);
+        color: rgba(255, 255, 255, 0.12);
+    }
+
+    /* ========================================
+    COLOR VARIANTS
+    ======================================== */
+
+    /* Primary - Mavi (Toplam) */
+    .policy-stat-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .policy-stat-primary:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    }
+
+    /* Success - Yeşil (Aktif) */
+    .policy-stat-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .policy-stat-success:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    /* Warning - Turuncu (Yaklaşan) */
+    .policy-stat-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .policy-stat-warning:hover {
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    }
+
+    /* Danger - Kırmızı (Kritik) */
+    .policy-stat-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .policy-stat-danger:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    }
+
+    /* Secondary - Gri (Dolmuş) */
+    .policy-stat-secondary {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    }
+
+    .policy-stat-secondary:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+    }
+
+    /* ========================================
+    RESPONSIVE
+    ======================================== */
+
+    @media (max-width: 1200px) {
+        .policy-stat-value {
+            font-size: 1.625rem;
+        }
+
+        .policy-stat-bg {
+            font-size: 100px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .policy-stat-card {
+            padding: 1rem;
+        }
+
+        .policy-stat-value {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .policy-stat-value {
+            font-size: 1.375rem;
+        }
+
+        .policy-stat-label {
+            font-size: 0.75rem;
+        }
+
+        .policy-stat-bg {
+            font-size: 80px;
+            bottom: -10px;
+            right: -10px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .policy-stat-card {
+            padding: 0.875rem;
+        }
+
+        .policy-stat-value {
+            font-size: 1.25rem;
+        }
+
+        .policy-stat-label {
+            font-size: 0.688rem;
+        }
+
+        .policy-stat-bg {
+            font-size: 70px;
+        }
+    }
+
+    /* ========================================
+    ANIMATION
+    ======================================== */
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .policy-stat-card {
+        animation: slideInRight 0.5s ease-out;
+    }
+
+    .policy-stat-card:nth-child(1) { animation-delay: 0s; }
+    .policy-stat-card:nth-child(2) { animation-delay: 0.05s; }
+    .policy-stat-card:nth-child(3) { animation-delay: 0.1s; }
+    .policy-stat-card:nth-child(4) { animation-delay: 0.15s; }
+    .policy-stat-card:nth-child(5) { animation-delay: 0.2s; }
+
+    /* ========================================
+    TIKLAMA EFEKTİ (Opsiyonel)
+    ======================================== */
+
+    .policy-stat-card {
+        cursor: pointer;
+    }
+
+    .policy-stat-card:active {
+        transform: translateY(-2px) scale(0.98);
+    }
+
+    /* Tıklanabilir görünüm için */
+    .policy-stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0);
+        transition: all 0.3s ease;
+        z-index: 3;
+        pointer-events: none;
+    }
+
+    .policy-stat-card:hover::after {
+        background: rgba(255, 255, 255, 0.1);
+    }
+</style>
+
 <!-- Header -->
 <div class="d-flex justify-content-between align-items-center mb-4 page-header">
     <div>
-        <h1><i class="bi bi-people me-2"></i>Müşteriler</h1>
-        <p id="customerCount">Toplam: {{ $customers->count() }} müşteri</p>
+        <h1>Müşteriler</h1>
     </div>
     <a href="{{ route('customers.create') }}" class="btn btn-primary">
         <i class="bi bi-plus-circle me-2"></i>Yeni Müşteri
     </a>
 </div>
+
+
+  <!-- İstatistik Kartları -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg col-md-4 col-12">
+            <div class="policy-stat-card policy-stat-primary">
+                <div class="policy-stat-content">
+                    <div class="policy-stat-value">{{ number_format($stats['total_customers']) }}</div>
+                    <div class="policy-stat-label">Toplam Poliçe</div>
+                </div>
+                <div class="policy-stat-bg">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg col-md-4 col-12">
+            <div class="policy-stat-card policy-stat-success">
+                <div class="policy-stat-content">
+                    <div class="policy-stat-value">{{ number_format($stats['active_customers']) }}</div>
+                    <div class="policy-stat-label">Aktif</div>
+                </div>
+                <div class="policy-stat-bg">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg col-md-4 col-12">
+            <div class="policy-stat-card policy-stat-warning">
+                <div class="policy-stat-content">
+                    <div class="policy-stat-value">{{ number_format($stats['potential_customers']) }}</div>
+                    <div class="policy-stat-label">Süresi Yaklaşan</div>
+                </div>
+                <div class="policy-stat-bg">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg col-md-4 col-12">
+            <div class="policy-stat-card policy-stat-danger">
+                <div class="policy-stat-content">
+                    <div class="policy-stat-value">{{ number_format($stats['total_policies']) }}</div>
+                    <div class="policy-stat-label">Kritik</div>
+                </div>
+                <div class="policy-stat-bg">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
 <!-- Filtreler -->
 <div class="filter-card card mb-4">
@@ -788,15 +1068,20 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // Desktop DataTable
+    // DESKTOP DATATABLE - STATE SAVE KAPALI
+
     const table = initDataTable('#customersTable', {
-        pageLength: 10,
+        order: [[7, 'desc']],
+        stateSave: false,
         columnDefs: [
-            { orderable: false, targets: [7] },
+            { orderable: false, targets: [0, 8] },
+            { targets: 0, searchable: false }
         ]
     });
 
-    // Desktop Filters
+
+
+    // DESKTOP FILTERS - TAM TEMİZLEME
     $('#filterStatus, #filterCity, #filterDateFrom, #filterDateTo').on('change', function() {
         const status = $('#filterStatus').val();
         const city = $('#filterCity').val();
@@ -805,22 +1090,24 @@ $(document).ready(function() {
 
         $.fn.dataTable.ext.search = [];
 
-        if (status) {
-            table.column(5).search(status);
-        } else {
-            table.column(5).search('');
+        table.columns().search('');
+
+
+        // Durum filtresi
+        if (status && status !== '') {
+            table.column(5).search(status, false, false);
         }
 
-        if (city) {
-            table.column(3).search(city);
-        } else {
-            table.column(3).search('');
+        // Şehir filtresi
+        if (city && city !== '') {
+            table.column(3).search(city, false, false);
         }
 
+        // Tarih filtresi
         if (dateFrom || dateTo) {
             $.fn.dataTable.ext.search.push(
                 function(settings, data, dataIndex) {
-                    const dateStr = data[6];
+                    const dateStr = data[7]; // Kayıt tarihi sütunu
                     if (!dateStr || dateStr === '-') return true;
 
                     const dateParts = dateStr.split('.');
@@ -839,24 +1126,17 @@ $(document).ready(function() {
         }
 
         table.draw();
+
         filterMobileCards();
     });
 
-    table.on('draw', function() {
-        const info = table.page.info();
-        $('#customerCount').text(`Gösterilen: ${info.recordsDisplay} / ${info.recordsTotal} müşteri`);
-    });
-
-    const info = table.page.info();
-    $('#customerCount').text(`Gösterilen: ${info.recordsDisplay} / ${info.recordsTotal} müşteri`);
-
-    // Mobile Search
+    // MOBILE SEARCH
     $('#mobileSearch').on('keyup', function() {
         const searchTerm = $(this).val().toLowerCase();
         filterMobileCards(searchTerm);
     });
 
-    // Mobile Filter Function
+    // MOBILE FILTER FUNCTION
     function filterMobileCards(searchTerm = '') {
         const status = $('#filterStatus').val();
         const city = $('#filterCity').val();
@@ -876,13 +1156,13 @@ $(document).ready(function() {
                 show = false;
             }
 
-            // Status filter
-            if (status && cardStatus !== status) {
+            // Status filter (Boş değilse)
+            if (status && status !== '' && cardStatus !== status) {
                 show = false;
             }
 
-            // City filter
-            if (city && cardCity !== city) {
+            // City filter (Boş değilse)
+            if (city && city !== '' && cardCity !== city) {
                 show = false;
             }
 
@@ -894,29 +1174,42 @@ $(document).ready(function() {
             }
         });
 
-        // Update count for mobile
-        if (window.innerWidth <= 768) {
-            $('#customerCount').text(`Gösterilen: ${visibleCount} / {{ $customers->count() }} müşteri`);
-        }
+        // Log için (opsiyonel)
+        console.log('Görünen kart sayısı:', visibleCount);
     }
 });
 
+// CLEAR FILTERS - TAM TEMİZLEME
 function clearFilters() {
-    $('#filterStatus, #filterCity, #filterDateFrom, #filterDateTo').val('');
+    $('#filterStatus').val('');
+    $('#filterCity').val('');
+    $('#filterDateFrom').val('');
+    $('#filterDateTo').val('');
     $('#mobileSearch').val('');
 
     $.fn.dataTable.ext.search = [];
 
     const table = $('#customersTable').DataTable();
-    table.search('').columns().search('').draw();
 
-    // Reset mobile cards
+    table.search('');
+
+    table.columns().search('');
+
+    table.state.clear();
+
+    table.draw();
+
     $('.customer-card').show();
-    $('#customerCount').text(`Toplam: {{ $customers->count() }} müşteri`);
+
+    console.log('Tüm filtreler temizlendi');
 }
 
+// DELETE CUSTOMER
 function deleteCustomer(id) {
-    if (!confirm('Bu müşteriyi silmek istediğinize emin misiniz?')) return;
+    if (!confirm('Bu müşteriyi silmek istediğinize emin misiniz?\n\nBu işlem geri alınamaz!')) {
+        return;
+    }
+
     const form = document.getElementById('deleteForm');
     form.action = '/panel/customers/' + id;
     form.submit();

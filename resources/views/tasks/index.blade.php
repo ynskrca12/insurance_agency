@@ -1090,12 +1090,7 @@
     <div class="page-header">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <h1 class="h4 mb-1 fw-bold text-dark">
-                    <i class="bi bi-check2-square me-2"></i>Görevler
-                </h1>
-                <p class="text-muted mb-0 small" id="taskCount">
-                    Toplam <strong>{{ $tasks->count() }}</strong> görev kaydı bulundu
-                </p>
+                <h1 class="h4 mb-1 fw-bold text-dark">Görevler</h1>
             </div>
             <div class="d-flex gap-2">
                 <a href="{{ route('tasks.kanban') }}" class="btn btn-info action-btn text-white">
@@ -1659,16 +1654,6 @@ $(document).ready(function() {
 
         table.draw();
     });
-
-    // Sayfa değişince toplam sayıyı güncelle
-    table.on('draw', function() {
-        const info = table.page.info();
-        $('#taskCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> görev`);
-    });
-
-    // İlk yüklemede toplam sayıyı güncelle
-    const info = table.page.info();
-    $('#taskCount').html(`Gösterilen: <strong>${info.recordsDisplay}</strong> / <strong>${info.recordsTotal}</strong> görev`);
 });
 
 function clearFilters() {
@@ -1736,11 +1721,6 @@ $(document).ready(function() {
                 $card.hide();
             }
         });
-
-        // Update count for mobile
-        if (window.innerWidth <= 768) {
-            $('#taskCount').html(`Gösterilen: <strong>${visibleCount}</strong> / <strong>{{ $tasks->count() }}</strong> görev`);
-        }
     }
 
     // Filter change event for mobile
@@ -1763,10 +1743,6 @@ function clearFilters() {
 
     // Reset mobile cards
     $('.task-card-mobile').show();
-
-    if (window.innerWidth <= 768) {
-        $('#taskCount').html(`Toplam: <strong>{{ $tasks->count() }}</strong> görev`);
-    }
 }
 </script>
 @endpush

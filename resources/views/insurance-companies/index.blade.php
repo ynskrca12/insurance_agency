@@ -586,10 +586,7 @@
     <div class="page-header">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <h1 class="h4 mb-1 fw-bold text-dark">
-                    <i class="bi bi-building me-2"></i>Sigorta Şirketleri
-                </h1>
-                <p class="text-muted mb-0 small">Toplam {{ $companies->total() }} şirket kaydı bulundu</p>
+                <h1 class="h4 mb-1 fw-bold text-dark">Sigorta Şirketleri</h1>
             </div>
             <a href="{{ route('insurance-companies.create') }}" class="btn btn-primary action-btn">
                 <i class="bi bi-plus-circle me-2"></i>Yeni Şirket
