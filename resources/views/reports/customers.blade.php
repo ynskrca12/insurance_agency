@@ -9,18 +9,6 @@
         margin-bottom: 1rem;
     }
 
-    .filter-card {
-        border: 1px solid #dcdcdc;
-        border-radius: 12px;
-        background: #ffffff;
-        margin-bottom: 1.5rem;
-        overflow: hidden;
-    }
-
-    .filter-card .card-body {
-        padding: 1.5rem;
-    }
-
     .form-label {
         font-weight: 500;
         color: #495057;
@@ -278,6 +266,221 @@
         }
     }
 </style>
+<style>
+    /* ========================================
+    CUSTOMER REPORTS - STAT CARDS
+    ======================================== */
+
+    .customer-stat-card {
+        position: relative;
+        border-radius: 14px;
+        padding: 1.5rem;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.875rem;
+        cursor: pointer;
+    }
+
+    .customer-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Content */
+    .customer-stat-content {
+        z-index: 2;
+        position: relative;
+    }
+
+    .customer-stat-value {
+        font-size: 1.875rem;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .customer-stat-label {
+        font-size: 0.813rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* Background Icon */
+    .customer-stat-bg {
+        position: absolute;
+        bottom: -15px;
+        right: -15px;
+        font-size: 130px;
+        color: rgba(255, 255, 255, 0.08);
+        z-index: 1;
+        line-height: 1;
+        pointer-events: none;
+        transform: rotate(-15deg);
+        transition: all 0.4s ease;
+    }
+
+    .customer-stat-card:hover .customer-stat-bg {
+        transform: rotate(-10deg) scale(1.05);
+        color: rgba(255, 255, 255, 0.12);
+    }
+
+    /* ========================================
+    COLOR VARIANTS
+    ======================================== */
+
+    /* Primary - Mavi (Toplam) */
+    .customer-stat-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .customer-stat-primary:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    }
+
+    /* Success - Yeşil (Aktif) */
+    .customer-stat-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .customer-stat-success:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    /* Info - Cyan (Potansiyel) */
+    .customer-stat-info {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    }
+
+    .customer-stat-info:hover {
+        background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+    }
+
+    /* Warning - Turuncu (Ortalama) */
+    .customer-stat-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .customer-stat-warning:hover {
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    }
+
+    /* ========================================
+    RESPONSIVE
+    ======================================== */
+
+    @media (max-width: 1200px) {
+        .customer-stat-value {
+            font-size: 1.625rem;
+        }
+
+        .customer-stat-bg {
+            font-size: 110px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .customer-stat-card {
+            padding: 1.25rem;
+        }
+
+        .customer-stat-value {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .customer-stat-value {
+            font-size: 1.375rem;
+        }
+
+        .customer-stat-label {
+            font-size: 0.75rem;
+        }
+
+        .customer-stat-bg {
+            font-size: 90px;
+            bottom: -10px;
+            right: -10px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .customer-stat-card {
+            padding: 1rem;
+        }
+
+        .customer-stat-value {
+            font-size: 1.25rem;
+        }
+
+        .customer-stat-label {
+            font-size: 0.688rem;
+        }
+
+        .customer-stat-bg {
+            font-size: 75px;
+        }
+    }
+
+    /* ========================================
+    ANIMATION
+    ======================================== */
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .customer-stat-card {
+        animation: fadeInScale 0.5s ease-out;
+    }
+
+    .customer-stat-card:nth-child(1) { animation-delay: 0s; }
+    .customer-stat-card:nth-child(2) { animation-delay: 0.05s; }
+    .customer-stat-card:nth-child(3) { animation-delay: 0.1s; }
+    .customer-stat-card:nth-child(4) { animation-delay: 0.15s; }
+
+    /* ========================================
+    CLICK EFFECT
+    ======================================== */
+
+    .customer-stat-card:active {
+        transform: translateY(-2px) scale(0.98);
+    }
+
+    /* Hover overlay */
+    .customer-stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0);
+        transition: all 0.3s ease;
+        z-index: 3;
+        pointer-events: none;
+    }
+
+    .customer-stat-card:hover::after {
+        background: rgba(255, 255, 255, 0.1);
+    }
+</style>
 @endpush
 
 @section('content')
@@ -289,10 +492,7 @@
                 <h1 class="h4 mb-2 fw-bold text-dark">
                     <i class="bi bi-people me-2"></i>Müşteri Analizleri
                 </h1>
-                <div class="period-info">
-                    <i class="bi bi-calendar-range"></i>
-                    <span>{{ \Carbon\Carbon::parse($startDate)->format('d.m.Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d.m.Y') }}</span>
-                </div>
+
             </div>
             <a href="{{ route('reports.index') }}" class="btn btn-light action-btn">
                 <i class="bi bi-arrow-left me-2"></i>Geri
@@ -300,59 +500,57 @@
         </div>
     </div>
 
-    <!-- Filtreler -->
-    <div class="filter-card card">
-        <div class="card-body">
-            <form method="GET" action="{{ route('reports.customers') }}">
-                <div class="row g-3 align-items-end">
-                    <div class="col-lg-5 col-md-6">
-                        <label class="form-label">Başlangıç Tarihi</label>
-                        <input type="date"
-                               class="form-control"
-                               name="start_date"
-                               value="{{ $startDate }}">
-                    </div>
-                    <div class="col-lg-5 col-md-6">
-                        <label class="form-label">Bitiş Tarihi</label>
-                        <input type="date"
-                               class="form-control"
-                               name="end_date"
-                               value="{{ $endDate }}">
-                    </div>
-                    <div class="col-lg-2 col-md-12">
-                        <button type="submit" class="btn btn-primary action-btn w-100">
-                            <i class="bi bi-funnel me-2"></i>Filtrele
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- İstatistik Kartları -->
     <div class="row g-3 mb-4">
+        <!-- Toplam Müşteri -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-primary">{{ number_format($stats['total_customers']) }}</div>
-                <div class="stat-label">Toplam Müşteri</div>
+            <div class="customer-stat-card customer-stat-primary">
+                <div class="customer-stat-content">
+                    <div class="customer-stat-value">{{ number_format($stats['total_customers'] ?? 0) }}</div>
+                    <div class="customer-stat-label">Toplam Müşteri</div>
+                </div>
+                <div class="customer-stat-bg">
+                    <i class="bi bi-people"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Aktif Müşteri -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-success">{{ number_format($stats['active_customers']) }}</div>
-                <div class="stat-label">Aktif Müşteri</div>
+            <div class="customer-stat-card customer-stat-success">
+                <div class="customer-stat-content">
+                    <div class="customer-stat-value">{{ number_format($stats['active_customers'] ?? 0) }}</div>
+                    <div class="customer-stat-label">Aktif Müşteri</div>
+                </div>
+                <div class="customer-stat-bg">
+                    <i class="bi bi-person-check"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Potansiyel Müşteri -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-info">{{ number_format($stats['new_customers']) }}</div>
-                <div class="stat-label">Yeni Müşteri</div>
+            <div class="customer-stat-card customer-stat-info">
+                <div class="customer-stat-content">
+                    <div class="customer-stat-value">{{ number_format($stats['potential_customers'] ?? 0) }}</div>
+                    <div class="customer-stat-label">Potansiyel Müşteri</div>
+                </div>
+                <div class="customer-stat-bg">
+                    <i class="bi bi-person-plus"></i>
+                </div>
             </div>
         </div>
+
+        <!-- Müşteri Başına Poliçe -->
         <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-warning">{{ number_format($avgPoliciesPerCustomer, 1) }}</div>
-                <div class="stat-label">Müşteri Başına Poliçe</div>
+            <div class="customer-stat-card customer-stat-warning">
+                <div class="customer-stat-content">
+                    <div class="customer-stat-value">{{ number_format($avgPoliciesPerCustomer ?? 0, 1) }}</div>
+                    <div class="customer-stat-label">Müşteri Başına Poliçe</div>
+                </div>
+                <div class="customer-stat-bg">
+                    <i class="bi bi-graph-up"></i>
+                </div>
             </div>
         </div>
     </div>
@@ -465,6 +663,5 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 @endpush

@@ -292,42 +292,15 @@ class ReportController extends Controller
     /**
      * Müşteri analizleri
      */
-    public function customers(Request $request)
+    public function customers()
     {
-        // Varsayılan olarak TÜM VERİLER (filtresiz)
-        $startDate = $request->get('start_date', null);
-        $endDate = $request->get('end_date', null);
-
-        // Display için tarih formatı
-        if (!$startDate || !$endDate) {
-            // İlk ve son müşteri tarihlerini al
-            $firstCustomer = Customer::orderBy('created_at', 'asc')->first();
-            $lastCustomer = Customer::orderBy('created_at', 'desc')->first();
-
-            $displayStartDate = $firstCustomer ? $firstCustomer->created_at->format('Y-m-d') : now()->subYear()->format('Y-m-d');
-            $displayEndDate = $lastCustomer ? $lastCustomer->created_at->format('Y-m-d') : now()->format('Y-m-d');
-        } else {
-            $displayStartDate = $startDate;
-            $displayEndDate = $endDate;
-        }
-
-        // Genel İstatistikler
         $stats = [
             'total_customers' => Customer::count(),
             'active_customers' => Customer::where('status', 'active')->count(),
-            'new_customers' => 0,
+            'potential_customers' => Customer::where('status', 'potential')->count(),
             'customers_with_policies' => Customer::has('policies')->count(),
         ];
 
-        // Yeni müşteriler (tarih filtresine göre)
-        if ($startDate && $endDate) {
-            $stats['new_customers'] = Customer::whereBetween('created_at', [$startDate, $endDate])->count();
-        } else {
-            // Filtresiz ise tüm müşteriler yeni kabul edilebilir veya son 1 yıl
-            $stats['new_customers'] = Customer::where('created_at', '>=', now()->subYear())->count();
-        }
-
-        // Şehre göre müşteri dağılımı
         $customersByCity = Customer::select('city', DB::raw('COUNT(*) as count'))
             ->whereNotNull('city')
             ->where('city', '!=', '')
@@ -336,12 +309,10 @@ class ReportController extends Controller
             ->limit(10)
             ->get();
 
-        // Müşteri başına ortalama poliçe sayısı
         $totalCustomers = Customer::count();
         $totalPolicies = Policy::count();
         $avgPoliciesPerCustomer = $totalCustomers > 0 ? $totalPolicies / $totalCustomers : 0;
 
-        // En değerli müşteriler (Tüm zamanlar)
         $topCustomers = Customer::select(
                 'customers.id',
                 'customers.name',
@@ -357,65 +328,12 @@ class ReportController extends Controller
             ->limit(10)
             ->get();
 
-        // Aylık yeni müşteri trendi
-        $monthlyQuery = Customer::query();
-
-        if ($startDate && $endDate) {
-            $monthlyQuery->whereBetween('created_at', [$startDate, $endDate]);
-        } else {
-            // Filtresiz ise son 12 ay
-            $monthlyQuery->where('created_at', '>=', now()->subYear());
-        }
-
-        $monthlyNewCustomers = $monthlyQuery
-            ->select(
-                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
-                DB::raw('COUNT(*) as count')
-            )
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get()
-            ->map(function($item) {
-                $months = [
-                    '01' => 'Oca', '02' => 'Şub', '03' => 'Mar', '04' => 'Nis',
-                    '05' => 'May', '06' => 'Haz', '07' => 'Tem', '08' => 'Ağu',
-                    '09' => 'Eyl', '10' => 'Eki', '11' => 'Kas', '12' => 'Ara'
-                ];
-                $parts = explode('-', $item->month);
-                $item->month_label = $months[$parts[1]] . ' ' . $parts[0];
-                return $item;
-            });
-
-        // Yaş grubuna göre dağılım (opsiyonel)
-        $customersByAge = Customer::whereNotNull('birth_date')
-            ->selectRaw('
-                CASE
-                    WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) < 25 THEN "18-24"
-                    WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 25 AND 34 THEN "25-34"
-                    WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 35 AND 44 THEN "35-44"
-                    WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 45 AND 54 THEN "45-54"
-                    WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 55 AND 64 THEN "55-64"
-                    ELSE "65+"
-                END as age_group,
-                COUNT(*) as count
-            ')
-            ->groupBy('age_group')
-            ->orderByRaw('FIELD(age_group, "18-24", "25-34", "35-44", "45-54", "55-64", "65+")')
-            ->get();
-
         return view('reports.customers', compact(
             'stats',
             'customersByCity',
             'avgPoliciesPerCustomer',
-            'topCustomers',
-            'monthlyNewCustomers',
-            'customersByAge',
-            'startDate',
-            'endDate'
-        ))->with([
-            'displayStartDate' => $displayStartDate,
-            'displayEndDate' => $displayEndDate,
-        ]);
+            'topCustomers'
+        ));
     }
 
     /**
