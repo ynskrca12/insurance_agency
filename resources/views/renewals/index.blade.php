@@ -948,9 +948,9 @@
     </div>
 
     <!-- İstatistik Kartları -->
-    <div class="row g-3 mb-4">
+    <div class="row g-1 mb-4">
         <!-- Toplam -->
-        <div class="col-lg col-md-4 col-12">
+        <div class="col-md-2 col-6">
             <div class="renewal-stat-card renewal-stat-primary">
                 <div class="renewal-stat-content">
                     <div class="renewal-stat-value">{{ number_format($stats['total']) }}</div>
@@ -963,7 +963,7 @@
         </div>
 
         <!-- Bekliyor -->
-        <div class="col-lg col-md-4 col-12">
+        <div class="col-md-2 col-6">
             <div class="renewal-stat-card renewal-stat-info">
                 <div class="renewal-stat-content">
                     <div class="renewal-stat-value">{{ number_format($stats['pending']) }}</div>
@@ -976,7 +976,7 @@
         </div>
 
         <!-- İletişimde -->
-        <div class="col-lg col-md-4 col-12">
+        <div class="col-md-2 col-6">
             <div class="renewal-stat-card renewal-stat-warning">
                 <div class="renewal-stat-content">
                     <div class="renewal-stat-value">{{ number_format($stats['contacted']) }}</div>
@@ -989,7 +989,7 @@
         </div>
 
         <!-- Kritik -->
-        <div class="col-lg col-md-4 col-12">
+        <div class="col-md-2 col-6">
             <div class="renewal-stat-card renewal-stat-danger">
                 <div class="renewal-stat-content">
                     <div class="renewal-stat-value">{{ number_format($stats['critical']) }}</div>
@@ -1002,7 +1002,7 @@
         </div>
 
         <!-- Yenilendi -->
-        <div class="col-lg col-md-4 col-12">
+        <div class="col-md-2 col-6">
             <div class="renewal-stat-card renewal-stat-success">
                 <div class="renewal-stat-content">
                     <div class="renewal-stat-value">{{ number_format($stats['renewed']) }}</div>
@@ -1015,7 +1015,7 @@
         </div>
 
         <!-- Kaybedildi -->
-        <div class="col-lg col-md-4 col-12">
+        <div class="col-md-2 col-6">
             <div class="renewal-stat-card renewal-stat-secondary">
                 <div class="renewal-stat-content">
                     <div class="renewal-stat-value">{{ number_format($stats['lost']) }}</div>
