@@ -926,8 +926,8 @@
         <div class="col-lg col-md-4 col-sm-6">
             <div class="quotation-stat-card quotation-stat-info">
                 <div class="quotation-stat-content">
-                    <div class="quotation-stat-value">{{ number_format($stats['sent']) }}</div>
-                    <div class="quotation-stat-label">Gönderildi</div>
+                    <div class="quotation-stat-value">{{ number_format($stats['viewed']) }}</div>
+                    <div class="quotation-stat-label">Görüntülendi</div>
                 </div>
                 <div class="quotation-stat-bg">
                     <i class="bi bi-send"></i>
@@ -936,7 +936,7 @@
         </div>
 
         <!-- Onaylandı -->
-        <div class="col-lg col-md-4 col-sm-6">
+        {{-- <div class="col-lg col-md-4 col-sm-6">
             <div class="quotation-stat-card quotation-stat-warning">
                 <div class="quotation-stat-content">
                     <div class="quotation-stat-value">{{ number_format($stats['approved']) }}</div>
@@ -946,10 +946,10 @@
                     <i class="bi bi-check2-circle"></i>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Dönüştürüldü -->
-        <div class="col-lg col-md-4 col-sm-6">
+        {{-- <div class="col-lg col-md-4 col-sm-6">
             <div class="quotation-stat-card quotation-stat-success">
                 <div class="quotation-stat-content">
                     <div class="quotation-stat-value">{{ number_format($stats['converted']) }}</div>
@@ -959,7 +959,7 @@
                     <i class="bi bi-arrow-repeat"></i>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Süresi Doldu -->
         <div class="col-lg col-md-4 col-sm-6">

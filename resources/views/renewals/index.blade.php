@@ -815,77 +815,109 @@
 </style>
 
 <style>
-    /* Renewal Days Status Badge (Yenilendi/Kaybedildi için) */
-.renewal-days-status-badge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-}
+    .renewal-days-status-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
 
-/* Days Alert Container */
-.renewal-days-alert {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    border-radius: 12px;
-    margin-bottom: 1rem;
-}
+    /* Days Alert Container */
+    .renewal-days-alert {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
 
-.renewal-days-alert.overdue {
-    background: rgba(239, 68, 68, 0.1);
-    border: 2px solid rgba(239, 68, 68, 0.3);
-}
+    .renewal-days-alert.overdue {
+        background: rgba(239, 68, 68, 0.1);
+        border: 2px solid rgba(239, 68, 68, 0.3);
+    }
 
-.renewal-days-alert.critical {
-    background: rgba(245, 158, 11, 0.1);
-    border: 2px solid rgba(245, 158, 11, 0.3);
-}
+    .renewal-days-alert.critical {
+        background: rgba(245, 158, 11, 0.1);
+        border: 2px solid rgba(245, 158, 11, 0.3);
+    }
 
-.renewal-days-alert.urgent {
-    background: rgba(14, 165, 233, 0.1);
-    border: 2px solid rgba(14, 165, 233, 0.3);
-}
+    .renewal-days-alert.urgent {
+        background: rgba(14, 165, 233, 0.1);
+        border: 2px solid rgba(14, 165, 233, 0.3);
+    }
 
-.renewal-days-alert.normal {
-    background: rgba(100, 116, 139, 0.05);
-    border: 2px solid rgba(100, 116, 139, 0.15);
-}
+    .renewal-days-alert.normal {
+        background: rgba(100, 116, 139, 0.05);
+        border: 2px solid rgba(100, 116, 139, 0.15);
+    }
 
-.renewal-days-icon {
-    font-size: 1.5rem;
-    flex-shrink: 0;
-}
+    .renewal-days-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
 
-.renewal-days-content {
-    flex: 1;
-}
+    .renewal-days-content {
+        flex: 1;
+    }
 
-.renewal-days-value {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-}
+    .renewal-days-value {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
 
-.renewal-days-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-}
+    .renewal-days-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
 
-/* Badge boyutları */
-.renewal-card-mobile .badge {
-    font-size: 0.875rem;
-    padding: 0.375rem 0.75rem;
-}
+    /* Badge boyutları */
+    .renewal-card-mobile .badge {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
+    }
 
-/* Disabled action button */
-.renewal-action-btn.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-}
+    /* Disabled action button */
+    .renewal-action-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+</style>
+<style>
+    .btn-whatsapp {
+        background: #25D366 !important;
+        color: white !important;
+        border-color: #25D366 !important;
+    }
+
+    .btn-whatsapp:hover {
+        background: #128C7E !important;
+        border-color: #128C7E !important;
+        transform: scale(1.1) !important;
+    }
+
+    .btn-whatsapp i {
+        color: white;
+    }
+</style>
+<style>
+    .renewal-action-btn.whatsapp {
+        background: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important;
+        color: white !important;
+        border-color: #25D366 !important;
+    }
+
+    .renewal-action-btn.whatsapp:active {
+        background: linear-gradient(135deg, #128C7E 0%, #0D7A6F 100%) !important;
+        transform: scale(0.95);
+    }
+
+    .renewal-action-btn.whatsapp i {
+        color: white;
+    }
 </style>
 @endpush
 
@@ -912,12 +944,6 @@
                 <span class="d-none d-md-inline">Takvim Görünümü</span>
                 <span class="d-inline d-md-none">Takvim</span>
             </a>
-
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#bulkReminderModal">
-                <i class="bi bi-send me-2"></i>
-                <span class="d-none d-md-inline">Toplu Hatırlatıcı</span>
-                <span class="d-inline d-md-none">Hatırlat</span>
-            </button>
         </div>
     </div>
 
@@ -1271,18 +1297,26 @@
                     <span>Detayları Gör</span>
                 </a>
 
-                @if($renewal->status === 'pending' || $renewal->status === 'contacted')
-                    <form method="POST" action="{{ route('renewals.sendReminder', $renewal) }}" style="margin: 0;">
-                        @csrf
-                        <button type="submit" class="renewal-action-btn remind" style="width: 100%;">
-                            <i class="bi bi-send"></i>
-                            <span>Hatırlat</span>
-                        </button>
-                    </form>
+                @if(in_array($renewal->status, ['pending', 'contacted']))
+                    <button type="button"
+                            class="renewal-action-btn remind whatsapp"
+                            onclick="sendWhatsAppReminder({{ json_encode([
+                                'customer_name' => $renewal->policy->customer->name ?? '',
+                                'customer_phone' => $renewal->policy->customer->phone ?? '',
+                                'policy_number' => $renewal->policy->policy_number ?? '',
+                                'policy_type' => $renewal->policy->policy_type_label ?? '',
+                                'company_name' => $renewal->policy->insuranceCompany->name ?? '-',
+                                'renewal_date' => $renewal->renewal_date->format('d.m.Y'),
+                                'days_left' => $renewal->days_until_renewal
+                            ]) }})"
+                            style="width: 100%;">
+                        <i class="bi bi-whatsapp"></i>
+                        <span>WhatsApp Hatırlat</span>
+                    </button>
                 @else
                     <div class="renewal-action-btn remind disabled" style="opacity: 0.5; cursor: not-allowed;">
-                        <i class="bi bi-send"></i>
-                        <span>Hatırlat</span>
+                        <i class="bi bi-whatsapp"></i>
+                        <span>WhatsApp Hatırlat</span>
                     </div>
                 @endif
             </div>
@@ -1440,7 +1474,7 @@
                                 {{ $status['label'] }}
                             </span>
                         </td>
-                        <td class="text-end">
+                        {{-- <td class="text-end">
                             <div class="action-buttons">
                                 <a href="{{ route('renewals.show', $renewal) }}"
                                    class="btn-icon"
@@ -1458,48 +1492,36 @@
                                 </form>
                                 @endif
                             </div>
+                        </td> --}}
+                        <td class="text-end">
+                            <div class="action-buttons">
+                                <a href="{{ route('renewals.show', $renewal) }}"
+                                class="btn-icon"
+                                title="Detay">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                @if(in_array($renewal->status, ['pending', 'contacted']))
+                                <button type="button"
+                                        class="btn-icon btn-whatsapp"
+                                        onclick="sendWhatsAppReminder({{ json_encode([
+                                            'customer_name' => $renewal->policy->customer->name ?? '',
+                                            'customer_phone' => $renewal->policy->customer->phone ?? '',
+                                            'policy_number' => $renewal->policy->policy_number ?? '',
+                                            'policy_type' => $renewal->policy->policy_type_label ?? '',
+                                            'company_name' => $renewal->policy->insuranceCompany->name ?? '-',
+                                            'renewal_date' => $renewal->renewal_date->format('d.m.Y'),
+                                            'days_left' => $renewal->days_until_renewal
+                                        ]) }})"
+                                        title="WhatsApp Hatırlatıcı Gönder">
+                                    <i class="bi bi-whatsapp"></i>
+                                </button>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
-        </div>
-    </div>
-</div>
-
-<!-- Toplu Hatırlatıcı Modal -->
-<div class="modal fade" id="bulkReminderModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title">
-                    <i class="bi bi-send me-2"></i>Toplu Hatırlatıcı Gönder
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="POST" action="{{ route('renewals.bulkSendReminders') }}">
-                @csrf
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Hedef Grup</label>
-                        <select class="form-select" name="filter" required>
-                            <option value="critical">Kritik (7 gün içinde - {{ $stats['critical'] }} adet)</option>
-                            <option value="upcoming">Yaklaşan (30 gün içinde)</option>
-                            <option value="all">Tümü (Bekliyor + İletişimde)</option>
-                        </select>
-                    </div>
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle me-2"></i>
-                        Seçilen gruptaki tüm müşterilere SMS hatırlatıcısı gönderilecektir.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-send me-2"></i>Gönder
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
@@ -1632,5 +1654,29 @@ function clearFilters() {
 
     $('.renewal-card-mobile').show();
 }
+</script>
+
+<script>
+    function sendWhatsAppReminder(data) {
+        const phone = data.customer_phone.replace(/\D/g, '');
+        const phoneNumber = phone.startsWith('0') ? '90' + phone.substring(1) : phone;
+
+        const daysLeft = data.days_left;
+        const daysText = daysLeft < 0 ? Math.abs(daysLeft) + ' gün önce süresi doldu' :
+                        daysLeft === 0 ? 'bugün sona eriyor' :
+                        daysLeft === 1 ? 'yarın sona eriyor' :
+                        daysLeft + ' gün sonra sona erecek';
+
+        const message = 'Sayın ' + data.customer_name + ',\n\n' +
+                    data.policy_type + ' poliçeniz ' + daysText + '.\n\n' +
+                    '📋 Poliçe No: ' + data.policy_number + '\n' +
+                    '🏢 Şirket: ' + data.company_name + '\n' +
+                    '📅 Yenileme Tarihi: ' + data.renewal_date + '\n\n' +
+                    'Yenileme için lütfen bizimle iletişime geçin.\n\n' +
+                    'Teşekkürler 🙏';
+
+        const whatsappUrl = 'https://wa.me/' + phoneNumber + '?text=' + encodeURIComponent(message);
+        window.open(whatsappUrl, '_blank');
+    }
 </script>
 @endpush

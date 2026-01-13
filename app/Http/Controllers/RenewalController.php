@@ -76,7 +76,29 @@ class RenewalController extends Controller
 
         ];
 
-        return view('renewals.index', compact('renewals', 'stats'));
+        $policies = Policy::with(['customer', 'insuranceCompany', 'createdBy'])
+        ->latest()
+        ->get();
+
+         // WhatsApp için kritik poliçeleri hazırla
+        $criticalPolicies = $policies->filter(function($policy) {
+            return in_array($policy->status, ['active', 'expiring_soon', 'critical']) &&
+                $policy->days_until_expiry <= 30 &&
+                $policy->days_until_expiry >= 0;
+        })->map(function($policy) {
+            return [
+                'id' => $policy->id,
+                'customer_name' => $policy->customer->name,
+                'customer_phone' => $policy->customer->phone,
+                'policy_number' => $policy->policy_number,
+                'policy_type' => $policy->policy_type_label,
+                'company_name' => $policy->insuranceCompany->name ?? '-',
+                'end_date' => $policy->end_date->format('d.m.Y'),
+                'days_left' => $policy->days_until_expiry
+            ];
+        })->values();
+
+        return view('renewals.index', compact('renewals', 'stats', 'criticalPolicies'));
     }
 
     /**

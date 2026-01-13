@@ -58,6 +58,8 @@ class QuotationController extends Controller
             'approved' => Quotation::approved()->count(),
             'converted' => Quotation::converted()->count(),
             'expired' => Quotation::where('valid_until', '<', now())->where('status', '!=', 'converted')->count(),
+            'viewed' => Quotation::where('status', 'viewed')->count(),
+
         ];
 
         return view('quotations.index', compact('quotations', 'stats'));
