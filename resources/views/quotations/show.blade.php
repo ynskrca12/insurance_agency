@@ -644,7 +644,7 @@
                     </div>
                     @if(isset($quotation->vehicle_info['chassis']) && $quotation->vehicle_info['chassis'])
                     <div class="info-box mt-2">
-                        <div class="info-label">Şasi Numarası</div>
+                        <div class="info-label">Ruhsat Seri No</div>
                         <div class="info-value font-monospace small">{{ $quotation->vehicle_info['chassis'] }}</div>
                     </div>
                     @endif

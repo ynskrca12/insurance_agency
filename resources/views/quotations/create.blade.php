@@ -365,11 +365,11 @@
                                        max="{{ date('Y') + 1 }}">
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label">Şasi Numarası</label>
+                                <label class="form-label">Ruhsat Seri No</label>
                                 <input type="text"
                                        class="form-control"
                                        name="vehicle_info[chassis]"
-                                       placeholder="17 haneli şasi numarası"
+                                       placeholder="Ruhsat Seri No"
                                        value="{{ old('vehicle_info.chassis') }}">
                                 <small class="form-text">İsteğe bağlı - Detaylı teklif için gerekli</small>
                             </div>

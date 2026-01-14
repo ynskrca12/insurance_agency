@@ -476,7 +476,7 @@
 
                     @if($policy->vehicle_chassis_no)
                     <div class="info-item">
-                        <div class="info-label">Şasi Numarası</div>
+                        <div class="info-label">Ruhsat Seri No</div>
                         <div class="info-value">
                             <small class="font-monospace">{{ $policy->vehicle_chassis_no }}</small>
                         </div>

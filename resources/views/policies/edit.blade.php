@@ -434,14 +434,14 @@
                             </div>
 
                             <div class="col-md-12">
-                                <label for="vehicle_chassis_no" class="form-label">Şasi Numarası</label>
+                                <label for="vehicle_chassis_no" class="form-label">Ruhsat Seri No</label>
                                 <input type="text"
                                        class="form-control"
                                        id="vehicle_chassis_no"
                                        name="vehicle_chassis_no"
                                        value="{{ old('vehicle_chassis_no', $policy->vehicle_chassis_no) }}"
-                                       placeholder="17 haneli şasi numarası">
-                                <small class="form-text">Araç ruhsatında yazan şasi numarası</small>
+                                       placeholder="Ruhsat Seri No">
+                                <small class="form-text">Numara ruhsatın ön yüzünde ve genelde belgenin sağ üst kısmında yer alır</small>
                             </div>
                         </div>
                     </div>
@@ -766,7 +766,6 @@ $(document).ready(function() {
         $(this).val(value);
     });
 
-    // Şasi numarası formatı - büyük harf
     $('#vehicle_chassis_no').on('input', function() {
         let value = $(this).val().toUpperCase();
         $(this).val(value);
