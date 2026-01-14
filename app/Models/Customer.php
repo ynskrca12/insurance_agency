@@ -93,6 +93,10 @@ class Customer extends Model
     {
         return $this->hasMany(Payment::class);
     }
+    public function assignedTo()
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
+    }
 
     /**
      * Aktif poliçeler

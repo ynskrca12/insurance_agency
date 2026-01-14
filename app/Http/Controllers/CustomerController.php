@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\CustomerNote;
+use App\Models\Policy;
+
 
 class CustomerController extends Controller
 {
@@ -15,7 +17,7 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Customer::withCount('policies')->orderBy('created_at', 'desc');
+        $query = Customer::with(['assignedTo'])->withCount('policies')->orderBy('created_at', 'desc');
 
         // Durum filtresi
         if ($request->filled('status')) {
@@ -71,6 +73,7 @@ class CustomerController extends Controller
             'workplace' => 'nullable|string|max:255',
             'status' => 'required|in:active,potential,passive,lost',
             'notes' => 'nullable|string',
+            'assigned_to' => 'nullable|exists:users,id',
         ], [
             'name.required' => 'Müşteri adı gereklidir.',
             'phone.required' => 'Telefon numarası gereklidir.',
@@ -211,7 +214,7 @@ class CustomerController extends Controller
             ->with('success', 'Müşteri başarıyla silindi.');
     }
 
-      /**
+    /**
      * Müşteriye not ekle
      */
     public function addNote(Request $request, Customer $customer)

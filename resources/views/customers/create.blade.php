@@ -294,7 +294,21 @@
                         </div>
 
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="assigned_to" class="form-label">İlgilenen Temsilci</label>
+                                <select class="form-select @error('assigned_to') is-invalid @enderror" id="assigned_to" name="assigned_to">
+                                    <option value="">Seçiniz</option>
+                                    @foreach(\App\Models\User::where('tenant_id', auth()->id())->orWhere('id', auth()->id())->get() as $user)
+                                        <option value="{{ $user->id }}" {{ old('assigned_to') == $user->id ? 'selected' : '' }}>
+                                            {{ $user->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('assigned_to')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-4">
                                 <label for="occupation" class="form-label">
                                     Meslek
                                 </label>
@@ -309,7 +323,7 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="workplace" class="form-label">
                                     İş Yeri
                                 </label>

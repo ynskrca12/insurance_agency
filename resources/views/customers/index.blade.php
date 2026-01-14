@@ -797,15 +797,15 @@
     }
 </style>
 
-<!-- Header -->
-<div class="d-flex justify-content-between align-items-center mb-4 page-header">
-    <div>
-        <h1>Müşteriler</h1>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 page-header">
+        <div>
+            <h1>Müşteriler</h1>
+        </div>
+        <a href="{{ route('customers.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Müşteri Ekle
+        </a>
     </div>
-    <a href="{{ route('customers.create') }}" class="btn btn-primary">
-        <i class="bi bi-plus-circle me-2"></i>Yeni Müşteri
-    </a>
-</div>
 
 
     <!-- İstatistik Kartları -->
@@ -814,7 +814,7 @@
             <div class="policy-stat-card policy-stat-primary">
                 <div class="policy-stat-content">
                     <div class="policy-stat-value">{{ number_format($stats['total_customers']) }}</div>
-                    <div class="policy-stat-label">Toplam Poliçe</div>
+                    <div class="policy-stat-label">Toplam Müşteri</div>
                 </div>
                 <div class="policy-stat-bg">
                     <i class="bi bi-file-earmark-text"></i>
@@ -826,7 +826,7 @@
             <div class="policy-stat-card policy-stat-success">
                 <div class="policy-stat-content">
                     <div class="policy-stat-value">{{ number_format($stats['active_customers']) }}</div>
-                    <div class="policy-stat-label">Aktif</div>
+                    <div class="policy-stat-label">Aktif Müşteri</div>
                 </div>
                 <div class="policy-stat-bg">
                     <i class="bi bi-check-circle"></i>
@@ -850,7 +850,7 @@
             <div class="policy-stat-card policy-stat-danger">
                 <div class="policy-stat-content">
                     <div class="policy-stat-value">{{ number_format($stats['total_policies']) }}</div>
-                    <div class="policy-stat-label">Kritik</div>
+                    <div class="policy-stat-label">Toplam Poliçe</div>
                 </div>
                 <div class="policy-stat-bg">
                     <i class="bi bi-exclamation-triangle"></i>
@@ -860,246 +860,258 @@
 
     </div>
 
-<!-- Filtreler -->
-<div class="filter-card card mb-4">
-    <div class="card-body">
-        <div class="row g-3 align-items-end">
-            <div class="col-md-2">
-                <label class="form-label">Durum</label>
-                <select id="filterStatus" class="form-select">
-                    <option value="">Tümü</option>
-                    <option value="Aktif">Aktif</option>
-                    <option value="Potansiyel">Potansiyel</option>
-                    <option value="Pasif">Pasif</option>
-                    <option value="Kayıp">Kayıp</option>
-                </select>
-            </div>
+    <!-- Filtreler -->
+    <div class="filter-card card mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-2">
+                    <label class="form-label">Durum</label>
+                    <select id="filterStatus" class="form-select">
+                        <option value="">Tümü</option>
+                        <option value="Aktif">Aktif</option>
+                        <option value="Potansiyel">Potansiyel</option>
+                        <option value="Pasif">Pasif</option>
+                        <option value="Kayıp">Kayıp</option>
+                    </select>
+                </div>
 
-            <div class="col-md-2">
-                <label class="form-label">Şehir</label>
-                <select id="filterCity" class="form-select">
-                    <option value="">Tümü</option>
-                    @foreach($cities as $city)
-                        <option value="{{ $city }}">{{ $city }}</option>
-                    @endforeach
-                </select>
-            </div>
+                <div class="col-md-2">
+                    <label class="form-label">Şehir</label>
+                    <select id="filterCity" class="form-select">
+                        <option value="">Tümü</option>
+                        @foreach($cities as $city)
+                            <option value="{{ $city }}">{{ $city }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-            <div class="col-md-2">
-                <label class="form-label">Başlangıç Tarihi</label>
-                <input type="date" id="filterDateFrom" class="form-control">
-            </div>
+                <div class="col-md-2">
+                    <label class="form-label">Başlangıç Tarihi</label>
+                    <input type="date" id="filterDateFrom" class="form-control">
+                </div>
 
-            <div class="col-md-2">
-                <label class="form-label">Bitiş Tarihi</label>
-                <input type="date" id="filterDateTo" class="form-control">
-            </div>
+                <div class="col-md-2">
+                    <label class="form-label">Bitiş Tarihi</label>
+                    <input type="date" id="filterDateTo" class="form-control">
+                </div>
 
-            <div class="col-md-4">
-                <button type="button" class="btn btn-secondary" onclick="clearFilters()">
-                    <i class="bi bi-x-circle me-1"></i>Temizle
-                </button>
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-secondary" onclick="clearFilters()">
+                        <i class="bi bi-x-circle me-1"></i>Temizle
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Desktop: Tablo Görünümü -->
-<div class="main-card card desktop-table-container">
-    <div class="card-body">
-        <table id="customersTable" class="table table-hover">
-            <thead>
-                <tr>
-                    <th width="50">#</th>
-                    <th>Müşteri Adı</th>
-                    <th>İletişim</th>
-                    <th>Şehir</th>
-                    <th>Poliçe Sayısı</th>
-                    <th>Durum</th>
-                    <th>Ekleyen Kişi</th>
-                    <th>Kayıt Tarihi</th>
-                    <th width="150">İşlemler</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($customers as $customer)
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>
-                        <strong>{{ $customer->name }}</strong>
-                        @if($customer->policies_count >= 3)
-                            <span class="badge bg-warning text-dark ms-1">VIP</span>
-                        @endif
-                    </td>
-                    <td>
-                        <div><i class="bi bi-telephone me-1"></i>{{ $customer->phone }}</div>
+    <!-- Desktop: Tablo Görünümü -->
+    <div class="main-card card desktop-table-container">
+        <div class="card-body">
+            <table id="customersTable" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th width="50">#</th>
+                        <th>Müşteri Adı</th>
+                        <th>İletişim</th>
+                        <th>Şehir</th>
+                        <th>Poliçe Sayısı</th>
+                        <th>Durum</th>
+                        <th>Ekleyen Kişi</th>
+                        <th>Temsilci</th>
+                        <th>Kayıt Tarihi</th>
+                        <th width="150">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($customers as $customer)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>
+                            <strong>{{ $customer->name }}</strong>
+                            @if($customer->policies_count >= 3)
+                                <span class="badge bg-warning text-dark ms-1">VIP</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div><i class="bi bi-telephone me-1"></i>{{ $customer->phone }}</div>
+                            @if($customer->email)
+                                <small class="text-muted"><i class="bi bi-envelope me-1"></i>{{ $customer->email }}</small>
+                            @endif
+                        </td>
+                        <td>{{ $customer->city ?? '-' }}</td>
+                        <td><span class="badge bg-info">{{ $customer->policies_count }}</span></td>
+                        <td>
+                            @php
+                                $map = [
+                                    'active' => ['success','Aktif'],
+                                    'potential' => ['warning','Potansiyel'],
+                                    'passive' => ['secondary','Pasif'],
+                                    'lost' => ['danger','Kayıp'],
+                                ];
+                            @endphp
+                            <span class="badge bg-{{ $map[$customer->status][0] }}">
+                                {{ $map[$customer->status][1] }}
+                            </span>
+                        </td>
+                        <td>{{ $customer->createdBy->name ?? '-' }}</td>
+                        <td>{{ $customer->assignedTo->name ?? '-' }}</td>
+                        <td data-sort="{{ $customer->created_at->format('Y-m-d') }}">
+                            {{ $customer->created_at->format('d.m.Y') }}
+                        </td>
+                        <td>
+                            <a href="{{ route('customers.show', $customer) }}" class="action-btn" title="Detay">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{{ route('customers.edit', $customer) }}" class="action-btn" title="Düzenle">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <button type="button"
+                                    class="action-btn btn-whatsapp-customer"
+                                    onclick="sendWhatsAppToCustomer('{{ $customer->name }}', '{{ $customer->phone }}')"
+                                    title="WhatsApp">
+                                <i class="bi bi-whatsapp"></i>
+                            </button>
+                            <button class="action-btn" onclick="deleteCustomer({{ $customer->id }})" title="Sil">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Mobile: Card Görünümü -->
+    <div class="mobile-cards-container">
+        <!-- Mobile Search Bar -->
+        <div class="mobile-search-bar">
+            <i class="bi bi-search mobile-search-icon"></i>
+            <input type="text" id="mobileSearch" class="mobile-search-input" placeholder="Müşteri ara...">
+        </div>
+
+        <!-- Customer Cards -->
+        <div id="mobileCustomersList">
+            @forelse($customers as $customer)
+                @php
+                    $statusMap = [
+                        'active' => ['success','Aktif'],
+                        'potential' => ['warning','Potansiyel'],
+                        'passive' => ['secondary','Pasif'],
+                        'lost' => ['danger','Kayıp'],
+                    ];
+                    $statusClass = $statusMap[$customer->status][0];
+                    $statusText = $statusMap[$customer->status][1];
+                @endphp
+
+                <div class="customer-card" data-customer-id="{{ $customer->id }}">
+                    <!-- Card Header -->
+                    <div class="customer-card-header">
+                        <div class="customer-card-title">
+                            <div class="customer-card-name">
+                                <span>{{ $customer->name }}</span>
+                                @if($customer->policies_count >= 3)
+                                    <span class="vip-badge">VIP</span>
+                                @endif
+                            </div>
+                            <div class="customer-card-id">#{{ $customer->id }}</div>
+                        </div>
+                        <div class="customer-card-status">
+                            <span class="status-badge bg-{{ $statusClass }} text-white">{{ $statusText }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="customer-card-body">
+                        <!-- Phone -->
+                        <div class="customer-info-row">
+                            <div class="customer-info-icon">
+                                <i class="bi bi-telephone"></i>
+                            </div>
+                            <div class="customer-info-content">
+                                <div class="customer-info-label">Telefon</div>
+                                <div class="customer-info-value">{{ $customer->phone }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
                         @if($customer->email)
-                            <small class="text-muted"><i class="bi bi-envelope me-1"></i>{{ $customer->email }}</small>
+                        <div class="customer-info-row">
+                            <div class="customer-info-icon">
+                                <i class="bi bi-envelope"></i>
+                            </div>
+                            <div class="customer-info-content">
+                                <div class="customer-info-label">E-posta</div>
+                                <div class="customer-info-value">{{ $customer->email }}</div>
+                            </div>
+                        </div>
                         @endif
-                    </td>
-                    <td>{{ $customer->city ?? '-' }}</td>
-                    <td><span class="badge bg-info">{{ $customer->policies_count }}</span></td>
-                    <td>
-                        @php
-                            $map = [
-                                'active' => ['success','Aktif'],
-                                'potential' => ['warning','Potansiyel'],
-                                'passive' => ['secondary','Pasif'],
-                                'lost' => ['danger','Kayıp'],
-                            ];
-                        @endphp
-                        <span class="badge bg-{{ $map[$customer->status][0] }}">
-                            {{ $map[$customer->status][1] }}
-                        </span>
-                    </td>
-                    <td>{{ $customer->createdBy->name ?? '-' }}</td>
-                    <td data-sort="{{ $customer->created_at->format('Y-m-d') }}">
-                        {{ $customer->created_at->format('d.m.Y') }}
-                    </td>
-                    <td>
-                        <a href="{{ route('customers.show', $customer) }}" class="action-btn" title="Detay">
+
+                        <!-- City -->
+                        <div class="customer-info-row">
+                            <div class="customer-info-icon">
+                                <i class="bi bi-geo-alt"></i>
+                            </div>
+                            <div class="customer-info-content">
+                                <div class="customer-info-label">Şehir</div>
+                                <div class="customer-info-value">{{ $customer->city ?? 'Belirtilmemiş' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="customer-info-row">
+                        <div class="customer-info-icon">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <div class="customer-info-content">
+                            <div class="customer-info-label">Temsilci</div>
+                            <div class="customer-info-value">{{ $customer->assignedTo->name ?? 'Atanmamış' }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="customer-card-stats">
+                        <div class="customer-stat-item">
+                            <div class="customer-stat-value">{{ $customer->policies_count }}</div>
+                            <div class="customer-stat-label">Poliçe</div>
+                        </div>
+                        <div class="customer-stat-item">
+                            <div class="customer-stat-value">{{ $customer->created_at->format('d.m.Y') }}</div>
+                            <div class="customer-stat-label">Kayıt Tarihi</div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="customer-card-actions">
+                        <a href="{{ route('customers.show', $customer) }}" class="customer-action-btn view">
                             <i class="bi bi-eye"></i>
+                            <span>Detay</span>
                         </a>
-                        <a href="{{ route('customers.edit', $customer) }}" class="action-btn" title="Düzenle">
+                        <a href="{{ route('customers.edit', $customer) }}" class="customer-action-btn edit">
                             <i class="bi bi-pencil"></i>
+                            <span>Düzenle</span>
                         </a>
                         <button type="button"
-                                class="action-btn btn-whatsapp-customer"
-                                onclick="sendWhatsAppToCustomer('{{ $customer->name }}', '{{ $customer->phone }}')"
-                                title="WhatsApp">
+                                class="customer-action-btn whatsapp"
+                                onclick="sendWhatsAppToCustomer('{{ $customer->name }}', '{{ $customer->phone }}')">
                             <i class="bi bi-whatsapp"></i>
+                            <span class="text-white">WhatsApp</span>
                         </button>
-                        <button class="action-btn" onclick="deleteCustomer({{ $customer->id }})" title="Sil">
+                        <button onclick="deleteCustomer({{ $customer->id }})" class="customer-action-btn delete">
                             <i class="bi bi-trash"></i>
+                            <span>Sil</span>
                         </button>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                    </div>
+                </div>
+            @empty
+                <div class="empty-state">
+                    <i class="bi bi-people"></i>
+                    <h3>Müşteri Bulunamadı</h3>
+                    <p>Henüz müşteri kaydı bulunmamaktadır.</p>
+                </div>
+            @endforelse
+        </div>
     </div>
-</div>
-
-<!-- Mobile: Card Görünümü -->
-<div class="mobile-cards-container">
-    <!-- Mobile Search Bar -->
-    <div class="mobile-search-bar">
-        <i class="bi bi-search mobile-search-icon"></i>
-        <input type="text" id="mobileSearch" class="mobile-search-input" placeholder="Müşteri ara...">
-    </div>
-
-    <!-- Customer Cards -->
-    <div id="mobileCustomersList">
-        @forelse($customers as $customer)
-            @php
-                $statusMap = [
-                    'active' => ['success','Aktif'],
-                    'potential' => ['warning','Potansiyel'],
-                    'passive' => ['secondary','Pasif'],
-                    'lost' => ['danger','Kayıp'],
-                ];
-                $statusClass = $statusMap[$customer->status][0];
-                $statusText = $statusMap[$customer->status][1];
-            @endphp
-
-            <div class="customer-card" data-customer-id="{{ $customer->id }}">
-                <!-- Card Header -->
-                <div class="customer-card-header">
-                    <div class="customer-card-title">
-                        <div class="customer-card-name">
-                            <span>{{ $customer->name }}</span>
-                            @if($customer->policies_count >= 3)
-                                <span class="vip-badge">VIP</span>
-                            @endif
-                        </div>
-                        <div class="customer-card-id">#{{ $customer->id }}</div>
-                    </div>
-                    <div class="customer-card-status">
-                        <span class="status-badge bg-{{ $statusClass }} text-white">{{ $statusText }}</span>
-                    </div>
-                </div>
-
-                <!-- Card Body -->
-                <div class="customer-card-body">
-                    <!-- Phone -->
-                    <div class="customer-info-row">
-                        <div class="customer-info-icon">
-                            <i class="bi bi-telephone"></i>
-                        </div>
-                        <div class="customer-info-content">
-                            <div class="customer-info-label">Telefon</div>
-                            <div class="customer-info-value">{{ $customer->phone }}</div>
-                        </div>
-                    </div>
-
-                    <!-- Email -->
-                    @if($customer->email)
-                    <div class="customer-info-row">
-                        <div class="customer-info-icon">
-                            <i class="bi bi-envelope"></i>
-                        </div>
-                        <div class="customer-info-content">
-                            <div class="customer-info-label">E-posta</div>
-                            <div class="customer-info-value">{{ $customer->email }}</div>
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- City -->
-                    <div class="customer-info-row">
-                        <div class="customer-info-icon">
-                            <i class="bi bi-geo-alt"></i>
-                        </div>
-                        <div class="customer-info-content">
-                            <div class="customer-info-label">Şehir</div>
-                            <div class="customer-info-value">{{ $customer->city ?? 'Belirtilmemiş' }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Stats -->
-                <div class="customer-card-stats">
-                    <div class="customer-stat-item">
-                        <div class="customer-stat-value">{{ $customer->policies_count }}</div>
-                        <div class="customer-stat-label">Poliçe</div>
-                    </div>
-                    <div class="customer-stat-item">
-                        <div class="customer-stat-value">{{ $customer->created_at->format('d.m.Y') }}</div>
-                        <div class="customer-stat-label">Kayıt Tarihi</div>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="customer-card-actions">
-                    <a href="{{ route('customers.show', $customer) }}" class="customer-action-btn view">
-                        <i class="bi bi-eye"></i>
-                        <span>Detay</span>
-                    </a>
-                    <a href="{{ route('customers.edit', $customer) }}" class="customer-action-btn edit">
-                        <i class="bi bi-pencil"></i>
-                        <span>Düzenle</span>
-                    </a>
-                    <button type="button"
-                            class="customer-action-btn whatsapp"
-                            onclick="sendWhatsAppToCustomer('{{ $customer->name }}', '{{ $customer->phone }}')">
-                        <i class="bi bi-whatsapp"></i>
-                        <span class="text-white">WhatsApp</span>
-                    </button>
-                    <button onclick="deleteCustomer({{ $customer->id }})" class="customer-action-btn delete">
-                        <i class="bi bi-trash"></i>
-                        <span>Sil</span>
-                    </button>
-                </div>
-            </div>
-        @empty
-            <div class="empty-state">
-                <i class="bi bi-people"></i>
-                <h3>Müşteri Bulunamadı</h3>
-                <p>Henüz müşteri kaydı bulunmamaktadır.</p>
-            </div>
-        @endforelse
-    </div>
-</div>
 
 <!-- Delete Form -->
 <form id="deleteForm" method="POST" style="display:none">

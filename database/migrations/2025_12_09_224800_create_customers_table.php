@@ -48,7 +48,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
 
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-
+            $table->integer('assigned_to')->nullable()->after('created_by')->comment('İlgilenen Temsilci');
             $table->timestamps();
             $table->softDeletes();
 
