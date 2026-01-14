@@ -304,7 +304,7 @@
 
     .customer-card-actions {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 8px;
     }
 
@@ -533,6 +533,38 @@
         .customer-card-actions {
             grid-template-columns: repeat(3, 1fr);
         }
+    }
+</style>
+
+<style>
+    .btn-whatsapp-customer {
+        background: #25D366 !important;
+        color: white !important;
+        border-color: #25D366 !important;
+    }
+
+    .btn-whatsapp-customer:hover {
+        background: #128C7E !important;
+        border-color: #128C7E !important;
+    }
+
+    .btn-whatsapp-customer i {
+        color: white;
+    }
+
+    .customer-action-btn.whatsapp {
+        background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+        color: white;
+        border-color: #25D366;
+    }
+
+    .customer-action-btn.whatsapp:active {
+        background: linear-gradient(135deg, #128C7E 0%, #0D7A6F 100%);
+        transform: scale(0.95);
+    }
+
+    .customer-action-btn.whatsapp i {
+        color: white;
     }
 </style>
 
@@ -776,9 +808,9 @@
 </div>
 
 
-  <!-- İstatistik Kartları -->
+    <!-- İstatistik Kartları -->
     <div class="row g-3 mb-4">
-        <div class="col-lg col-md-4 col-12">
+        <div class="col-md-3 col-6">
             <div class="policy-stat-card policy-stat-primary">
                 <div class="policy-stat-content">
                     <div class="policy-stat-value">{{ number_format($stats['total_customers']) }}</div>
@@ -790,7 +822,7 @@
             </div>
         </div>
 
-        <div class="col-lg col-md-4 col-12">
+        <div class="col-md-3 col-6">
             <div class="policy-stat-card policy-stat-success">
                 <div class="policy-stat-content">
                     <div class="policy-stat-value">{{ number_format($stats['active_customers']) }}</div>
@@ -802,7 +834,7 @@
             </div>
         </div>
 
-        <div class="col-lg col-md-4 col-12">
+        <div class="col-md-3 col-6">
             <div class="policy-stat-card policy-stat-warning">
                 <div class="policy-stat-content">
                     <div class="policy-stat-value">{{ number_format($stats['potential_customers']) }}</div>
@@ -814,7 +846,7 @@
             </div>
         </div>
 
-        <div class="col-lg col-md-4 col-12">
+        <div class="col-md-3 col-6">
             <div class="policy-stat-card policy-stat-danger">
                 <div class="policy-stat-content">
                     <div class="policy-stat-value">{{ number_format($stats['total_policies']) }}</div>
@@ -931,6 +963,12 @@
                         <a href="{{ route('customers.edit', $customer) }}" class="action-btn" title="Düzenle">
                             <i class="bi bi-pencil"></i>
                         </a>
+                        <button type="button"
+                                class="action-btn btn-whatsapp-customer"
+                                onclick="sendWhatsAppToCustomer('{{ $customer->name }}', '{{ $customer->phone }}')"
+                                title="WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </button>
                         <button class="action-btn" onclick="deleteCustomer({{ $customer->id }})" title="Sil">
                             <i class="bi bi-trash"></i>
                         </button>
@@ -1041,6 +1079,12 @@
                         <i class="bi bi-pencil"></i>
                         <span>Düzenle</span>
                     </a>
+                    <button type="button"
+                            class="customer-action-btn whatsapp"
+                            onclick="sendWhatsAppToCustomer('{{ $customer->name }}', '{{ $customer->phone }}')">
+                        <i class="bi bi-whatsapp"></i>
+                        <span class="text-white">WhatsApp</span>
+                    </button>
                     <button onclick="deleteCustomer({{ $customer->id }})" class="customer-action-btn delete">
                         <i class="bi bi-trash"></i>
                         <span>Sil</span>
@@ -1067,152 +1111,164 @@
 
 @push('scripts')
 <script>
-$(document).ready(function() {
-    // DESKTOP DATATABLE - STATE SAVE KAPALI
+    $(document).ready(function() {
+        // DESKTOP DATATABLE - STATE SAVE KAPALI
 
-    const table = initDataTable('#customersTable', {
-        order: [[7, 'desc']],
-        stateSave: false,
-        columnDefs: [
-            { orderable: false, targets: [0, 8] },
-            { targets: 0, searchable: false }
-        ]
+        const table = initDataTable('#customersTable', {
+            order: [[7, 'desc']],
+            stateSave: false,
+            columnDefs: [
+                { orderable: false, targets: [0, 8] },
+                { targets: 0, searchable: false }
+            ]
+        });
+
+
+
+        // DESKTOP FILTERS - TAM TEMİZLEME
+        $('#filterStatus, #filterCity, #filterDateFrom, #filterDateTo').on('change', function() {
+            const status = $('#filterStatus').val();
+            const city = $('#filterCity').val();
+            const dateFrom = $('#filterDateFrom').val();
+            const dateTo = $('#filterDateTo').val();
+
+            $.fn.dataTable.ext.search = [];
+
+            table.columns().search('');
+
+
+            // Durum filtresi
+            if (status && status !== '') {
+                table.column(5).search(status, false, false);
+            }
+
+            // Şehir filtresi
+            if (city && city !== '') {
+                table.column(3).search(city, false, false);
+            }
+
+            // Tarih filtresi
+            if (dateFrom || dateTo) {
+                $.fn.dataTable.ext.search.push(
+                    function(settings, data, dataIndex) {
+                        const dateStr = data[7]; // Kayıt tarihi sütunu
+                        if (!dateStr || dateStr === '-') return true;
+
+                        const dateParts = dateStr.split('.');
+                        if (dateParts.length !== 3) return true;
+
+                        const rowDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+                        const startDate = dateFrom ? new Date(dateFrom) : null;
+                        const endDate = dateTo ? new Date(dateTo) : null;
+
+                        if (startDate && rowDate < startDate) return false;
+                        if (endDate && rowDate > endDate) return false;
+
+                        return true;
+                    }
+                );
+            }
+
+            table.draw();
+
+            filterMobileCards();
+        });
+
+        // MOBILE SEARCH
+        $('#mobileSearch').on('keyup', function() {
+            const searchTerm = $(this).val().toLowerCase();
+            filterMobileCards(searchTerm);
+        });
+
+        // MOBILE FILTER FUNCTION
+        function filterMobileCards(searchTerm = '') {
+            const status = $('#filterStatus').val();
+            const city = $('#filterCity').val();
+
+            let visibleCount = 0;
+
+            $('.customer-card').each(function() {
+                const $card = $(this);
+                const cardText = $card.text().toLowerCase();
+                const cardStatus = $card.find('.status-badge').text().trim();
+                const cardCity = $card.find('.customer-info-value').eq(2).text().trim();
+
+                let show = true;
+
+                // Search filter
+                if (searchTerm && !cardText.includes(searchTerm)) {
+                    show = false;
+                }
+
+                // Status filter (Boş değilse)
+                if (status && status !== '' && cardStatus !== status) {
+                    show = false;
+                }
+
+                // City filter (Boş değilse)
+                if (city && city !== '' && cardCity !== city) {
+                    show = false;
+                }
+
+                if (show) {
+                    $card.show();
+                    visibleCount++;
+                } else {
+                    $card.hide();
+                }
+            });
+
+            // Log için (opsiyonel)
+            console.log('Görünen kart sayısı:', visibleCount);
+        }
     });
 
-
-
-    // DESKTOP FILTERS - TAM TEMİZLEME
-    $('#filterStatus, #filterCity, #filterDateFrom, #filterDateTo').on('change', function() {
-        const status = $('#filterStatus').val();
-        const city = $('#filterCity').val();
-        const dateFrom = $('#filterDateFrom').val();
-        const dateTo = $('#filterDateTo').val();
+    // CLEAR FILTERS - TAM TEMİZLEME
+    function clearFilters() {
+        $('#filterStatus').val('');
+        $('#filterCity').val('');
+        $('#filterDateFrom').val('');
+        $('#filterDateTo').val('');
+        $('#mobileSearch').val('');
 
         $.fn.dataTable.ext.search = [];
 
+        const table = $('#customersTable').DataTable();
+
+        table.search('');
+
         table.columns().search('');
 
-
-        // Durum filtresi
-        if (status && status !== '') {
-            table.column(5).search(status, false, false);
-        }
-
-        // Şehir filtresi
-        if (city && city !== '') {
-            table.column(3).search(city, false, false);
-        }
-
-        // Tarih filtresi
-        if (dateFrom || dateTo) {
-            $.fn.dataTable.ext.search.push(
-                function(settings, data, dataIndex) {
-                    const dateStr = data[7]; // Kayıt tarihi sütunu
-                    if (!dateStr || dateStr === '-') return true;
-
-                    const dateParts = dateStr.split('.');
-                    if (dateParts.length !== 3) return true;
-
-                    const rowDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
-                    const startDate = dateFrom ? new Date(dateFrom) : null;
-                    const endDate = dateTo ? new Date(dateTo) : null;
-
-                    if (startDate && rowDate < startDate) return false;
-                    if (endDate && rowDate > endDate) return false;
-
-                    return true;
-                }
-            );
-        }
+        table.state.clear();
 
         table.draw();
 
-        filterMobileCards();
-    });
+        $('.customer-card').show();
 
-    // MOBILE SEARCH
-    $('#mobileSearch').on('keyup', function() {
-        const searchTerm = $(this).val().toLowerCase();
-        filterMobileCards(searchTerm);
-    });
-
-    // MOBILE FILTER FUNCTION
-    function filterMobileCards(searchTerm = '') {
-        const status = $('#filterStatus').val();
-        const city = $('#filterCity').val();
-
-        let visibleCount = 0;
-
-        $('.customer-card').each(function() {
-            const $card = $(this);
-            const cardText = $card.text().toLowerCase();
-            const cardStatus = $card.find('.status-badge').text().trim();
-            const cardCity = $card.find('.customer-info-value').eq(2).text().trim();
-
-            let show = true;
-
-            // Search filter
-            if (searchTerm && !cardText.includes(searchTerm)) {
-                show = false;
-            }
-
-            // Status filter (Boş değilse)
-            if (status && status !== '' && cardStatus !== status) {
-                show = false;
-            }
-
-            // City filter (Boş değilse)
-            if (city && city !== '' && cardCity !== city) {
-                show = false;
-            }
-
-            if (show) {
-                $card.show();
-                visibleCount++;
-            } else {
-                $card.hide();
-            }
-        });
-
-        // Log için (opsiyonel)
-        console.log('Görünen kart sayısı:', visibleCount);
-    }
-});
-
-// CLEAR FILTERS - TAM TEMİZLEME
-function clearFilters() {
-    $('#filterStatus').val('');
-    $('#filterCity').val('');
-    $('#filterDateFrom').val('');
-    $('#filterDateTo').val('');
-    $('#mobileSearch').val('');
-
-    $.fn.dataTable.ext.search = [];
-
-    const table = $('#customersTable').DataTable();
-
-    table.search('');
-
-    table.columns().search('');
-
-    table.state.clear();
-
-    table.draw();
-
-    $('.customer-card').show();
-
-    console.log('Tüm filtreler temizlendi');
-}
-
-// DELETE CUSTOMER
-function deleteCustomer(id) {
-    if (!confirm('Bu müşteriyi silmek istediğinize emin misiniz?\n\nBu işlem geri alınamaz!')) {
-        return;
+        console.log('Tüm filtreler temizlendi');
     }
 
-    const form = document.getElementById('deleteForm');
-    form.action = '/panel/customers/' + id;
-    form.submit();
-}
+    // DELETE CUSTOMER
+    function deleteCustomer(id) {
+        if (!confirm('Bu müşteriyi silmek istediğinize emin misiniz?\n\nBu işlem geri alınamaz!')) {
+            return;
+        }
+
+        const form = document.getElementById('deleteForm');
+        form.action = '/panel/customers/' + id;
+        form.submit();
+    }
+</script>
+
+<script>
+    function sendWhatsAppToCustomer(customerName, customerPhone) {
+        const phone = customerPhone.replace(/\D/g, '');
+        const phoneNumber = phone.startsWith('0') ? '90' + phone.substring(1) : phone;
+
+        const message = 'Sayın ' + customerName + ',\n\n';
+
+        const whatsappUrl = 'https://wa.me/' + phoneNumber + '?text=' + encodeURIComponent(message);
+        window.open(whatsappUrl, '_blank');
+    }
 </script>
 @endpush
