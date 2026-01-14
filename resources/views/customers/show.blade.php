@@ -854,170 +854,177 @@
             <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#notes">
                     <i class="bi bi-sticky me-2"></i>
-                    <span>Notlar</span>
+                    <span>Etkileşimler / Notlar</span>
                     <span class="badge badge-modern bg-secondary ms-2">{{ $customer->customerNotes->count() }}</span>
                 </button>
             </li>
             <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#documents">
+                    <i class="bi bi-file-earmark-arrow-up me-2"></i>
+                    <span>Belgeler</span>
+                    <span class="badge badge-modern bg-secondary ms-2">{{ $customer->documents->count() }}</span>
+                </button>
+            </li>
+            {{-- <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#calls">
                     <i class="bi bi-telephone me-2"></i>
                     <span>Aramalar</span>
                     <span class="badge badge-modern bg-secondary ms-2">{{ $customer->customerCalls->count() }}</span>
                 </button>
-            </li>
+            </li> --}}
         </ul>
 
         <!-- Tab İçerikleri -->
         <div class="tab-content">
-        <!-- Poliçeler -->
-        <div class="tab-pane fade show active" id="policies">
-            <div class="content-card card">
-                <div class="card-body p-0">
-                    @if($customer->policies->isEmpty())
-                        <div class="empty-state">
-                            <i class="bi bi-inbox"></i>
-                            <h6 class="text-muted mb-2">Henüz Poliçe Bulunmuyor</h6>
-                            <p class="text-muted small mb-3">Bu müşteriye ait henüz bir poliçe kaydı eklenmemiş.</p>
-                            <a href="{{ route('policies.create') }}" class="btn btn-primary btn-sm action-btn">
-                                <i class="bi bi-plus-circle me-2"></i>Yeni Poliçe Ekle
-                            </a>
-                        </div>
-                    @else
-                        <!-- Desktop Table View -->
-                        <div class="table-responsive p-3 d-none d-md-block">
-                            <table class="table table-modern mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Poliçe No</th>
-                                        <th>Tür</th>
-                                        <th>Şirket</th>
-                                        <th>Başlangıç</th>
-                                        <th>Bitiş</th>
-                                        <th>Prim</th>
-                                        <th>Durum</th>
-                                        <th class="text-center">İşlem</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($customer->policies as $policy)
-                                    <tr>
-                                        <td>
-                                            <strong class="text-primary">{{ $policy->policy_number }}</strong>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-modern bg-info">
-                                                {{ $policy->policy_type_label }}
-                                            </span>
-                                        </td>
-                                        <td>{{ $policy->insuranceCompany->name }}</td>
-                                        <td>
-                                            <small class="text-muted">{{ $policy->start_date->format('d.m.Y') }}</small>
-                                        </td>
-                                        <td>
-                                            <small class="text-muted">{{ $policy->end_date->format('d.m.Y') }}</small>
-                                        </td>
-                                        <td>
-                                            <strong>{{ number_format($policy->premium_amount, 2) }} ₺</strong>
-                                        </td>
-                                        <td>
-                                            @php
-                                                $statusConfig = [
-                                                    'active' => ['color' => 'success', 'label' => 'Aktif'],
-                                                    'expiring_soon' => ['color' => 'warning', 'label' => 'Yakında Bitiyor'],
-                                                    'critical' => ['color' => 'danger', 'label' => 'Kritik'],
-                                                    'expired' => ['color' => 'secondary', 'label' => 'Süresi Bitti'],
-                                                    'renewed' => ['color' => 'info', 'label' => 'Yenilendi'],
-                                                    'cancelled' => ['color' => 'dark', 'label' => 'İptal'],
-                                                ];
-                                                $config = $statusConfig[$policy->status] ?? ['color' => 'secondary', 'label' => $policy->status];
-                                            @endphp
+            <!-- Poliçeler -->
+            <div class="tab-pane fade show active" id="policies">
+                <div class="content-card card">
+                    <div class="card-body p-0">
+                        @if($customer->policies->isEmpty())
+                            <div class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <h6 class="text-muted mb-2">Henüz Poliçe Bulunmuyor</h6>
+                                <p class="text-muted small mb-3">Bu müşteriye ait henüz bir poliçe kaydı eklenmemiş.</p>
+                                <a href="{{ route('policies.create') }}" class="btn btn-primary btn-sm action-btn">
+                                    <i class="bi bi-plus-circle me-2"></i>Yeni Poliçe Ekle
+                                </a>
+                            </div>
+                        @else
+                            <!-- Desktop Table View -->
+                            <div class="table-responsive p-3 d-none d-md-block">
+                                <table class="table table-modern mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Poliçe No</th>
+                                            <th>Tür</th>
+                                            <th>Şirket</th>
+                                            <th>Başlangıç</th>
+                                            <th>Bitiş</th>
+                                            <th>Prim</th>
+                                            <th>Durum</th>
+                                            <th class="text-center">İşlem</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($customer->policies as $policy)
+                                        <tr>
+                                            <td>
+                                                <strong class="text-primary">{{ $policy->policy_number }}</strong>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-modern bg-info">
+                                                    {{ $policy->policy_type_label }}
+                                                </span>
+                                            </td>
+                                            <td>{{ $policy->insuranceCompany->name }}</td>
+                                            <td>
+                                                <small class="text-muted">{{ $policy->start_date->format('d.m.Y') }}</small>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">{{ $policy->end_date->format('d.m.Y') }}</small>
+                                            </td>
+                                            <td>
+                                                <strong>{{ number_format($policy->premium_amount, 2) }} ₺</strong>
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $statusConfig = [
+                                                        'active' => ['color' => 'success', 'label' => 'Aktif'],
+                                                        'expiring_soon' => ['color' => 'warning', 'label' => 'Yakında Bitiyor'],
+                                                        'critical' => ['color' => 'danger', 'label' => 'Kritik'],
+                                                        'expired' => ['color' => 'secondary', 'label' => 'Süresi Bitti'],
+                                                        'renewed' => ['color' => 'info', 'label' => 'Yenilendi'],
+                                                        'cancelled' => ['color' => 'dark', 'label' => 'İptal'],
+                                                    ];
+                                                    $config = $statusConfig[$policy->status] ?? ['color' => 'secondary', 'label' => $policy->status];
+                                                @endphp
+                                                <span class="badge badge-modern bg-{{ $config['color'] }}">
+                                                    {{ $config['label'] }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="{{ route('policies.show', $policy) }}"
+                                                class="quick-action-btn btn btn-light"
+                                                title="Detaylar">
+                                                    <i class="bi bi-eye text-primary"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Mobile Card View -->
+                            <div class="d-md-none p-3">
+                                @foreach($customer->policies as $policy)
+                                    @php
+                                        $statusConfig = [
+                                            'active' => ['color' => 'success', 'label' => 'Aktif'],
+                                            'expiring_soon' => ['color' => 'warning', 'label' => 'Yakında Bitiyor'],
+                                            'critical' => ['color' => 'danger', 'label' => 'Kritik'],
+                                            'expired' => ['color' => 'secondary', 'label' => 'Süresi Bitti'],
+                                            'renewed' => ['color' => 'info', 'label' => 'Yenilendi'],
+                                            'cancelled' => ['color' => 'dark', 'label' => 'İptal'],
+                                        ];
+                                        $config = $statusConfig[$policy->status] ?? ['color' => 'secondary', 'label' => $policy->status];
+                                    @endphp
+
+                                    <div class="policy-card-mobile">
+                                        <!-- Card Header -->
+                                        <div class="policy-card-header">
+                                            <div>
+                                                <div class="policy-card-number">{{ $policy->policy_number }}</div>
+                                                <span class="badge badge-modern bg-info policy-card-type">
+                                                    {{ $policy->policy_type_label }}
+                                                </span>
+                                            </div>
                                             <span class="badge badge-modern bg-{{ $config['color'] }}">
                                                 {{ $config['label'] }}
                                             </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="{{ route('policies.show', $policy) }}"
-                                            class="quick-action-btn btn btn-light"
-                                            title="Detaylar">
-                                                <i class="bi bi-eye text-primary"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                                        </div>
 
-                        <!-- Mobile Card View -->
-                        <div class="d-md-none p-3">
-                            @foreach($customer->policies as $policy)
-                                @php
-                                    $statusConfig = [
-                                        'active' => ['color' => 'success', 'label' => 'Aktif'],
-                                        'expiring_soon' => ['color' => 'warning', 'label' => 'Yakında Bitiyor'],
-                                        'critical' => ['color' => 'danger', 'label' => 'Kritik'],
-                                        'expired' => ['color' => 'secondary', 'label' => 'Süresi Bitti'],
-                                        'renewed' => ['color' => 'info', 'label' => 'Yenilendi'],
-                                        'cancelled' => ['color' => 'dark', 'label' => 'İptal'],
-                                    ];
-                                    $config = $statusConfig[$policy->status] ?? ['color' => 'secondary', 'label' => $policy->status];
-                                @endphp
+                                        <!-- Card Body -->
+                                        <div class="policy-card-body">
+                                            <div class="policy-info-item">
+                                                <div class="policy-info-label">Şirket</div>
+                                                <div class="policy-info-value">{{ $policy->insuranceCompany->name }}</div>
+                                            </div>
 
-                                <div class="policy-card-mobile">
-                                    <!-- Card Header -->
-                                    <div class="policy-card-header">
-                                        <div>
-                                            <div class="policy-card-number">{{ $policy->policy_number }}</div>
-                                            <span class="badge badge-modern bg-info policy-card-type">
-                                                {{ $policy->policy_type_label }}
+                                            <div class="policy-info-item">
+                                                <div class="policy-info-label">Prim Tutarı</div>
+                                                <div class="policy-info-value text-success">{{ number_format($policy->premium_amount, 2) }} ₺</div>
+                                            </div>
+
+                                            <div class="policy-info-item">
+                                                <div class="policy-info-label">Başlangıç</div>
+                                                <div class="policy-info-value">{{ $policy->start_date->format('d.m.Y') }}</div>
+                                            </div>
+
+                                            <div class="policy-info-item">
+                                                <div class="policy-info-label">Bitiş</div>
+                                                <div class="policy-info-value">{{ $policy->end_date->format('d.m.Y') }}</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Card Footer -->
+                                        <div class="policy-card-footer">
+                                            <span class="text-muted" style="font-size: 0.75rem;">
+                                                <i class="bi bi-calendar-event"></i>
+                                                {{ $policy->created_at->diffForHumans() }}
                                             </span>
-                                        </div>
-                                        <span class="badge badge-modern bg-{{ $config['color'] }}">
-                                            {{ $config['label'] }}
-                                        </span>
-                                    </div>
-
-                                    <!-- Card Body -->
-                                    <div class="policy-card-body">
-                                        <div class="policy-info-item">
-                                            <div class="policy-info-label">Şirket</div>
-                                            <div class="policy-info-value">{{ $policy->insuranceCompany->name }}</div>
-                                        </div>
-
-                                        <div class="policy-info-item">
-                                            <div class="policy-info-label">Prim Tutarı</div>
-                                            <div class="policy-info-value text-success">{{ number_format($policy->premium_amount, 2) }} ₺</div>
-                                        </div>
-
-                                        <div class="policy-info-item">
-                                            <div class="policy-info-label">Başlangıç</div>
-                                            <div class="policy-info-value">{{ $policy->start_date->format('d.m.Y') }}</div>
-                                        </div>
-
-                                        <div class="policy-info-item">
-                                            <div class="policy-info-label">Bitiş</div>
-                                            <div class="policy-info-value">{{ $policy->end_date->format('d.m.Y') }}</div>
+                                            <a href="{{ route('policies.show', $policy) }}" class="policy-card-action">
+                                                <i class="bi bi-eye"></i>
+                                                Detay
+                                            </a>
                                         </div>
                                     </div>
-
-                                    <!-- Card Footer -->
-                                    <div class="policy-card-footer">
-                                        <span class="text-muted" style="font-size: 0.75rem;">
-                                            <i class="bi bi-calendar-event"></i>
-                                            {{ $policy->created_at->diffForHumans() }}
-                                        </span>
-                                        <a href="{{ route('policies.show', $policy) }}" class="policy-card-action">
-                                            <i class="bi bi-eye"></i>
-                                            Detay
-                                        </a>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
-        </div>
 
             <!-- Teklifler -->
             <div class="tab-pane fade" id="quotations">
@@ -1139,6 +1146,58 @@
                 </div>
             </div>
 
+            <!-- documents -->
+            <div class="tab-pane fade" id="documents">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">Müşteri Belgeleri</h6>
+                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">
+                            <i class="bi bi-plus-circle me-1"></i>Belge Yükle
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        @forelse($customer->documents as $document)
+                            <div class="document-item d-flex justify-content-between align-items-center p-3 border-bottom">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-file-earmark-pdf fs-3 text-danger me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">{{ $document->title }}</h6>
+                                        <small class="text-muted">
+                                            {{ $document->file_size_formatted }} •
+                                            {{ $document->uploadedBy->name }} •
+                                            {{ $document->created_at->diffForHumans() }}
+                                        </small>
+                                        @if($document->description)
+                                            <p class="mb-0 small text-muted mt-1">{{ $document->description }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ asset('customer_files/' . $document->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{{ asset('customer_files/' . $document->file_path) }}" download class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-download"></i>
+                                    </a>
+                                    <form action="{{ route('customers.documents.destroy', [$customer, $document]) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Belgeyi silmek istediğinizden emin misiniz?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-5">
+                                <i class="bi bi-file-earmark-x fs-1 text-muted"></i>
+                                <p class="text-muted mt-2">Henüz belge yüklenmemiş</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+
             <!-- Aramalar -->
             <div class="tab-pane fade" id="calls">
                 <div class="content-card card">
@@ -1178,6 +1237,40 @@
                             @endforeach
                         @endif
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Modal -->
+        <div class="modal fade" id="uploadDocumentModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Belge Yükle</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form action="{{ route('customers.documents.store', $customer) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Belge Başlığı <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="file" class="form-label">Dosya <span class="text-danger">*</span></label>
+                                <input type="file" class="form-control" id="file" name="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
+                                <small class="text-muted">Maksimum 5MB (PDF, DOC, DOCX, JPG, PNG)</small>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Açıklama</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                            <button type="submit" class="btn btn-primary">Yükle</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -1392,7 +1485,6 @@ style.textContent = `
     }
 
     .empty-state i {
-        font-size: 4rem;
         color: #cbd5e1;
         margin-bottom: 1rem;
     }

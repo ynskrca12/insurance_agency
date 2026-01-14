@@ -97,6 +97,10 @@ class Customer extends Model
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
+    public function documents()
+    {
+        return $this->hasMany(CustomerDocument::class)->latest();
+    }
 
     /**
      * Aktif poliçeler

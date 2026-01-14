@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\CustomerNote;
 use App\Models\Policy;
-
+use App\Models\CustomerDocument;
 
 class CustomerController extends Controller
 {
@@ -128,6 +128,7 @@ class CustomerController extends Controller
             'customerNotes.user',
             'customerCalls.user',
             'crossSellOpportunities',
+            'documents.uploadedBy',
         ]);
 
         return view('customers.show', compact('customer'));
@@ -272,5 +273,48 @@ class CustomerController extends Controller
 
             return back()->with('error', 'Not eklenirken bir hata oluştu: ' . $e->getMessage());
         }
+    }
+
+    public function storeDocument(Request $request, Customer $customer)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'file' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
+            'description' => 'nullable|string',
+        ]);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+
+            $originalName = $file->getClientOriginalName();
+            $mimeType = $file->getClientMimeType();
+            $fileSize = $file->getSize();
+
+            $fileName = time() . '_' . $originalName;
+            $file->move(public_path('customer_files'), $fileName);
+
+            $customer->documents()->create([
+                'uploaded_by' => auth()->id(),
+                'title' => $validated['title'],
+                'file_name' => $originalName,
+                'file_path' => $fileName,
+                'file_type' => $mimeType,
+                'file_size' => $fileSize,
+                'description' => $validated['description'] ?? null,
+            ]);
+        }
+
+        return back()->with('success', 'Belge başarıyla yüklendi.');
+    }
+
+    public function destroyDocument(Customer $customer, CustomerDocument $document)
+    {
+        if (file_exists(public_path('customer_files/' . $document->file_path))) {
+            unlink(public_path('customer_files/' . $document->file_path));
+        }
+
+        $document->delete();
+
+        return back()->with('success', 'Belge silindi.');
     }
 }

@@ -177,6 +177,9 @@ Route::prefix('panel')->group(function () {
         Route::resource('customers', CustomerController::class);
         Route::post('/{customer}/notes', [CustomerController::class, 'addNote'])->name('customers.addNote');
 
+        Route::post('customers/{customer}/documents', [CustomerController::class, 'storeDocument'])->name('customers.documents.store');
+        Route::delete('customers/{customer}/documents/{document}', [CustomerController::class, 'destroyDocument'])->name('customers.documents.destroy');
+
         Route::resource('policies', PolicyController::class);
 
         // Quotations (Teklifler)
