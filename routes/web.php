@@ -189,7 +189,7 @@ Route::prefix('panel')->group(function () {
 
         // Renewals (Yenilemeler)
         Route::get('renewals', [RenewalController::class, 'index'])->name('renewals.index');
-        Route::get('renewals/calendar', [RenewalController::class, 'calendar'])->name('renewals.calendar');
+        Route::get('calendar', [RenewalController::class, 'calendar'])->name('calendar.index');
         Route::get('renewals/{renewal}', [RenewalController::class, 'show'])->name('renewals.show');
         Route::post('renewals/{renewal}/contact', [RenewalController::class, 'contact'])->name('renewals.contact');
         Route::post('renewals/{renewal}/mark-renewed', [RenewalController::class, 'markAsRenewed'])->name('renewals.markAsRenewed');

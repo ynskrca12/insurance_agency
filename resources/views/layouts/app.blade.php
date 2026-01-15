@@ -1139,6 +1139,14 @@
                         </li>
 
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('calendar.*') ? 'active' : '' }}"
+                            href="{{ route('calendar.index') }}">
+                                <i class="bi bi-calendar3"></i>
+                                Takvim
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}"
                             href="{{ route('reports.index') }}">
                                 <i class="bi bi-graph-up"></i>

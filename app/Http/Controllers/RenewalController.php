@@ -262,9 +262,6 @@ class RenewalController extends Controller
         }
     }
 
-    /**
-     * Takvim görünümü
-     */
     public function calendar(Request $request)
     {
         $month = $request->get('month', now()->month);
@@ -281,7 +278,17 @@ class RenewalController extends Controller
                 return $renewal->renewal_date->format('Y-m-d');
             });
 
-        return view('renewals.calendar', compact('renewals', 'month', 'year', 'startDate', 'endDate'));
+        $birthdays = Customer::whereNotNull('birth_date')
+            ->get()
+            ->filter(function($customer) use ($month) {
+                return Carbon::parse($customer->birth_date)->month == $month;
+            })
+            ->groupBy(function($customer) use ($year) {
+                $birthDate = Carbon::parse($customer->birth_date);
+                return Carbon::create($year, $birthDate->month, $birthDate->day)->format('Y-m-d');
+            });
+
+        return view('renewals.calendar', compact('renewals', 'birthdays', 'month', 'year', 'startDate', 'endDate'));
     }
 
     /**

@@ -938,12 +938,6 @@
                 <span class="d-inline d-md-none">Oluştur</span>
             </a>
             @endif
-
-            <a href="{{ route('renewals.calendar') }}" class="btn btn-info text-white">
-                <i class="bi bi-calendar3 me-2"></i>
-                <span class="d-none d-md-inline">Takvim Görünümü</span>
-                <span class="d-inline d-md-none">Takvim</span>
-            </a>
         </div>
     </div>
 
