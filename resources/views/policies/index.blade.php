@@ -1022,7 +1022,7 @@
                         <div class="policy-info-label">Bitiş Tarihi</div>
                         <div class="policy-info-value {{ $daysLeft <= 30 ? 'text-danger' : '' }}">
                             {{ $policy->end_date->format('d.m.Y') }}
-                            @if ($policy->status != 'renewed')
+                            @if (!in_array($policy->status, ['renewed', 'lost']))
                                 @if($daysLeft > 0)
                                     <small>{{ $daysLeft }} gün</small>
                                 @elseif($daysLeft === 0)
@@ -1144,7 +1144,7 @@
                                 @php
                                     $daysLeft = $policy->days_until_expiry;
                                 @endphp
-                                @if ($policy->status != 'renewed')
+                                @if (!in_array($policy->status, ['renewed', 'lost']))
                                     @if($daysLeft > 0)
                                         <small class="text-muted">{{ $daysLeft }} gün kaldı</small>
                                     @elseif($daysLeft === 0)

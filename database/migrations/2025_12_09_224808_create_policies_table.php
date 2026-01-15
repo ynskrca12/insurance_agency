@@ -55,7 +55,8 @@ return new class extends Migration
                 'critical',         // 7 gün
                 'expired',          // Bitti
                 'renewed',          // Yenilendi
-                'cancelled'         // İptal
+                'cancelled',         // İptal
+                'lost'              // Kayıp
             ])->default('active');
 
             // Yenileme İlişkisi

@@ -232,7 +232,7 @@ class RenewalController extends Controller
             ]);
 
             $renewal->policy->update([
-                'status' => 'expired',
+                'status' => 'lost',
             ]);
 
             // Müşteriyi pasif olarak işaretle (opsiyonel)
