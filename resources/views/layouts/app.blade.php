@@ -967,6 +967,12 @@
                 padding: 24px;
             }
         }
+
+        .buttons-excel, .buttons-pdf, .buttons-print{
+            color: #ffffff !important;
+            padding: 8px 30px !important;
+            border-radius: 12px !important;
+        }
     </style>
 
     @stack('styles')

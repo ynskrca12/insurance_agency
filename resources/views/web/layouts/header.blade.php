@@ -71,18 +71,13 @@
         </div>
 
     </div>
-
-    <!-- Close Button -->
-    <!-- <button class="announcement-close" onclick="closeAnnouncement()">
-        <i class="bi bi-x"></i>
-    </button> -->
 </div>
 
 <!-- Main Navbar -->
 <nav class="navbar navbar-expand-lg  navbar-web py-3">
     <div class="container px-3 px-md-0 py-0">
         <a href="{{ route('home') }}" class="navbar-brand">
-            <img src="{{ asset('logosysnew.png') }}" alt="syslogo" style="width: 28px;" class="">
+            <img src="{{ asset('public/logosysnew.png') }}" alt="syslogo" style="width: 28px;" class="">
             <span>Sigorta Yönetim Sistemi</span>
         </a>
 
@@ -98,6 +93,15 @@
                 <li><a href="{{ route('demo.form') }}" class="btn btn-demo">Ücretsiz Demo</a></li>
             @else
                 <li><a href="{{ route('dashboard') }}" class="btn btn-dashboard">Panel</a></li>
+                <li>
+
+                <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-demo" style="border: none;">
+                        Çıkış Yap
+                    </button>
+                </form>
+        </li>
             @endguest
         </ul>
 
