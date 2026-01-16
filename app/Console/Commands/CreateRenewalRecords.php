@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Console\Commands;
 
 use App\Models\Policy;
@@ -10,15 +9,16 @@ use Carbon\Carbon;
 class CreateRenewalRecords extends Command
 {
     protected $signature = 'renewals:create';
-    protected $description = 'Yaklaşan poliçeler için otomatik yenileme kayıtları oluştur';
+    protected $description = 'Yaklaşan ve süresi dolmuş poliçeler için otomatik yenileme kayıtları oluştur';
 
     public function handle()
     {
         $this->info('Yenileme kayıtları oluşturuluyor...');
 
-        // 90 gün içinde bitecek aktif poliçeleri bul
+        // 90 gün içinde bitecek + süresi dolmuş aktif poliçeleri bul
         $policies = Policy::where('status', 'active')
-            ->whereBetween('end_date', [now(), now()->addDays(90)])
+            ->where('end_date', '>=', now()->subDays(90)) // Son 90 gün içinde dolmuş
+            ->where('end_date', '<=', now()->addDays(90)) // Veya 90 gün içinde dolacak
             ->whereDoesntHave('renewal')
             ->get();
 
@@ -38,7 +38,6 @@ class CreateRenewalRecords extends Command
 
         $this->info("{$created} adet yenileme kaydı oluşturuldu.");
 
-        // Mevcut kayıtların önceliklerini güncelle
         $this->updatePriorities();
 
         return 0;
@@ -48,7 +47,14 @@ class CreateRenewalRecords extends Command
     {
         $daysLeft = now()->diffInDays($endDate, false);
 
-        if ($daysLeft < 0) return 'critical';
+        if ($daysLeft < 0) {
+            $daysOverdue = abs($daysLeft);
+            if ($daysOverdue <= 7) return 'critical'; // Yeni dolmuş
+            if ($daysOverdue <= 15) return 'high'; // 2 hafta içinde dolmuş
+            return 'normal'; // Daha eski
+        }
+
+        // Pozitif değerler = poliçe henüz dolmamış
         if ($daysLeft <= 7) return 'critical';
         if ($daysLeft <= 30) return 'high';
         if ($daysLeft <= 60) return 'normal';

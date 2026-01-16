@@ -141,7 +141,7 @@ class Policy extends Model
     }
     public function getStatusAttribute($value)
     {
-        if (in_array($value, ['renewed', 'cancelled'])) {
+        if (in_array($value, ['renewed', 'cancelled', 'lost'])) {
             return $value;
         }
 

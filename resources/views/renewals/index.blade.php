@@ -932,7 +932,7 @@
             @if(in_array(auth()->user()->role, ['owner', 'manager']))
             <a href="{{ route('renewals.generate') }}"
             class="btn btn-primary d-flex align-items-center"
-            onclick="return confirm('⚙️ Yenileme Kayıtları Oluşturma\n\n• 90 gün içinde bitecek poliçeler taranacak\n• Yeni yenileme kayıtları oluşturulacak\n• Mevcut kayıtlar güncellenmeyecek\n\nDevam edilsin mi?')">
+            onclick="return confirm('⚙️ Yenileme Kayıtları Oluşturma\n\n• 90 gün içinde bitecek poliçeler taranacak\n• Yeni yenileme kayıtları oluşturulacak\n•Süresi dolmuş kaybedilmeyen veya yenilenmeyen poliçeleri de oluşturulacak\n• Mevcut kayıtlar güncellenmeyecek\n\nDevam edilsin mi?')">
                 <i class="bi bi-plus-circle-fill me-2"></i>
                 <span class="d-none d-md-inline">Kayıtları Oluştur</span>
                 <span class="d-inline d-md-none">Oluştur</span>
