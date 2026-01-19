@@ -5,11 +5,8 @@
 @push('styles')
 <style>
     .detail-header {
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
+        padding: 12px 0px;
+        margin-bottom: 1rem;
     }
 
     .info-card {
@@ -21,7 +18,7 @@
     }
 
     .info-card .card-header {
-        background: #fafafa;
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
         border-bottom: 1px solid #e8e8e8;
         padding: 1rem 1.25rem;
     }
@@ -89,10 +86,10 @@
     }
 
     .stat-box {
-        background: #fafafa;
-        border: 1px solid #e8e8e8;
-        border-radius: 10px;
-        padding: 1.5rem;
+        background: #fff;
+        border: 1px solid #dcdcdc;
+        border-radius: 16px;
+        padding: 12px;
         text-align: center;
         height: 100%;
         transition: all 0.3s ease;
@@ -104,8 +101,7 @@
     }
 
     .stat-icon {
-        font-size: 2.5rem;
-        margin-bottom: 0.75rem;
+        font-size: 28px;
     }
 
     .stat-label {
@@ -274,7 +270,7 @@
 
     @media (max-width: 768px) {
         .stat-box {
-            padding: 1rem;
+            padding: 8px;
         }
 
         .stat-icon {
@@ -294,9 +290,7 @@
     <div class="detail-header">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div class="flex-grow-1">
-                <h1 class="h3 mb-1 fw-bold text-dark">
-                    <i class="bi bi-file-earmark-text me-2"></i>{{ $policy->policy_number }}
-                </h1>
+                <h1 class="h4 mb-1 fw-bold text-dark">{{ $policy->policy_number }}</h1>
                 <p class="text-muted mb-0 small">
                     {{ $policy->policy_type_label }} •
                     Oluşturulma: {{ $policy->created_at->format('d.m.Y H:i') }}
@@ -392,8 +386,8 @@
             <div class="info-card card">
                 <div class="card-header">
                     <h6 class="card-title">
-                        <i class="bi bi-person"></i>
-                        <span>Müşteri Bilgileri</span>
+                        <i class="bi bi-person text-white"></i>
+                        <span class="text-white">Müşteri Bilgileri</span>
                     </h6>
                 </div>
                 <div class="card-body">
@@ -463,8 +457,8 @@
             <div class="info-card card">
                 <div class="card-header">
                     <h6 class="card-title">
-                        <i class="bi bi-building"></i>
-                        <span>Sigorta Şirketi</span>
+                        <i class="bi bi-building text-white"></i>
+                        <span class="text-white">Sigorta Şirketi</span>
                     </h6>
                 </div>
                 <div class="card-body">
@@ -505,8 +499,8 @@
             <div class="info-card card">
                 <div class="card-header">
                     <h6 class="card-title">
-                        <i class="bi bi-car-front"></i>
-                        <span>Araç Bilgileri</span>
+                        <i class="bi bi-car-front text-white"></i>
+                        <span ckass="text-white">Araç Bilgileri</span>
                     </h6>
                 </div>
                 <div class="card-body">
@@ -543,8 +537,8 @@
             <div class="info-card card">
                 <div class="card-header">
                     <h6 class="card-title">
-                        <i class="bi bi-house"></i>
-                        <span>Konut Bilgileri</span>
+                        <i class="bi bi-house text-white"></i>
+                        <span class="text-white">Konut Bilgileri</span>
                     </h6>
                 </div>
                 <div class="card-body">
@@ -574,8 +568,8 @@
             <div class="info-card card">
                 <div class="card-header">
                     <h6 class="card-title">
-                        <i class="bi bi-cash-stack"></i>
-                        <span>Mali Bilgiler</span>
+                        <i class="bi bi-cash-stack text-white"></i>
+                        <span class="text-white">Mali Bilgiler</span>
                     </h6>
                 </div>
                 <div class="card-body">
