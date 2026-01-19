@@ -10,24 +10,6 @@ class InsuranceCompany extends Model
 {
     use HasFactory, BelongsToTenantShared;
 
-    // protected $fillable = [
-    //     'name',
-    //     'code',
-    //     'logo',
-    //     'phone',
-    //     'email',
-    //     'website',
-    //     'default_commission_kasko',
-    //     'default_commission_trafik',
-    //     'default_commission_konut',
-    //     'default_commission_dask',
-    //     'default_commission_saglik',
-    //     'default_commission_hayat',
-    //     'default_commission_tss',
-    //     'is_active',
-    //     'display_order',
-    // ];
-
     protected $guarded = [];
 
     protected $casts = [
@@ -51,6 +33,15 @@ class InsuranceCompany extends Model
     public function quotations()
     {
         return $this->hasMany(Quotation::class);
+    }
+
+    /**
+     * Cari hesap ilişkisi
+     */
+    public function cariHesap()
+    {
+        return $this->hasOne(CariHesap::class, 'referans_id')
+                    ->where('tip', 'sirket');
     }
 
     // Scope'lar

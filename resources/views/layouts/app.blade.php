@@ -975,6 +975,41 @@
         }
     </style>
 
+    <style>
+        .nav-link {
+            color: #6c757d;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background-color: #f8f9fa;
+            color: #0d6efd;
+        }
+
+        .nav-link.active {
+            background-color: #0d6efd;
+            color: white;
+            border-radius: 0.25rem;
+        }
+
+        .nav-link i.bi-chevron-down {
+            font-size: 0.75rem;
+            transition: transform 0.3s;
+        }
+
+        .nav-link[aria-expanded="true"] i.bi-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        .collapse .nav-link {
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+        }
+    </style>
+
     @stack('styles')
 </head>
 <body>
@@ -1060,6 +1095,24 @@
         <div class="row">
             <!-- Sidebar -->
             <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse" id="sidebarMenu">
+                @php
+                    // Cari menü AÇIK MI?
+                    $isCariOpen = request()->routeIs(
+                        'cari-hesaplar.*',
+                        'tahsilatlar.*',
+                        'sirket-odemeleri.*'
+                    );
+
+                    // Cari menü ACTIVE MI? (raporlar hariç)
+                    $isCariActive = request()->routeIs(
+                        'cari-hesaplar.index',
+                        'cari-hesaplar.create',
+                        'cari-hesaplar.show',
+                        'tahsilatlar.*',
+                        'sirket-odemeleri.*'
+                    );
+                @endphp
+
                 <div class="sidebar-sticky">
                     <ul class="nav flex-column">
                         <li class="nav-item">
@@ -1106,12 +1159,61 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('payments.*') ? 'active' : '' }}"
-                            href="{{ route('payments.installments') }}">
-                                <i class="bi bi-credit-card"></i>
-                                Ödemeler
-                                <span class="badge bg-success ms-auto">{{ $sidebarCounts['payments'] }}</span>
+                            <a class="nav-link {{ $isCariActive ? 'active' : '' }}"
+                            data-bs-toggle="collapse"
+                            href="#cariMenu"
+                            role="button"
+                            aria-expanded="{{ $isCariOpen ? 'true' : 'false' }}"
+                            aria-controls="cariMenu">
+                                <i class="bi bi-cash-stack me-2"></i>
+                                <span>Cari İşlemler</span>
+                                <i class="bi bi-chevron-down ms-auto" style="margin-right:2px;"></i>
                             </a>
+                            <div class="collapse {{ $isCariOpen ? 'show' : '' }}" id="cariMenu">
+                                <ul class="nav flex-column ms-3">
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs(
+                                                'cari-hesaplar.index',
+                                                'cari-hesaplar.create',
+                                                'cari-hesaplar.show',
+                                                'cari-hesaplar.edit'
+                                            ) ? 'active' : '' }}"
+                                        href="{{ route('cari-hesaplar.index') }}">
+                                            <i class="bi bi-journal-text me-2"></i>
+                                            Cari Hesaplar
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('tahsilatlar.*') ? 'active' : '' }}"
+                                        href="{{ route('tahsilatlar.index') }}">
+                                            <i class="bi bi-cash-coin me-2"></i>
+                                            Tahsilatlar
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('sirket-odemeleri*') ? 'active' : '' }}"
+                                        href="{{ route('sirket-odemeleri.index') }}">
+                                            <i class="bi bi-bank me-2"></i>
+                                            Şirket Ödemeleri
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('cari-hesaplar.yasilandirma') ? 'active' : '' }}"
+                                        href="{{ route('cari-hesaplar.yasilandirma') }}">
+                                            <i class="bi bi-file-earmark-bar-graph me-2"></i>Yaşlandırma Raporu
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('cari-hesaplar.kasa-banka') ? 'active' : '' }}"
+                                        href="{{ route('cari-hesaplar.kasa-banka') }}">
+                                            <i class="bi bi-file-earmark-bar-graph me-2"></i>Kasa/Banka Raporu
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
 
                         <li class="nav-item">

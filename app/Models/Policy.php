@@ -11,34 +11,6 @@ class Policy extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;
 
-    // protected $fillable = [
-    //     'customer_id',
-    //     'insurance_company_id',
-    //     'policy_number',
-    //     'policy_type',
-    //     'vehicle_plate',
-    //     'vehicle_brand',
-    //     'vehicle_model',
-    //     'vehicle_year',
-    //     'vehicle_chassis_no',
-    //     'property_address',
-    //     'property_area',
-    //     'property_floor',
-    //     'start_date',
-    //     'end_date',
-    //     'premium_amount',
-    //     'commission_rate',
-    //     'commission_amount',
-    //     'payment_type',
-    //     'installment_count',
-    //     'status',
-    //     'renewed_from_policy_id',
-    //     'renewed_to_policy_id',
-    //     'document_path',
-    //     'notes',
-    //     'created_by',
-    // ];
-
     protected $guarded = [];
 
     protected $casts = [
@@ -77,10 +49,10 @@ class Policy extends Model
         return $this->hasMany(RenewalReminder::class);
     }
 
-    public function paymentPlan()
-    {
-        return $this->hasOne(PaymentPlan::class);
-    }
+    // public function paymentPlan()
+    // {
+    //     return $this->hasOne(PaymentPlan::class);
+    // }
 
     public function renewedFromPolicy()
     {
@@ -90,6 +62,20 @@ class Policy extends Model
     public function renewedToPolicy()
     {
         return $this->belongsTo(Policy::class, 'renewed_to_policy_id');
+    }
+
+    /**
+     * Cari hareketler
+     */
+    public function cariHareketler()
+    {
+        return $this->hasMany(CariHareket::class, 'referans_id')
+                    ->where('referans_tip', 'policy');
+    }
+
+    public function tahsilatlar()
+    {
+        return $this->hasMany(Tahsilat::class, 'policy_id');
     }
 
     /**
@@ -139,6 +125,7 @@ class Policy extends Model
     {
         return now()->diffInDays($this->end_date, false);
     }
+
     public function getStatusAttribute($value)
     {
         if (in_array($value, ['renewed', 'cancelled', 'lost'])) {
@@ -148,13 +135,13 @@ class Policy extends Model
         $daysUntilExpiry = $this->days_until_expiry;
 
         if ($daysUntilExpiry < 0) {
-            return 'expired'; // Süresi dolmuş
+            return 'expired';
         } elseif ($daysUntilExpiry <= 7) {
-            return 'critical'; // 7 gün veya daha az
+            return 'critical';
         } elseif ($daysUntilExpiry <= 90) {
-            return 'expiring_soon'; // 90 gün içinde
+            return 'expiring_soon';
         } else {
-            return 'active'; // Normal aktif
+            return 'active';
         }
     }
 
@@ -241,5 +228,13 @@ class Policy extends Model
         ];
 
         return $labels[$this->policy_type] ?? $this->policy_type;
+    }
+
+    /**
+     * Şirkete ödenmesi gereken net tutar (prim - komisyon)
+     */
+    public function getNetAmountAttribute()
+    {
+        return $this->premium_amount - $this->commission_amount;
     }
 }

@@ -157,6 +157,15 @@
         vertical-align: middle;
         font-size: 0.9rem;
     }
+
+    /* ✅ YENİ: Ödeme durumu badge stilleri */
+    .payment-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+        font-weight: 600;
+        border-radius: 4px;
+        margin-top: 4px;
+    }
 </style>
 <style>
     /* ============================================
@@ -961,6 +970,10 @@
                 ];
                 $config = $statusConfig[$policy->status] ?? ['color' => 'secondary', 'label' => $policy->status, 'icon' => 'circle-fill'];
                 $daysLeft = $policy->days_until_expiry;
+
+                // ✅ YENİ: Cari ödeme durumu hesapla
+                $cariOdemeler = $policy->cariHareketler->where('islem_tipi', 'alacak')->sum('tutar');
+                $kalanBorc = $policy->premium_amount - $cariOdemeler;
             @endphp
 
             <div class="policy-card-mobile" data-policy-id="{{ $policy->id }}">
@@ -1094,20 +1107,26 @@
                 <thead>
                     <tr>
                         <th width="50">#</th>
-                            <th>Poliçe No</th>
-                            <th>Müşteri</th>
-                            <th>Tür</th>
-                            <th>Şirket</th>
-                            <th>Araç/Adres</th>
-                            <th>Bitiş Tarihi</th>
-                            <th>Prim Tutarı</th>
-                            <th>Durum</th>
-                            <th>Ekleyen Kişi</th>
-                            <th width="150">İşlemler</th>
+                        <th>Poliçe No</th>
+                        <th>Müşteri</th>
+                        <th>Tür</th>
+                        <th>Şirket</th>
+                        <th>Araç/Adres</th>
+                        <th>Bitiş Tarihi</th>
+                        <th>Prim Tutarı</th>
+                        <th>Durum</th>
+                        <th>Ekleyen Kişi</th>
+                        <th width="150">İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
-                        @foreach($policies as $index => $policy)
+                    @foreach($policies as $index => $policy)
+                        @php
+                            // ✅ YENİ: Cari ödeme durumu hesapla
+                            $cariOdemeler = $policy->cariHareketler->where('islem_tipi', 'alacak')->sum('tutar');
+                            $kalanBorc = $policy->premium_amount - $cariOdemeler;
+                            $musteriCari = $policy->customer->cariHesap;
+                        @endphp
                         <tr>
                             <td></td>
                             <td>
@@ -1119,6 +1138,13 @@
                                 </a>
                                 <br>
                                 <small class="text-muted">{{ $policy->customer->phone }}</small>
+                                {{-- ✅ YENİ: Müşterinin toplam cari borcu --}}
+                                @if($musteriCari && $musteriCari->bakiye > 0)
+                                    <br>
+                                    <small class="badge bg-danger payment-badge">
+                                        {{ number_format($musteriCari->bakiye, 0) }}₺ borç
+                                    </small>
+                                @endif
                             </td>
                             <td>
                                 <span class="badge badge-modern bg-info">
@@ -1156,6 +1182,15 @@
                             </td>
                             <td data-order="{{ $policy->premium_amount }}">
                                 <strong>{{ number_format($policy->premium_amount, 2) }} ₺</strong>
+                                {{-- ✅ YENİ: Bu poliçeye yapılan ödeme --}}
+                                @if($cariOdemeler > 0)
+                                    <br>
+                                    <small class="text-success">{{ number_format($cariOdemeler, 0) }}₺ ödendi</small>
+                                @endif
+                                @if($kalanBorc > 0)
+                                    <br>
+                                    <small class="text-danger">{{ number_format($kalanBorc, 0) }}₺ kaldı</small>
+                                @endif
                             </td>
                             <td>
                                 @php
@@ -1173,6 +1208,7 @@
                                     <i class="bi bi-{{ $config['icon'] }}"></i>
                                     {{ $config['label'] }}
                                 </span>
+                            </td>
                             <td>
                                 <span class="text-muted">{{ $policy->createdBy->name ?? '-' }}</span>
                             </td>
@@ -1183,6 +1219,14 @@
                                        title="Detayları Görüntüle">
                                         <i class="bi bi-eye"></i>
                                     </a>
+                                    {{-- ✅ YENİ: Eğer borç varsa tahsilat butonu ekle --}}
+                                    @if($kalanBorc > 0)
+                                        <a href="{{ route('tahsilatlar.create', ['customer_id' => $policy->customer_id]) }}"
+                                           class="btn btn-light btn-icon text-success"
+                                           title="Tahsilat Yap">
+                                            <i class="bi bi-cash-coin"></i>
+                                        </a>
+                                    @endif
                                     <a href="{{ route('policies.edit', $policy) }}"
                                        class="btn btn-light btn-icon"
                                        title="Düzenle">
@@ -1197,8 +1241,8 @@
                                 </div>
                             </td>
                         </tr>
-                        @endforeach
-                    </tbody>
+                    @endforeach
+                </tbody>
             </table>
         </div>
     </div>
@@ -1342,6 +1386,14 @@ $(document).ready(function () {
                 });
             }
         });
+    }
+
+    function deletePolicy(id) {
+        if(confirm('Bu poliçeyi silmek istediğinizden emin misiniz?')) {
+            const form = document.getElementById('deleteForm');
+            form.action = '/policies/' + id;
+            form.submit();
+        }
     }
 </script>
 @endpush

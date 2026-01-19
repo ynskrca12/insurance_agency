@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Policy;
 use App\Models\Customer;
 use App\Models\InsuranceCompany;
-use App\Models\PaymentPlan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class PolicyController extends Controller
 {
@@ -17,7 +15,13 @@ class PolicyController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Policy::with(['customer', 'insuranceCompany', 'createdBy'])->orderBy('created_at', 'desc');
+        // ✅ CARİ İLİŞKİLERİ EKLE
+        $query = Policy::with([
+            'customer.cariHesap',  // ✅ YENİ: Müşteri cari hesabı
+            'insuranceCompany',
+            'createdBy',
+            'cariHareketler'  // ✅ YENİ: Poliçeye ait cari hareketler
+        ])->orderBy('created_at', 'desc');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -74,13 +78,14 @@ class PolicyController extends Controller
     public function create(Request $request)
     {
         $customers = Customer::where('status', 'active')
+            ->with('cariHesap')  // ✅ YENİ: Cari hesap bilgisi
             ->orderBy('name')
             ->get();
 
         $insuranceCompanies = InsuranceCompany::active()->get();
 
         $selectedCustomer = $request->customer_id
-            ? Customer::find($request->customer_id)
+            ? Customer::with('cariHesap')->find($request->customer_id)
             : null;
 
         return view('policies.create', compact('customers', 'insuranceCompanies', 'selectedCustomer'));
@@ -119,21 +124,21 @@ class PolicyController extends Controller
                 'premium_amount' => $validated['premium_amount'],
                 'commission_rate' => $commissionRate,
                 'commission_amount' => $commissionAmount,
-                'payment_type' => $validated['payment_type'],
-                'installment_count' => $validated['installment_count'] ?? 1,
                 'status' => 'active',
                 'notes' => $validated['notes'] ?? null,
                 'created_by' => auth()->id(),
             ]);
 
-            $this->createPaymentPlan($policy, $validated);
+            // ✅ PolicyObserver otomatik cari kayıt oluşturacak
+            // Müşteri carisine +premium_amount BORÇ
+            // Şirket carisine -(premium_amount - commission_amount) ALACAK
 
             $policy->customer->updateStats();
 
             DB::commit();
 
             return redirect()->route('policies.show', $policy)
-                ->with('success', 'Poliçe başarıyla oluşturuldu.');
+                ->with('success', 'Poliçe başarıyla oluşturuldu. Müşteri carisine ' . number_format($validated['premium_amount'], 2) . '₺ borç kaydedildi.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -148,15 +153,42 @@ class PolicyController extends Controller
     public function show(Policy $policy)
     {
         $policy->load([
-            'customer',
-            'insuranceCompany',
+            'customer.cariHesap',  // ✅ YENİ: Müşteri cari hesabı
+            'insuranceCompany.cariHesap',  // ✅ YENİ: Şirket cari hesabı
             'createdBy',
-            'paymentPlan.installments',
+            'cariHareketler',  // ✅ YENİ: Bu poliçeye ait cari hareketler
             'renewal',
             'reminders',
         ]);
 
-        return view('policies.show', compact('policy'));
+        // ✅ YENİ: Bu poliçeye yapılan tahsilatları getir
+        // $tahsilatlar = \App\Models\Tahsilat::whereHas('cariHareketler', function($q) use ($policy) {
+        //     $q->where('referans_tip', 'policy')
+        //       ->where('referans_id', $policy->id);
+        // })
+        // ->with('musteriCari.customer', 'kasaBanka')
+        // ->latest()
+        // ->get();
+        $tahsilatlar = $policy->tahsilatlar()
+            ->with('musteriCari.customer', 'kasaBanka')
+            ->latest()
+            ->get();
+
+        // $tahsilatlar = Tahsilat::where('policy_id', $policy->id)
+        //     ->with('musteriCari.customer', 'kasaBanka')
+        //     ->latest()
+        //     ->get();
+
+        // dd($tahsilatlar);
+
+        // ✅ YENİ: Ödeme durumu hesapla
+        $toplamOdenen = $tahsilatlar->sum('tutar');
+        $kalanBorc = $policy->premium_amount - $toplamOdenen;
+        $odemeYuzdesi = $policy->premium_amount > 0
+            ? round(($toplamOdenen / $policy->premium_amount) * 100, 2)
+            : 0;
+
+        return view('policies.show', compact('policy', 'tahsilatlar', 'toplamOdenen', 'kalanBorc', 'odemeYuzdesi'));
     }
 
     /**
@@ -164,7 +196,7 @@ class PolicyController extends Controller
      */
     public function edit(Policy $policy)
     {
-        $customers = Customer::orderBy('name')->get();
+        $customers = Customer::with('cariHesap')->orderBy('name')->get();
         $insuranceCompanies = InsuranceCompany::active()->get();
 
         return view('policies.edit', compact('policy', 'customers', 'insuranceCompanies'));
@@ -179,7 +211,6 @@ class PolicyController extends Controller
 
         DB::beginTransaction();
         try {
-            // Komisyon hesapla
             $commissionRate = $validated['commission_rate'] ?? $policy->commission_rate;
             $commissionAmount = ($validated['premium_amount'] * $commissionRate) / 100;
 
@@ -201,15 +232,10 @@ class PolicyController extends Controller
                 'premium_amount' => $validated['premium_amount'],
                 'commission_rate' => $commissionRate,
                 'commission_amount' => $commissionAmount,
-                'payment_type' => $validated['payment_type'],
-                'installment_count' => $validated['installment_count'] ?? 1,
                 'notes' => $validated['notes'] ?? null,
             ]);
 
-            // Durum güncelle
             $policy->updateStatus();
-
-            // Müşteri istatistiklerini güncelle
             $policy->customer->updateStats();
 
             DB::commit();
@@ -237,6 +263,7 @@ class PolicyController extends Controller
         try {
             $customerId = $policy->customer_id;
 
+            // ✅ PolicyObserver otomatik cari kayıtları da silecek
             $policy->delete();
 
             Customer::find($customerId)?->updateStats();
@@ -244,7 +271,7 @@ class PolicyController extends Controller
             DB::commit();
 
             return redirect()->route('policies.index')
-                ->with('success', 'Poliçe başarıyla silindi.');
+                ->with('success', 'Poliçe ve ilgili cari kayıtlar başarıyla silindi.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -266,12 +293,9 @@ class PolicyController extends Controller
             'end_date' => 'required|date|after:start_date',
             'premium_amount' => 'required|numeric|min:0',
             'commission_rate' => 'nullable|numeric|min:0|max:100',
-            'payment_type' => 'required|in:cash,installment',
-            'installment_count' => 'nullable|integer|min:1|max:12',
             'notes' => 'nullable|string',
         ];
 
-        // Araç poliçeleri için
         if (in_array($request->policy_type, ['kasko', 'trafik'])) {
             $rules['vehicle_plate'] = 'required|string|max:20';
             $rules['vehicle_brand'] = 'nullable|string|max:50';
@@ -280,7 +304,6 @@ class PolicyController extends Controller
             $rules['vehicle_chassis_no'] = 'nullable|string|max:50';
         }
 
-        // Konut poliçeleri için
         if (in_array($request->policy_type, ['konut', 'dask'])) {
             $rules['property_address'] = 'required|string';
             $rules['property_area'] = 'nullable|numeric|min:0';
@@ -298,26 +321,9 @@ class PolicyController extends Controller
             'end_date.after' => 'Bitiş tarihi başlangıç tarihinden sonra olmalıdır.',
             'premium_amount.required' => 'Prim tutarı gereklidir.',
             'premium_amount.min' => 'Prim tutarı 0\'dan büyük olmalıdır.',
-            'payment_type.required' => 'Ödeme tipi seçilmelidir.',
             'vehicle_plate.required' => 'Plaka bilgisi gereklidir.',
             'property_address.required' => 'Adres bilgisi gereklidir.',
         ]);
-    }
-
-    /**
-     * Ödeme planı oluştur
-     */
-    private function createPaymentPlan(Policy $policy, array $data)
-    {
-        $paymentPlan = PaymentPlan::create([
-            'policy_id' => $policy->id,
-            'customer_id' => $policy->customer_id,
-            'total_amount' => $data['premium_amount'],
-            'installment_count' => $data['installment_count'] ?? 1,
-            'payment_type' => $data['payment_type'],
-        ]);
-
-        $paymentPlan->generateInstallments();
     }
 
     /**

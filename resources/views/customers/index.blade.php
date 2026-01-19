@@ -170,6 +170,15 @@
         border-radius: 6px;
     }
 
+    /* ✅ YENİ: Cari badge stilleri */
+    .cari-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+        font-weight: 600;
+        border-radius: 4px;
+        margin-top: 4px;
+    }
+
     /* ============================================
        MOBILE CARD VIEW - PROFESSIONAL
     ============================================ */
@@ -838,7 +847,7 @@
             <div class="policy-stat-card policy-stat-warning">
                 <div class="policy-stat-content">
                     <div class="policy-stat-value">{{ number_format($stats['potential_customers']) }}</div>
-                    <div class="policy-stat-label">Süresi Yaklaşan</div>
+                    <div class="policy-stat-label">Potansiyel</div>
                 </div>
                 <div class="policy-stat-bg">
                     <i class="bi bi-clock-history"></i>
@@ -919,7 +928,7 @@
                         <th>Ekleyen Kişi</th>
                         <th>Temsilci</th>
                         <th>Kayıt Tarihi</th>
-                        <th width="150">İşlemler</th>
+                        <th width="180">İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -930,6 +939,13 @@
                             <strong>{{ $customer->name }}</strong>
                             @if($customer->policies_count >= 3)
                                 <span class="badge bg-warning text-dark ms-1">VIP</span>
+                            @endif
+                            {{-- ✅ YENİ: Cari borç gösterimi --}}
+                            @if($customer->cariHesap && $customer->cariHesap->bakiye > 0)
+                                <br>
+                                <small class="badge bg-danger cari-badge">
+                                    {{ number_format($customer->cariHesap->bakiye, 0) }}₺ borç
+                                </small>
                             @endif
                         </td>
                         <td>
@@ -962,6 +978,15 @@
                             <a href="{{ route('customers.show', $customer) }}" class="action-btn" title="Detay">
                                 <i class="bi bi-eye"></i>
                             </a>
+                            {{-- ✅ YENİ: Tahsilat butonu (borç varsa) --}}
+                            @if($customer->cariHesap && $customer->cariHesap->bakiye > 0)
+                                <a href="{{ route('tahsilatlar.create', ['customer_id' => $customer->id]) }}"
+                                   class="action-btn"
+                                   style="background: #10b981; color: white; border-color: #10b981;"
+                                   title="Tahsilat Yap">
+                                    <i class="bi bi-cash-coin"></i>
+                                </a>
+                            @endif
                             <a href="{{ route('customers.edit', $customer) }}" class="action-btn" title="Düzenle">
                                 <i class="bi bi-pencil"></i>
                             </a>
@@ -1015,6 +1040,12 @@
                                 @endif
                             </div>
                             <div class="customer-card-id">#{{ $customer->id }}</div>
+                            {{-- ✅ YENİ: Mobilde cari borç --}}
+                            @if($customer->cariHesap && $customer->cariHesap->bakiye > 0)
+                                <small class="badge bg-danger cari-badge mt-1">
+                                    {{ number_format($customer->cariHesap->bakiye, 0) }}₺ borç
+                                </small>
+                            @endif
                         </div>
                         <div class="customer-card-status">
                             <span class="status-badge bg-{{ $statusClass }} text-white">{{ $statusText }}</span>
@@ -1127,10 +1158,10 @@
         // DESKTOP DATATABLE - STATE SAVE KAPALI
 
         const table = initDataTable('#customersTable', {
-            order: [[7, 'desc']],
+            order: [[8, 'desc']],
             stateSave: false,
             columnDefs: [
-                { orderable: false, targets: [0, 8] },
+                { orderable: false, targets: [0, 9] },
                 { targets: 0, searchable: false }
             ]
         });
@@ -1163,7 +1194,7 @@
             if (dateFrom || dateTo) {
                 $.fn.dataTable.ext.search.push(
                     function(settings, data, dataIndex) {
-                        const dateStr = data[7]; // Kayıt tarihi sütunu
+                        const dateStr = data[8]; // Kayıt tarihi sütunu
                         if (!dateStr || dateStr === '-') return true;
 
                         const dateParts = dateStr.split('.');

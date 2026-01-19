@@ -45,9 +45,6 @@ return new class extends Migration
             $table->decimal('commission_rate', 5, 2)->comment('Komisyon %');
             $table->decimal('commission_amount', 12, 2)->comment('Komisyon tutar');
 
-            $table->enum('payment_type', ['cash', 'installment'])->default('cash');
-            $table->integer('installment_count')->nullable();
-
             // Durum (Otomatik güncellenir)
             $table->enum('status', [
                 'active',           // Aktif

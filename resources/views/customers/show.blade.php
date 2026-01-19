@@ -5,11 +5,8 @@
 @push('styles')
 <style>
     .customer-header {
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 2rem;
-        margin-bottom: 2rem;
+        padding: 20px 0px;
+        margin-bottom: 8px;
     }
 
     .stat-card {
@@ -32,7 +29,7 @@
     }
 
     .info-card .card-header {
-        background: #fafafa;
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
         border: none;
         border-radius: 10px 10px 0 0 !important;
         padding: 1rem 1.25rem;
@@ -77,20 +74,14 @@
     }
 
     .nav-tabs-modern {
-        border: 1px solid #dcdcdc;
-        background: #fafafa;
-        border-radius: 10px;
-        padding: 0.5rem;
     }
 
     .nav-tabs-modern .nav-link {
         border: none;
-        border-radius: 8px;
-        color: #6c757d;
+        border-radius: 10px;
         font-weight: 500;
         transition: all 0.3s ease;
-        padding: 0.75rem 1.25rem;
-        margin: 0 0.25rem;
+        padding: 12px 28px;
     }
 
     .nav-tabs-modern .nav-link:hover {
@@ -100,7 +91,7 @@
 
     .nav-tabs-modern .nav-link.active {
         background: #ffffff;
-        color: #212529;
+        color: #000;
         border: 1px solid #dcdcdc;
     }
 
@@ -236,9 +227,10 @@
     }
 
     .stat-box {
-        border: 1px solid #e8e8e8;
-        border-radius: 10px;
-        padding: 12px 16px;
+        background: #ffffff;
+        border: 1px solid #dcdcdc;
+        border-radius: 14px;
+        padding: 14px 18px;
         transition: all 0.3s ease;
     }
 
@@ -248,12 +240,7 @@
     }
 
     .header-badge {
-        background: #f5f5f5;
-        border: 1px solid #dcdcdc;
-        color: #495057;
-        padding: 0.25rem 0.75rem;
-        border-radius: 6px;
-        font-size: 0.875rem;
+        color: #333;
     }
 
     @media (max-width: 768px) {
@@ -617,16 +604,13 @@
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div class="flex-grow-1">
             <div class="d-flex align-items-center gap-2 mb-2">
-                <h1 class="h2 mb-0 fw-bold text-dark">{{ $customer->name }}</h1>
+                <h1 class="h3 mb-0 me-3 fw-bold text-dark">{{ $customer->name }}</h1>
                 @if($customer->isVIP())
                     <span class="badge bg-warning text-dark badge-modern">
                         <i class="bi bi-star-fill"></i> VIP
                     </span>
                 @endif
-            </div>
-            <div class="d-flex align-items-center gap-3 flex-wrap text-muted">
-                <span><i class="bi bi-hash me-1"></i>{{ $customer->id }}</span>
-                <span><i class="bi bi-calendar-check me-1"></i>{{ $customer->created_at->format('d.m.Y') }}</span>
+                 <span><i class="bi bi-calendar-check me-1"></i>{{ $customer->created_at->format('d.m.Y') }}</span>
                 @php
                     $statusLabels = [
                         'active' => 'Aktif Müşteri',
@@ -635,14 +619,14 @@
                         'lost' => 'Kayıp',
                     ];
                 @endphp
+                <span>-</span>
                 <span class="header-badge">
-                    <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>
                     {{ $statusLabels[$customer->status] }}
                 </span>
             </div>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('customers.edit', $customer) }}" class="btn btn-warning action-btn">
+            <a href="{{ route('customers.edit', $customer) }}" class="btn btn-outline-primary action-btn">
                 <i class="bi bi-pencil me-2"></i>Düzenle
             </a>
             <a href="{{ route('customers.index') }}" class="btn btn-light action-btn">
@@ -656,9 +640,6 @@
         <div class="col-6 col-md-3">
             <div class="stat-box">
                 <div class="d-flex align-items-center">
-                    <div class="stat-icon text-primary me-3">
-                        <i class="bi bi-file-earmark-text"></i>
-                    </div>
                     <div>
                         <div class="h4 mb-0 fw-bold text-dark">{{ $customer->total_policies }}</div>
                         <small class="text-muted">Toplam Poliçe</small>
@@ -669,9 +650,6 @@
         <div class="col-6 col-md-3">
             <div class="stat-box">
                 <div class="d-flex align-items-center">
-                    <div class="stat-icon text-success me-3">
-                        <i class="bi bi-cash-stack"></i>
-                    </div>
                     <div>
                         <div class="h4 mb-0 fw-bold text-dark">{{ number_format($customer->total_premium, 0) }}₺</div>
                         <small class="text-muted">Toplam Prim</small>
@@ -682,9 +660,6 @@
         <div class="col-6 col-md-3">
             <div class="stat-box">
                 <div class="d-flex align-items-center">
-                    <div class="stat-icon text-info me-3">
-                        <i class="bi bi-graph-up"></i>
-                    </div>
                     <div>
                         <div class="h4 mb-0 fw-bold text-dark">{{ number_format($customer->lifetime_value, 0) }}₺</div>
                         <small class="text-muted">Komisyon</small>
@@ -695,9 +670,6 @@
         <div class="col-6 col-md-3">
             <div class="stat-box">
                 <div class="d-flex align-items-center">
-                    <div class="stat-icon text-danger me-3">
-                        <i class="bi bi-shield-check"></i>
-                    </div>
                     <div>
                         <span class="badge badge-modern bg-{{ $customer->risk_score >= 70 ? 'danger' : ($customer->risk_score >= 40 ? 'warning' : 'success') }}">
                             {{ $customer->risk_score }}/100
@@ -716,8 +688,8 @@
         <!-- İletişim Bilgileri -->
         <div class="info-card card">
             <div class="card-header">
-                <h6 class="mb-0 fw-semibold text-dark">
-                    <i class="bi bi-telephone text-primary me-2"></i>İletişim Bilgileri
+                <h6 class="mb-0 fw-semibold text-white">
+                    <i class="bi bi-telephone text-white me-2"></i>İletişim Bilgileri
                 </h6>
             </div>
             <div class="card-body">
@@ -725,7 +697,7 @@
                     <div class="info-label">Telefon</div>
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="info-value">{{ $customer->phone }}</span>
-                        <a href="tel:{{ $customer->phone }}" class="quick-action-btn btn btn-light">
+                        <a href="tel:{{ $customer->phone }}" class="quick-action-btn">
                             <i class="bi bi-telephone text-primary"></i>
                         </a>
                     </div>
@@ -736,7 +708,7 @@
                     <div class="info-label">İkinci Telefon</div>
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="info-value">{{ $customer->phone_secondary }}</span>
-                        <a href="tel:{{ $customer->phone_secondary }}" class="quick-action-btn btn btn-light">
+                        <a href="tel:{{ $customer->phone_secondary }}" class="quick-action-btn">
                             <i class="bi bi-telephone text-primary"></i>
                         </a>
                     </div>
@@ -748,7 +720,7 @@
                     <div class="info-label">E-posta</div>
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="info-value text-break">{{ $customer->email }}</span>
-                        <a href="mailto:{{ $customer->email }}" class="quick-action-btn btn btn-light">
+                        <a href="mailto:{{ $customer->email }}" class="quick-action-btn">
                             <i class="bi bi-envelope text-primary"></i>
                         </a>
                     </div>
@@ -767,8 +739,8 @@
         <!-- Kişisel Bilgiler -->
         <div class="info-card card">
             <div class="card-header">
-                <h6 class="mb-0 fw-semibold text-dark">
-                    <i class="bi bi-person-badge text-info me-2"></i>Kişisel Bilgiler
+                <h6 class="mb-0 fw-semibold text-white">
+                    <i class="bi bi-person-badge text-white me-2"></i>Kişisel Bilgiler
                 </h6>
             </div>
             <div class="card-body">
@@ -800,8 +772,8 @@
         @if($customer->address || $customer->city)
         <div class="info-card card">
             <div class="card-header">
-                <h6 class="mb-0 fw-semibold text-dark">
-                    <i class="bi bi-geo-alt text-danger me-2"></i>Adres Bilgileri
+                <h6 class="mb-0 fw-semibold text-white">
+                    <i class="bi bi-geo-alt text-white me-2"></i>Adres Bilgileri
                 </h6>
             </div>
             <div class="card-body">
@@ -838,46 +810,41 @@
         <!-- Modern Tabs -->
         <ul class="nav nav-tabs-modern mb-4" role="tablist">
             <li class="nav-item">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#policies">
-                    <i class="bi bi-file-earmark-text me-2"></i>
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#cari">
+                    <span>Cari Hesap</span>
+                    <span class="badge badge-modern bg-secondary ms-2"></span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#policies">
                     <span>Poliçeler</span>
-                    <span class="badge badge-modern bg-primary ms-2">{{ $customer->policies->count() }}</span>
+                    <span class="badge badge-modern bg-secondary ms-2">{{ $customer->policies->count() }}</span>
                 </button>
             </li>
             <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#quotations">
-                    <i class="bi bi-file-earmark-plus me-2"></i>
                     <span>Teklifler</span>
                     <span class="badge badge-modern bg-secondary ms-2">{{ $customer->quotations->count() }}</span>
                 </button>
             </li>
             <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#notes">
-                    <i class="bi bi-sticky me-2"></i>
                     <span>Etkileşimler / Notlar</span>
                     <span class="badge badge-modern bg-secondary ms-2">{{ $customer->customerNotes->count() }}</span>
                 </button>
             </li>
             <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#documents">
-                    <i class="bi bi-file-earmark-arrow-up me-2"></i>
                     <span>Belgeler</span>
                     <span class="badge badge-modern bg-secondary ms-2">{{ $customer->documents->count() }}</span>
                 </button>
             </li>
-            {{-- <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#calls">
-                    <i class="bi bi-telephone me-2"></i>
-                    <span>Aramalar</span>
-                    <span class="badge badge-modern bg-secondary ms-2">{{ $customer->customerCalls->count() }}</span>
-                </button>
-            </li> --}}
         </ul>
 
         <!-- Tab İçerikleri -->
-        <div class="tab-content">
+        <div class="tab-content mb-3">
             <!-- Poliçeler -->
-            <div class="tab-pane fade show active" id="policies">
+            <div class="tab-pane fade" id="policies">
                 <div class="content-card card">
                     <div class="card-body p-0">
                         @if($customer->policies->isEmpty())
@@ -1198,48 +1165,354 @@
                 </div>
             </div>
 
-            <!-- Aramalar -->
-            <div class="tab-pane fade" id="calls">
-                <div class="content-card card">
-                    <div class="card-body">
-                        @if($customer->customerCalls->isEmpty())
-                            <div class="empty-state">
-                                <i class="bi bi-telephone"></i>
-                                <h6 class="text-muted mb-2">Henüz Arama Kaydı Bulunmuyor</h6>
-                                <p class="text-muted small mb-0">Müşteri ile yapılan aramalar burada görüntülenecektir.</p>
+            <!-- Cari -->
+            <div class="tab-pane fade show active" id="cari">
+                    {{-- Müşteri Detay Sayfasında Cari Tab İçeriği --}}
+                    @php
+                        $cariHesap = $customer->cariHesap;
+                    @endphp
+
+                    @if($cariHesap)
+                        <div class="row">
+                            {{-- Sol Kolon - Genel Bilgiler --}}
+                            <div class="col-md-6">
+                                {{-- Cari Özet Kartı --}}
+                                <div class="card mb-3 {{ $cariHesap->bakiye > 0 ? 'border-danger' : ($cariHesap->bakiye < 0 ? 'border-success' : 'border-secondary') }}">
+                                    <div class="card-header {{ $cariHesap->bakiye > 0 ? 'bg-danger' : ($cariHesap->bakiye < 0 ? 'bg-success' : 'bg-secondary') }} text-white">
+                                        <h6 class="mb-0">
+                                            <i class="bi bi-wallet2 me-2"></i>
+                                            Cari Hesap Özeti
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-6 mb-3">
+                                                <small class="text-muted d-block">Cari Kod</small>
+                                                <h5 class="mb-0">{{ $cariHesap->kod }}</h5>
+                                            </div>
+                                            <div class="col-6 mb-3">
+                                                <small class="text-muted d-block">Durum</small>
+                                                <span class="badge bg-{{ $cariHesap->bakiye_rengi }}">
+                                                    {{ $cariHesap->bakiye_durumu }}
+                                                </span>
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <small class="text-muted d-block">Güncel Bakiye</small>
+                                                <h3 class="mb-0 {{ $cariHesap->bakiye > 0 ? 'text-danger' : ($cariHesap->bakiye < 0 ? 'text-success' : '') }}">
+                                                    {{ number_format(abs($cariHesap->bakiye), 2) }}₺
+                                                </h3>
+                                                @if($cariHesap->bakiye > 0)
+                                                    <small class="text-danger">Müşteri bize {{ number_format($cariHesap->bakiye, 2) }}₺ borçlu</small>
+                                                @elseif($cariHesap->bakiye < 0)
+                                                    <small class="text-success">Müşteri bizden {{ number_format(abs($cariHesap->bakiye), 2) }}₺ alacaklı</small>
+                                                @else
+                                                    <small class="text-muted">Borç/alacak yok</small>
+                                                @endif
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted d-block">Vade Günü</small>
+                                                <strong>{{ $cariHesap->vade_gun }} gün</strong>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted d-block">Kredi Limiti</small>
+                                                <strong>{{ $cariHesap->kredi_limiti ? number_format($cariHesap->kredi_limiti, 2) . '₺' : '-' }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Hızlı İşlemler --}}
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">
+                                            <i class="bi bi-lightning-charge me-2"></i>
+                                            Hızlı İşlemler
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-grid gap-2">
+                                            <a href="{{ route('tahsilatlar.create', ['customer_id' => $customer->id]) }}"
+                                            class="btn btn-success">
+                                                <i class="bi bi-cash-coin me-2"></i>Yeni Tahsilat
+                                            </a>
+                                            <a href="{{ route('cari-hesaplar.show', $cariHesap) }}"
+                                            class="btn btn-primary">
+                                                <i class="bi bi-journal-text me-2"></i>Cari Ekstre
+                                            </a>
+                                            @if($cariHesap->bakiye > 0)
+                                                <button type="button"
+                                                        class="btn btn-warning"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#tahsilatHatirlatModal">
+                                                    <i class="bi bi-envelope me-2"></i>Tahsilat Hatırlatıcı Gönder
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        @else
-                            @foreach($customer->customerCalls->sortByDesc('called_at') as $call)
-                            <div class="timeline-item">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="badge badge-modern bg-{{ $call->outcome === 'answered' ? 'success' : 'warning' }}">
-                                            {{ $call->outcome_label }}
-                                        </span>
-                                        @if($call->duration)
-                                            <span class="badge badge-modern bg-light text-dark border">
-                                                <i class="bi bi-stopwatch me-1"></i>{{ $call->duration_in_minutes }} dk
-                                            </span>
+
+                            {{-- Sağ Kolon - Son Hareketler --}}
+                            <div class="col-md-6">
+                                {{-- Son Hareketler --}}
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">
+                                                <i class="bi bi-clock-history me-2"></i>
+                                                Son 10 Hareket
+                                            </h6>
+                                            <a href="{{ route('cari-hesaplar.show', $cariHesap) }}"
+                                            class="btn btn-sm btn-outline-primary">
+                                                Tümünü Gör
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        @php
+                                            $sonHareketler = $cariHesap->hareketler()
+                                                ->latest('islem_tarihi')
+                                                ->latest('created_at')
+                                                ->limit(10)
+                                                ->get();
+                                        @endphp
+
+                                        @if($sonHareketler->count() > 0)
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-hover mb-0">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th style="width: 80px;">Tarih</th>
+                                                            <th style="width: 60px;">Tür</th>
+                                                            <th>Açıklama</th>
+                                                            <th class="text-end" style="width: 100px;">Tutar</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($sonHareketler as $hareket)
+                                                            <tr>
+                                                                <td>
+                                                                    <small class="text-muted">
+                                                                        {{ $hareket->islem_tarihi->format('d.m.Y') }}
+                                                                    </small>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="badge badge-sm bg-{{ $hareket->islem_tipi === 'borc' ? 'danger' : 'success' }}">
+                                                                        {{ $hareket->islem_tipi === 'borc' ? 'B' : 'A' }}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <small>{{ \Str::limit($hareket->aciklama, 30) }}</small>
+                                                                </td>
+                                                                <td class="text-end">
+                                                                    <small class="text-{{ $hareket->islem_tipi === 'borc' ? 'danger' : 'success' }}">
+                                                                        {{ $hareket->islem_tipi === 'borc' ? '+' : '-' }}{{ number_format($hareket->tutar, 2) }}₺
+                                                                    </small>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        @else
+                                            <div class="text-center py-4 text-muted">
+                                                <i class="bi bi-inbox fs-1"></i>
+                                                <p class="mb-0 mt-2">Henüz hareket yok</p>
+                                            </div>
                                         @endif
                                     </div>
-                                    <small class="text-muted">
-                                        {{ $call->called_at->format('d.m.Y H:i') }}
-                                    </small>
                                 </div>
-                                @if($call->notes)
-                                    <p class="mb-2 text-dark">{{ $call->notes }}</p>
+
+                                {{-- Vade Geçmiş Borçlar --}}
+                                @php
+                                    $vadeGecmisler = $cariHesap->vadeGecmisBorclar();
+                                @endphp
+                                @if($vadeGecmisler->count() > 0)
+                                    <div class="card mt-3 border-danger">
+                                        <div class="card-header bg-danger text-white">
+                                            <h6 class="mb-0">
+                                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                                Vade Geçmiş Borçlar
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Vade Tarihi</th>
+                                                            <th>Açıklama</th>
+                                                            <th class="text-end">Tutar</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($vadeGecmisler as $hareket)
+                                                            <tr>
+                                                                <td>
+                                                                    <small class="text-danger">
+                                                                        {{ $hareket->vade_tarihi->format('d.m.Y') }}
+                                                                        <br>
+                                                                        ({{ $hareket->vade_tarihi->diffForHumans() }})
+                                                                    </small>
+                                                                </td>
+                                                                <td>
+                                                                    <small>{{ \Str::limit($hareket->aciklama, 25) }}</small>
+                                                                </td>
+                                                                <td class="text-end">
+                                                                    <strong class="text-danger">
+                                                                        {{ number_format($hareket->tutar, 2) }}₺
+                                                                    </strong>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                    <tfoot class="table-light">
+                                                        <tr>
+                                                            <td colspan="2" class="text-end"><strong>Toplam:</strong></td>
+                                                            <td class="text-end">
+                                                                <strong class="text-danger">
+                                                                    {{ number_format($vadeGecmisler->sum('tutar'), 2) }}₺
+                                                                </strong>
+                                                            </td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endif
-                                <small class="text-muted">
-                                    <i class="bi bi-person-circle me-1"></i>
-                                    <strong>{{ $call->user->name }}</strong>
-                                </small>
                             </div>
-                            @endforeach
+                        </div>
+
+                        {{-- İstatistikler --}}
+                        <div class="row mt-3">
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="bi bi-file-text text-primary fs-3"></i>
+                                        <h4 class="mt-2 mb-0">
+                                            {{ $cariHesap->hareketler()->count() }}
+                                        </h4>
+                                        <small class="text-muted">Toplam Hareket</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="bi bi-arrow-down-circle text-success fs-3"></i>
+                                        <h4 class="mt-2 mb-0">
+                                            {{ number_format($cariHesap->hareketler()->where('islem_tipi', 'alacak')->sum('tutar'), 2) }}₺
+                                        </h4>
+                                        <small class="text-muted">Toplam Tahsilat</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="bi bi-arrow-up-circle text-danger fs-3"></i>
+                                        <h4 class="mt-2 mb-0">
+                                            {{ number_format($cariHesap->hareketler()->where('islem_tipi', 'borc')->sum('tutar'), 2) }}₺
+                                        </h4>
+                                        <small class="text-muted">Toplam Borç</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="bi bi-calendar-x text-warning fs-3"></i>
+                                        <h4 class="mt-2 mb-0">
+                                            {{ $vadeGecmisler->count() }}
+                                        </h4>
+                                        <small class="text-muted">Vade Geçmiş</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    @else
+                        {{-- Cari Hesap Yok --}}
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Bu müşterinin henüz cari hesabı oluşturulmamış.
+                            <button type="button"
+                                    class="btn btn-sm btn-warning ms-3"
+                                    onclick="createCariHesap()">
+                                <i class="bi bi-plus-circle me-1"></i>Cari Hesap Oluştur
+                            </button>
+                        </div>
+                    @endif
+            </div>
+        </div>
+
+
+
+        {{-- Tahsilat Hatırlatıcı Modal --}}
+        <div class="modal fade" id="tahsilatHatirlatModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Tahsilat Hatırlatıcı Gönder</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>{{ $customer->name }} müşterisine tahsilat hatırlatıcı göndermek istediğinize emin misiniz?</p>
+                        @if($cariHesap && $cariHesap->bakiye > 0)
+                            <div class="alert alert-info">
+                                <strong>Borç Tutarı:</strong> {{ number_format($cariHesap->bakiye, 2) }}₺
+                            </div>
                         @endif
+                        <div class="mb-3">
+                            <label class="form-label">Gönderim Yöntemi</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="hatirlatYontem" id="sms" value="sms" checked>
+                                <label class="form-check-label" for="sms">
+                                    SMS ({{ $customer->phone }})
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="hatirlatYontem" id="whatsapp" value="whatsapp">
+                                <label class="form-check-label" for="whatsapp">
+                                    WhatsApp ({{ $customer->phone }})
+                                </label>
+                            </div>
+                            @if($customer->email)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="hatirlatYontem" id="email" value="email">
+                                    <label class="form-check-label" for="email">
+                                        E-posta ({{ $customer->email }})
+                                    </label>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="button" class="btn btn-primary" onclick="sendReminder()">
+                            <i class="bi bi-send me-2"></i>Gönder
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+
+@push('scripts')
+<script>
+    function createCariHesap() {
+        // AJAX ile cari hesap oluşturma
+        alert('Cari hesap oluşturma özelliği yakında eklenecek!');
+    }
+
+    function sendReminder() {
+        const yontem = document.querySelector('input[name="hatirlatYontem"]:checked').value;
+        alert(yontem.toUpperCase() + ' ile hatırlatıcı gönderiliyor...');
+        // AJAX implementasyonu buraya gelecek
+        bootstrap.Modal.getInstance(document.getElementById('tahsilatHatirlatModal')).hide();
+    }
+</script>
+@endpush
 
         <!-- Upload Modal -->
         <div class="modal fade" id="uploadDocumentModal" tabindex="-1">

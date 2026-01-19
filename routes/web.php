@@ -26,6 +26,9 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\DemoUserController;
 use App\Http\Controllers\Web\BlogController as WebBlogController;
+use App\Http\Controllers\CariHesapController;
+use App\Http\Controllers\TahsilatController;
+use App\Http\Controllers\SirketOdemeController;
 
 // Admin Auth Routes (Guest only)
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -285,6 +288,48 @@ Route::prefix('panel')->group(function () {
             Route::post('/backup', [SettingsController::class, 'backup'])->name('settings.backup');
         });
 
+            // Cari Hesaplar
+        Route::prefix('cari-hesaplar')->name('cari-hesaplar.')->group(function () {
+            Route::get('/', [CariHesapController::class, 'index'])->name('index');
+            Route::get('/create', [CariHesapController::class, 'create'])->name('create');
+            Route::post('/', [CariHesapController::class, 'store'])->name('store');
+            Route::get('/{cariHesap}', [CariHesapController::class, 'show'])->name('show');
+            Route::post('/{cariHesap}/hareket', [CariHesapController::class, 'addHareket'])->name('add-hareket');
+            Route::post('/{cariHesap}/recalculate', [CariHesapController::class, 'recalculateBalance'])->name('recalculate');
+
+            // Raporlar
+            Route::get('/raporlar/yasilandirma', [CariHesapController::class, 'yasilandirma'])->name('yasilandirma');
+            Route::get('/raporlar/kasa-banka', [CariHesapController::class, 'kasaBanka'])->name('kasa-banka');
+        });
+
+        // Tahsilatlar
+        Route::prefix('tahsilatlar')->name('tahsilatlar.')->group(function () {
+            Route::get('/', [TahsilatController::class, 'index'])->name('index');
+            Route::get('/create', [TahsilatController::class, 'create'])->name('create');
+            Route::post('/', [TahsilatController::class, 'store'])->name('store');
+            Route::get('/{tahsilat}', [TahsilatController::class, 'show'])->name('show');
+            Route::get('/{tahsilat}/edit', [TahsilatController::class, 'edit'])->name('edit');
+            Route::put('/{tahsilat}', [TahsilatController::class, 'update'])->name('update');
+            Route::delete('/{tahsilat}', [TahsilatController::class, 'destroy'])->name('destroy');
+
+            // AJAX
+            Route::get('/customer/{customerId}/details', [TahsilatController::class, 'customerDetails'])->name('customer-details');
+        });
+
+        // Şirket Ödemeleri
+        Route::prefix('sirket-odemeleri')->name('sirket-odemeleri.')->group(function () {
+            Route::get('/', [SirketOdemeController::class, 'index'])->name('index');
+            Route::get('/create', [SirketOdemeController::class, 'create'])->name('create');
+            Route::post('/', [SirketOdemeController::class, 'store'])->name('store');
+            Route::get('/{sirketOdeme}', [SirketOdemeController::class, 'show'])->name('show');
+            Route::get('/{sirketOdeme}/edit', [SirketOdemeController::class, 'edit'])->name('edit');
+            Route::put('/{sirketOdeme}', [SirketOdemeController::class, 'update'])->name('update');
+            Route::delete('/{sirketOdeme}', [SirketOdemeController::class, 'destroy'])->name('destroy');
+
+            // AJAX
+            Route::get('/company/{companyId}/details', [SirketOdemeController::class, 'companyDetails'])->name('company-details');
+        });
+
     });
 });
 
@@ -315,3 +360,5 @@ Route::get('/insurance-companies/count', [InsuranceCompanyController::class, 'co
 //         return 'Hata: ' . $e->getMessage();
 //     }
 // });
+Route::get('/tahsilatlar/customer-policies/{customer}', [TahsilatController::class, 'getCustomerPolicies'])
+    ->name('tahsilatlar.customer-policies');

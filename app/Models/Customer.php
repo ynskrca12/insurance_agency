@@ -10,31 +10,6 @@ class Customer extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;
 
-    // protected $fillable = [
-    //     'name',
-    //     'email',
-    //     'phone',
-    //     'phone_secondary',
-    //     'id_number',
-    //     'birth_date',
-    //     'address',
-    //     'city',
-    //     'district',
-    //     'postal_code',
-    //     'occupation',
-    //     'workplace',
-    //     'segments',
-    //     'total_policies',
-    //     'total_premium',
-    //     'lifetime_value',
-    //     'risk_score',
-    //     'last_contact_date',
-    //     'next_contact_date',
-    //     'status',
-    //     'notes',
-    //     'created_by',
-    // ];
-
     protected $guarded = [];
 
     protected $casts = [
@@ -93,13 +68,44 @@ class Customer extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
     public function assignedTo()
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
+
     public function documents()
     {
         return $this->hasMany(CustomerDocument::class)->latest();
+    }
+
+    /**
+     * Cari hesap ilişkisi
+     */
+    public function cariHesap()
+    {
+        return $this->hasOne(CariHesap::class, 'referans_id')
+                    ->where('tip', 'musteri');
+    }
+
+    /**
+     * Cari hesap oluştur veya getir
+     */
+    public function getOrCreateCariHesap()
+    {
+        if ($this->cariHesap) {
+            return $this->cariHesap;
+        }
+
+        return CariHesap::create([
+            'tenant_id' => $this->tenant_id,
+            'tip' => 'musteri',
+            'referans_id' => $this->id,
+            'kod' => CariHesap::otomatikKodOlustur('musteri', $this->tenant_id),
+            'ad' => $this->name,
+            'vade_gun' => 30, // Default 30 gün vade
+            'aktif' => true,
+        ]);
     }
 
     /**
@@ -172,5 +178,26 @@ class Customer extends Model
     public function getFullContactAttribute(): string
     {
         return "{$this->name} ({$this->phone})";
+    }
+
+    /**
+     * Cari bakiye
+     */
+    public function getCariBakiyeAttribute()
+    {
+        return $this->cariHesap ? $this->cariHesap->bakiye : 0;
+    }
+
+    /**
+     * Boot
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Müşteri oluşturulduğunda otomatik cari hesap aç
+        static::created(function ($customer) {
+            $customer->getOrCreateCariHesap();
+        });
     }
 }

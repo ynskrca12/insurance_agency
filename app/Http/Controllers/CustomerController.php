@@ -17,7 +17,10 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Customer::with(['assignedTo'])->withCount('policies')->orderBy('created_at', 'desc');
+        // ✅ CARİ İLİŞKİSİ EKLE
+        $query = Customer::with(['assignedTo', 'cariHesap'])
+            ->withCount('policies')
+            ->orderBy('created_at', 'desc');
 
         // Durum filtresi
         if ($request->filled('status')) {
@@ -101,8 +104,8 @@ class CustomerController extends Controller
 
             DB::commit();
 
-            return redirect()->route('customers.show', $customer)
-                ->with('success', 'Müşteri başarıyla eklendi.');
+           return redirect()->route('customers.show', $customer)
+            ->with('success', 'Müşteri başarıyla eklendi.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -122,13 +125,16 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
+        // ✅ CARİ İLİŞKİLERİ EKLE
         $customer->load([
             'policies.insuranceCompany',
+            'policies.cariHareketler',  // ✅ YENİ: Poliçe cari hareketleri
             'quotations',
             'customerNotes.user',
             'customerCalls.user',
             'crossSellOpportunities',
             'documents.uploadedBy',
+            'cariHesap.hareketler',  // ✅ YENİ: Cari hesap ve hareketler
         ]);
 
         return view('customers.show', compact('customer'));
@@ -199,9 +205,6 @@ class CustomerController extends Controller
         }
     }
 
-    /**
-     * Müşteri sil
-     */
     public function destroy(Customer $customer)
     {
         // Poliçesi varsa silme
@@ -209,10 +212,22 @@ class CustomerController extends Controller
             return back()->with('error', 'Bu müşterinin aktif poliçeleri olduğu için silinemez.');
         }
 
+        // ✅ YENİ: Cari hesap kontrolü (bakiye 0 olmalı)
+        if ($customer->cariHesap) {
+            if ($customer->cariHesap->bakiye != 0) {
+                return back()->with('error', 'Bu müşterinin cari hesabında ' .
+                    number_format(abs($customer->cariHesap->bakiye), 2) .
+                    '₺ bakiye olduğu için silinemez.');
+            }
+
+            // ✅ Bakiye 0 ise cari hesabı da sil
+            $customer->cariHesap->delete();
+        }
+
         $customer->delete();
 
         return redirect()->route('customers.index')
-            ->with('success', 'Müşteri başarıyla silindi.');
+            ->with('success', 'Müşteri ve ilgili cari hesap başarıyla silindi.');
     }
 
     /**
@@ -254,7 +269,6 @@ class CustomerController extends Controller
                 ]);
             }
 
-            // Normal istek
             return back()->with('success', 'Not başarıyla eklendi.');
 
         } catch (\Exception $e) {

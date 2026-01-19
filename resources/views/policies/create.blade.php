@@ -460,95 +460,87 @@
                     <div class="card-header">
                         <h5 class="section-title">
                             <i class="bi bi-cash-stack"></i>
-                            <span>Ödeme ve Komisyon Bilgileri</span>
+                            <span>Prim ve Komisyon Bilgileri</span>
                         </h5>
                     </div>
                     <div class="card-body">
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Bilgi:</strong> Poliçe oluşturulduğunda otomatik olarak cari kayıtlar oluşturulacak:
+                            <ul class="mb-0 mt-2 small">
+                                <li>Müşteri carisine <strong>{{ number_format(old('premium_amount', 0), 2) }}₺</strong> borç kaydedilecek</li>
+                                <li>Şirket carisine net prim tutarı alacak kaydedilecek</li>
+                                <li>Tahsilatları "Tahsilatlar" menüsünden yapabilirsiniz</li>
+                            </ul>
+                        </div>
+
                         <div class="row g-3">
                             <!-- Prim Tutarı -->
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label for="premium_amount" class="form-label">
                                     Prim Tutarı (₺) <span class="text-danger">*</span>
                                 </label>
                                 <input type="number"
-                                       class="form-control @error('premium_amount') is-invalid @enderror"
-                                       id="premium_amount"
-                                       name="premium_amount"
-                                       value="{{ old('premium_amount') }}"
-                                       step="0.01"
-                                       placeholder="0.00"
-                                       required>
-                                <small class="form-text">Toplam prim bedeli</small>
+                                    class="form-control @error('premium_amount') is-invalid @enderror"
+                                    id="premium_amount"
+                                    name="premium_amount"
+                                    value="{{ old('premium_amount') }}"
+                                    step="0.01"
+                                    placeholder="0.00"
+                                    required>
+                                <small class="form-text">Toplam prim bedeli (Müşteriye borç olarak yazılacak)</small>
                                 @error('premium_amount')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <!-- Komisyon Oranı -->
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="commission_rate" class="form-label">
                                     Komisyon Oranı (%)
                                 </label>
                                 <input type="number"
-                                       class="form-control calculated-field"
-                                       id="commission_rate"
-                                       name="commission_rate"
-                                       value="{{ old('commission_rate') }}"
-                                       step="0.01"
-                                       readonly>
+                                    class="form-control calculated-field"
+                                    id="commission_rate"
+                                    name="commission_rate"
+                                    value="{{ old('commission_rate') }}"
+                                    step="0.01"
+                                    readonly>
                                 <small class="form-text">
                                     <i class="bi bi-calculator me-1"></i>Otomatik hesaplanır
                                 </small>
                             </div>
 
                             <!-- Komisyon Tutarı -->
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label">Komisyon Tutarı (₺)</label>
                                 <input type="text"
-                                       class="form-control calculated-field"
-                                       id="commission_amount_display"
-                                       readonly
-                                       value="0.00">
+                                    class="form-control calculated-field"
+                                    id="commission_amount_display"
+                                    readonly
+                                    value="0.00">
                                 <small class="form-text">
-                                    <i class="bi bi-calculator me-1"></i>Otomatik hesaplanır
+                                    <i class="bi bi-calculator me-1"></i>Bizim kazancımız
                                 </small>
                             </div>
 
-                            <!-- Ödeme Tipi -->
-                            <div class="col-md-6">
-                                <label for="payment_type" class="form-label">
-                                    Ödeme Şekli <span class="text-danger">*</span>
-                                </label>
-                                <select class="form-select @error('payment_type') is-invalid @enderror"
-                                        id="payment_type"
-                                        name="payment_type"
-                                        required>
-                                    <option value="cash" {{ old('payment_type', 'cash') === 'cash' ? 'selected' : '' }}>
-                                        Peşin Ödeme
-                                    </option>
-                                    <option value="installment" {{ old('payment_type') === 'installment' ? 'selected' : '' }}>
-                                        Taksitli Ödeme
-                                    </option>
-                                </select>
-                                @error('payment_type')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <!-- Taksit Sayısı -->
-                            <div class="col-md-6" id="installmentCountDiv" style="display: none;">
-                                <label for="installment_count" class="form-label">
-                                    Taksit Sayısı
-                                </label>
-                                <select class="form-select" id="installment_count" name="installment_count">
-                                    <option value="2">2 Taksit</option>
-                                    <option value="3">3 Taksit</option>
-                                    <option value="4">4 Taksit</option>
-                                    <option value="6">6 Taksit</option>
-                                    <option value="9">9 Taksit</option>
-                                    <option value="12">12 Taksit</option>
-                                </select>
-                                <small class="form-text">Ödeme kaç taksit olarak yapılacak</small>
+                            <!-- Net Prim (Şirkete Ödenecek) -->
+                            <div class="col-md-12">
+                                <div class="alert alert-warning">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <strong><i class="bi bi-building me-2"></i>Şirkete Ödenecek Net Prim:</strong>
+                                        </div>
+                                        <div class="col-md-6 text-end">
+                                            <h4 class="mb-0 text-warning" id="net_amount_display">0.00₺</h4>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted d-block mt-2">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Bu tutar sigorta şirketinin carisine alacak olarak yazılacak.
+                                        Ödemeyi "Şirket Ödemeleri" menüsünden yapabilirsiniz.
+                                    </small>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -621,14 +613,28 @@ $(document).ready(function() {
     });
 
     // Ödeme tipine göre taksit sayısını göster/gizle
-    $('#payment_type').on('change', function() {
-        if ($(this).val() === 'installment') {
-            $('#installmentCountDiv').slideDown(300);
-        } else {
-            $('#installmentCountDiv').slideUp(300);
-            $('#installment_count').val('1');
-        }
-    });
+    // $('#payment_type').on('change', function() {
+    //     if ($(this).val() === 'installment') {
+    //         $('#installmentCountDiv').slideDown(300);
+    //     } else {
+    //         $('#installmentCountDiv').slideUp(300);
+    //         $('#installment_count').val('1');
+    //     }
+    // });
+
+     function calculateCommission() {
+        const premium = parseFloat($('#premium_amount').val()) || 0;
+        const rate = parseFloat($('#commission_rate').val()) || 0;
+        const commission = (premium * rate) / 100;
+        const netAmount = premium - commission;
+
+        $('#commission_amount_display').val(commission.toFixed(2));
+        $('#net_amount_display').text(netAmount.toFixed(2) + '₺');
+    }
+
+        // Event listeners
+    $('#insurance_company_id, #policy_type').on('change', updateCommissionRate);
+    $('#premium_amount, #commission_rate').on('input', calculateCommission);
 
     // Komisyon oranını otomatik güncelle
     function updateCommissionRate() {
@@ -641,10 +647,11 @@ $(document).ready(function() {
 
             if (rate !== undefined && rate !== null) {
                 $('#commission_rate').val(rate);
-                calculateCommission();
+                calculateCommission(); // ✅ YENİ: Hemen hesapla
             } else {
                 $('#commission_rate').val('0');
                 $('#commission_amount_display').val('0.00');
+                $('#net_amount_display').text('0.00₺'); // ✅ YENİ
             }
         }
     }
@@ -654,8 +661,10 @@ $(document).ready(function() {
         const premium = parseFloat($('#premium_amount').val()) || 0;
         const rate = parseFloat($('#commission_rate').val()) || 0;
         const commission = (premium * rate) / 100;
+        const netAmount = premium - commission; // ✅ YENİ
 
         $('#commission_amount_display').val(commission.toFixed(2));
+        $('#net_amount_display').text(netAmount.toFixed(2) + '₺'); // ✅ YENİ
     }
 
     // Event listeners

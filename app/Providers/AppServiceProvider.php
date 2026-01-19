@@ -11,6 +11,7 @@ use App\Models\{
     PolicyRenewal, Payment, Task,
     Campaign, InsuranceCompany
 };
+use App\Observers\PolicyObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -62,5 +63,7 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('sidebarCounts', $counts);
         });
+
+        Policy::observe(PolicyObserver::class);
     }
 }

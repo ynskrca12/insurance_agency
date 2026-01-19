@@ -261,6 +261,17 @@
         color: #0d6efd;
     }
 
+    /* ✅ YENİ: Cari kartları için stiller */
+    .cari-payment-card {
+        border-left: 4px solid #10b981;
+        background: #f0fdf4;
+    }
+
+    .cari-debt-card {
+        border-left: 4px solid #ef4444;
+        background: #fef2f2;
+    }
+
     @media (max-width: 768px) {
         .stat-box {
             padding: 1rem;
@@ -307,6 +318,14 @@
                     <i class="bi bi-{{ $config['icon'] }}"></i>
                     {{ $config['label'] }}
                 </span>
+
+                {{-- ✅ YENİ: Hızlı Tahsilat Butonu --}}
+                @if($kalanBorc > 0)
+                    <a href="{{ route('tahsilatlar.create', ['customer_id' => $policy->customer_id]) }}" class="btn btn-success action-btn">
+                        <i class="bi bi-cash-coin me-2"></i>Tahsilat Yap
+                    </a>
+                @endif
+
                 <a href="{{ route('policies.edit', $policy) }}" class="btn btn-warning action-btn">
                     <i class="bi bi-pencil me-2"></i>Düzenle
                 </a>
@@ -319,21 +338,21 @@
 
     <!-- Tarih Bilgileri -->
     <div class="row g-3 mb-4">
-        <div class="col-lg-4 col-md-6">
+        <div class="col-lg-3 col-md-6">
             <div class="stat-box">
                 <i class="bi bi-calendar-check stat-icon text-success"></i>
                 <div class="stat-label">Başlangıç Tarihi</div>
                 <div class="stat-value">{{ $policy->start_date->format('d.m.Y') }}</div>
             </div>
         </div>
-        <div class="col-lg-4 col-md-6">
+        <div class="col-lg-3 col-md-6">
             <div class="stat-box">
                 <i class="bi bi-calendar-x stat-icon text-danger"></i>
                 <div class="stat-label">Bitiş Tarihi</div>
                 <div class="stat-value">{{ $policy->end_date->format('d.m.Y') }}</div>
             </div>
         </div>
-        <div class="col-lg-4 col-md-12">
+        <div class="col-lg-3 col-md-6">
             <div class="stat-box">
                 @php
                     $daysLeft = $policy->days_until_expiry;
@@ -347,6 +366,20 @@
                     <div class="stat-value text-danger">Bugün Bitiyor</div>
                 @else
                     <div class="stat-value text-danger">{{ abs($daysLeft) }} Gün Önce</div>
+                @endif
+            </div>
+        </div>
+
+        {{-- ✅ YENİ: Ödeme Durumu Kartı --}}
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-box {{ $kalanBorc <= 0 ? 'cari-payment-card' : 'cari-debt-card' }}">
+                <i class="bi bi-cash-stack stat-icon {{ $kalanBorc <= 0 ? 'text-success' : 'text-danger' }}"></i>
+                <div class="stat-label">Ödeme Durumu</div>
+                @if($kalanBorc <= 0)
+                    <div class="stat-value text-success">Ödendi</div>
+                @else
+                    <div class="stat-value text-danger">{{ number_format($kalanBorc, 0) }}₺</div>
+                    <small class="text-muted">Kalan Borç</small>
                 @endif
             </div>
         </div>
@@ -400,6 +433,28 @@
                             <i class="bi bi-geo-alt me-1"></i>{{ $policy->customer->city }}
                         </div>
                     </div>
+                    @endif
+
+                    {{-- ✅ YENİ: Müşteri Cari Durumu --}}
+                    @if($policy->customer->cariHesap)
+                        <div class="info-item">
+                            <div class="info-label">Toplam Cari Borç</div>
+                            <div class="info-value">
+                                @if($policy->customer->cariHesap->bakiye > 0)
+                                    <span class="text-danger">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        {{ number_format($policy->customer->cariHesap->bakiye, 2) }}₺
+                                    </span>
+                                @elseif($policy->customer->cariHesap->bakiye < 0)
+                                    <span class="text-success">
+                                        <i class="bi bi-check-circle me-1"></i>
+                                        {{ number_format(abs($policy->customer->cariHesap->bakiye), 2) }}₺ Alacak
+                                    </span>
+                                @else
+                                    <span class="text-muted">Borç/Alacak Yok</span>
+                                @endif
+                            </div>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -536,16 +591,22 @@
                         <span>Komisyon Tutarı</span>
                         <strong class="text-success">{{ number_format($policy->commission_amount, 2) }} ₺</strong>
                     </div>
-                    <div class="summary-item">
-                        <span>Ödeme Şekli</span>
-                        <strong>{{ $policy->payment_type === 'cash' ? 'Peşin' : 'Taksitli' }}</strong>
+
+                    {{-- ✅ YENİ: Ödeme Durumu --}}
+                    <div class="summary-item border-top mt-2 pt-2">
+                        <span>Ödenen Tutar</span>
+                        <strong class="text-success">{{ number_format($toplamOdenen, 2) }} ₺</strong>
                     </div>
-                    @if($policy->payment_type === 'installment')
                     <div class="summary-item">
-                        <span>Taksit Sayısı</span>
-                        <strong>{{ $policy->installment_count }} Taksit</strong>
+                        <span>Kalan Borç</span>
+                        <strong class="{{ $kalanBorc > 0 ? 'text-danger' : 'text-success' }}">
+                            {{ number_format($kalanBorc, 2) }} ₺
+                        </strong>
                     </div>
-                    @endif
+                    <div class="summary-item">
+                        <span>Ödeme Oranı</span>
+                        <strong>% {{ number_format($odemeYuzdesi, 1) }}</strong>
+                    </div>
                 </div>
             </div>
         </div>
@@ -554,9 +615,10 @@
         <div class="col-lg-8">
             <!-- Modern Tabs -->
             <ul class="nav nav-tabs-modern" role="tablist">
+                {{-- ✅ YENİ TAB: Tahsilatlar --}}
                 <li class="nav-item">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#payment">
-                        <i class="bi bi-credit-card me-2"></i>Ödeme Planı
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tahsilatlar">
+                        <i class="bi bi-cash-coin me-2"></i>Tahsilatlar ({{ $tahsilatlar->count() }})
                     </button>
                 </li>
                 <li class="nav-item">
@@ -578,97 +640,120 @@
 
             <!-- Tab Contents -->
             <div class="tab-content">
-                <!-- Ödeme Planı -->
-                <div class="tab-pane fade show active" id="payment">
+                {{-- ✅ YENİ TAB İÇERİĞİ: Tahsilatlar --}}
+                <div class="tab-pane fade show active" id="tahsilatlar">
                     <div class="content-card card">
                         <div class="card-body">
-                            @if($policy->paymentPlan)
-                                @if($policy->paymentPlan->installments->isEmpty())
-                                    <div class="empty-state">
-                                        <i class="bi bi-inbox"></i>
-                                        <h6 class="text-muted mb-1">Taksit Bilgisi Yok</h6>
-                                        <p class="text-muted small mb-0">Henüz taksit bilgisi girilmemiş.</p>
-                                    </div>
-                                @else
-                                    <!-- Ödeme Özeti -->
-                                    <div class="row g-3 mb-4">
-                                        <div class="col-md-3">
-                                            <div class="summary-box">
-                                                <div class="stat-label">Toplam Tutar</div>
-                                                <div class="h5 mb-0">{{ number_format($policy->paymentPlan->total_amount, 2) }} ₺</div>
+                            @if($tahsilatlar->count() > 0)
+                                <!-- Ödeme Özeti -->
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-4">
+                                        <div class="summary-box {{ $kalanBorc <= 0 ? 'border-success' : 'border-warning' }}">
+                                            <div class="stat-label {{ $kalanBorc <= 0 ? 'text-success' : 'text-warning' }}">
+                                                Ödeme Durumu
                                             </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="summary-box border-success">
-                                                <div class="stat-label text-success">Ödenen</div>
-                                                <div class="h5 mb-0 text-success">{{ number_format($policy->paymentPlan->paid_amount, 2) }} ₺</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="summary-box border-danger">
-                                                <div class="stat-label text-danger">Kalan</div>
-                                                <div class="h5 mb-0 text-danger">{{ number_format($policy->paymentPlan->remaining_amount, 2) }} ₺</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="summary-box">
-                                                <div class="stat-label">İlerleme</div>
-                                                <div class="h5 mb-0">% {{ $policy->paymentPlan->payment_progress }}</div>
+                                            <div class="h5 mb-0 {{ $kalanBorc <= 0 ? 'text-success' : 'text-warning' }}">
+                                                % {{ number_format($odemeYuzdesi, 1) }}
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="summary-box border-success">
+                                            <div class="stat-label text-success">Toplam Ödenen</div>
+                                            <div class="h5 mb-0 text-success">{{ number_format($toplamOdenen, 2) }} ₺</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="summary-box border-danger">
+                                            <div class="stat-label text-danger">Kalan Borç</div>
+                                            <div class="h5 mb-0 text-danger">{{ number_format($kalanBorc, 2) }} ₺</div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                                    <!-- Taksit Listesi -->
-                                    <div class="table-responsive">
-                                        <table class="table table-modern">
-                                            <thead>
-                                                <tr>
-                                                    <th>Taksit</th>
-                                                    <th>Tutar</th>
-                                                    <th>Vade Tarihi</th>
-                                                    <th>Ödeme Tarihi</th>
-                                                    <th>Yöntem</th>
-                                                    <th>Durum</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($policy->paymentPlan->installments as $installment)
-                                                <tr>
-                                                    <td><strong>{{ $installment->installment_number }}</strong></td>
-                                                    <td><strong>{{ number_format($installment->amount, 2) }} ₺</strong></td>
-                                                    <td>{{ $installment->due_date->format('d.m.Y') }}</td>
-                                                    <td>
-                                                        @if($installment->paid_date)
-                                                            {{ $installment->paid_date->format('d.m.Y') }}
-                                                        @else
-                                                            <span class="text-muted">-</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @if($installment->payment_method)
-                                                            <span class="badge bg-light text-dark border">
-                                                                {{ $installment->payment_method_label }}
-                                                            </span>
-                                                        @else
-                                                            <span class="text-muted">-</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge badge-modern bg-{{ $installment->status_color }}">
-                                                            {{ $installment->status_label }}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @endif
+                                <!-- Tahsilat Listesi -->
+                                <div class="table-responsive">
+                                    <table class="table table-modern">
+                                        <thead>
+                                            <tr>
+                                                <th>Tarih</th>
+                                                <th>Makbuz No</th>
+                                                <th>Ödeme Yöntemi</th>
+                                                <th>Kasa/Banka</th>
+                                                <th class="text-end">Tutar</th>
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($tahsilatlar as $tahsilat)
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ $tahsilat->tahsilat_tarihi->format('d.m.Y') }}</strong>
+                                                    <br>
+                                                    <small class="text-muted">{{ $tahsilat->created_at->diffForHumans() }}</small>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-secondary">{{ $tahsilat->makbuz_no }}</span>
+                                                </td>
+                                                <td>
+                                                    @php
+                                                        $paymentBadges = [
+                                                            'nakit' => 'success',
+                                                            'kredi_karti' => 'primary',
+                                                            'banka_havalesi' => 'info',
+                                                            'cek' => 'warning',
+                                                            'sanal_pos' => 'dark',
+                                                        ];
+                                                        $badgeColor = $paymentBadges[$tahsilat->odeme_yontemi] ?? 'secondary';
+                                                    @endphp
+                                                    <span class="badge bg-{{ $badgeColor }}">
+                                                        {{ $tahsilat->odeme_yontemi_label }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    @if($tahsilat->kasaBanka)
+                                                        <small>{{ $tahsilat->kasaBanka->ad }}</small>
+                                                    @else
+                                                        <small class="text-muted">-</small>
+                                                    @endif
+                                                </td>
+                                                <td class="text-end">
+                                                    <strong class="text-success">{{ number_format($tahsilat->tutar, 2) }} ₺</strong>
+                                                </td>
+                                                <td>
+                                                    <a href="{{ route('tahsilatlar.show', $tahsilat) }}"
+                                                       class="btn btn-sm btn-outline-primary"
+                                                       title="Detay">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                        <tfoot class="table-light">
+                                            <tr>
+                                                <td colspan="4" class="text-end"><strong>TOPLAM:</strong></td>
+                                                <td class="text-end">
+                                                    <strong class="text-success fs-5">
+                                                        {{ number_format($toplamOdenen, 2) }} ₺
+                                                    </strong>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
                             @else
                                 <div class="empty-state">
-                                    <i class="bi bi-credit-card"></i>
-                                    <h6 class="text-muted mb-1">Ödeme Planı Yok</h6>
-                                    <p class="text-muted small mb-0">Henüz ödeme planı oluşturulmamış.</p>
+                                    <i class="bi bi-cash-coin display-1"></i>
+                                    <h6 class="text-muted mb-2">Henüz Tahsilat Yok</h6>
+                                    <p class="text-muted small mb-3">Bu poliçeye ait tahsilat kaydı bulunmuyor.</p>
+                                    @if($kalanBorc > 0)
+                                        <a href="{{ route('tahsilatlar.create', ['customer_id' => $policy->customer_id]) }}"
+                                           class="btn btn-success">
+                                            <i class="bi bi-plus-circle me-2"></i>İlk Tahsilatı Yap
+                                        </a>
+                                    @endif
                                 </div>
                             @endif
                         </div>
@@ -703,7 +788,7 @@
                                 </div>
                             @else
                                 <div class="empty-state">
-                                    <i class="bi bi-arrow-repeat"></i>
+                                    <i class="bi bi-arrow-repeat display-1"></i>
                                     <h6 class="text-muted mb-2">Yenileme Süreci Başlatılmamış</h6>
                                     <p class="text-muted small mb-3">Poliçe yenileme süreci henüz başlatılmamış.</p>
                                     @if($policy->status === 'expiring_soon' || $policy->status === 'critical')
@@ -724,7 +809,7 @@
                         <div class="card-body">
                             @if($policy->reminders->isEmpty())
                                 <div class="empty-state">
-                                    <i class="bi bi-bell-slash"></i>
+                                    <i class="bi bi-bell-slash display-1"></i>
                                     <h6 class="text-muted mb-1">Hatırlatıcı Yok</h6>
                                     <p class="text-muted small mb-0">Bu poliçe için hatırlatıcı bulunmuyor.</p>
                                 </div>
@@ -763,7 +848,7 @@
                                 </div>
                             @else
                                 <div class="empty-state">
-                                    <i class="bi bi-sticky"></i>
+                                    <i class="bi bi-sticky display-1"></i>
                                     <h6 class="text-muted mb-1">Not Yok</h6>
                                     <p class="text-muted small mb-0">Bu poliçe için not bulunmuyor.</p>
                                 </div>
