@@ -1165,7 +1165,7 @@
                             role="button"
                             aria-expanded="{{ $isCariOpen ? 'true' : 'false' }}"
                             aria-controls="cariMenu">
-                                <i class="bi bi-cash-stack me-2"></i>
+                                <i class="bi bi-cash-stack"></i>
                                 <span>Cari İşlemler</span>
                                 <i class="bi bi-chevron-down ms-auto" style="margin-right:2px;"></i>
                             </a>

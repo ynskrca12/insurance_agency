@@ -362,3 +362,6 @@ Route::get('/insurance-companies/count', [InsuranceCompanyController::class, 'co
 // });
 Route::get('/tahsilatlar/customer-policies/{customer}', [TahsilatController::class, 'getCustomerPolicies'])
     ->name('tahsilatlar.customer-policies');
+
+    // Raporlar grubu içine ekle (mevcut report route'ların yanına)
+Route::get('/reports/cari', [ReportController::class, 'cari'])->name('reports.cari');
