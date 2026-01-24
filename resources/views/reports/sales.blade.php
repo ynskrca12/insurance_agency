@@ -180,6 +180,17 @@
         background: #fafafa;
     }
 
+    .table-modern tfoot {
+        background: #f8f9fa;
+        border-top: 2px solid #dee2e6;
+    }
+
+    .table-modern tfoot th {
+        padding: 1rem 1.25rem;
+        font-weight: 700;
+        color: #212529;
+    }
+
     .company-name {
         font-weight: 600;
         color: #212529;
@@ -266,48 +277,22 @@
         color: #6c757d;
     }
 
-    .modal-modern .modal-content {
-        border: none;
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    .modal-modern .modal-header {
-        border: none;
-        padding: 1.25rem 1.5rem;
-    }
-
-    .modal-modern .modal-body {
-        padding: 1.5rem;
-    }
-
-    .modal-modern .modal-footer {
-        background: #fafafa;
-        border-top: 1px solid #e9ecef;
-        padding: 1rem 1.5rem;
-    }
-
-    .info-alert {
-        background: #e8f4fd;
-        border: 1px solid #b3d9ff;
-        border-radius: 10px;
-        padding: 1rem 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        color: #0066cc;
-    }
-
-    .info-alert i {
-        font-size: 1.25rem;
-    }
-
     .period-info {
         display: flex;
         align-items: center;
         gap: 0.5rem;
         color: #6c757d;
         font-size: 0.9375rem;
+    }
+
+    .rep-name {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .amount-value {
+        font-weight: 700;
+        color: #28a745;
     }
 
     @media (max-width: 768px) {
@@ -341,13 +326,10 @@
                 </h1>
                 <div class="period-info">
                     <i class="bi bi-calendar-range"></i>
-                    <span>{{ \Carbon\Carbon::parse($startDate)->format('d.m.Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d.m.Y') }}</span>
+                    <span>{{ \Carbon\Carbon::parse($displayStartDate)->format('d.m.Y') }} - {{ \Carbon\Carbon::parse($displayEndDate)->format('d.m.Y') }}</span>
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <!-- <button type="button" class="btn btn-success action-btn" data-bs-toggle="modal" data-bs-target="#exportModal">
-                    <i class="bi bi-file-earmark-excel me-2"></i>Excel'e Aktar
-                </button> -->
                 <a href="{{ route('reports.index') }}" class="btn btn-light action-btn">
                     <i class="bi bi-arrow-left me-2"></i>Geri
                 </a>
@@ -421,12 +403,26 @@
         </div>
     </div>
 
+    <!-- YENİ: Satış Trendi Line Chart -->
+    <div class="chart-card card mb-4">
+        <div class="card-header">
+            <h5 class="chart-title">
+                <i class="bi bi-graph-up-arrow"></i>
+                <span>Satış Trendi</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="salesTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
     <!-- Grafikler -->
     <div class="row g-4 mb-4">
-        <!-- Satış Trendi -->
+        <!-- Sigorta Şirketi Dağılımı Tablosu -->
         <div class="col-lg-8">
-            <!-- Sigorta Şirketi Dağılımı Tablosu -->
-            <div class="table-card card mb-4">
+            <div class="table-card card">
                 <div class="card-header">
                     <h5 class="chart-title">
                         <i class="bi bi-building"></i>
@@ -472,7 +468,7 @@
                         </table>
                     </div>
                 </div>
-    </div>
+            </div>
         </div>
 
         <!-- Poliçe Türü Dağılımı -->
@@ -489,6 +485,146 @@
                         <canvas id="policyTypeChart"></canvas>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- YENİ: Branş Bazlı Detaylı Analiz -->
+    <div class="table-card card mb-4">
+        <div class="card-header">
+            <h5 class="chart-title">
+                <i class="bi bi-bar-chart-line"></i>
+                <span>Branş Bazlı Detaylı Analiz</span>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th>Branş</th>
+                            <th class="text-end">Poliçe Sayısı</th>
+                            <th class="text-end">Toplam Prim</th>
+                            <th class="text-end">Toplam Komisyon</th>
+                            <th class="text-end">Ort. Prim</th>
+                            <th class="text-end">Ort. Kom. Oranı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $typeLabels = [
+                                'kasko' => 'Kasko',
+                                'trafik' => 'Trafik',
+                                'konut' => 'Konut',
+                                'dask' => 'DASK',
+                                'saglik' => 'Sağlık',
+                                'hayat' => 'Hayat',
+                                'tss' => 'Tamamlayıcı Sağlık',
+                            ];
+                        @endphp
+                        @foreach($branchAnalysis as $branch)
+                        <tr>
+                            <td><strong>{{ $typeLabels[$branch->policy_type] ?? $branch->policy_type }}</strong></td>
+                            <td class="text-end">{{ number_format($branch->policy_count) }}</td>
+                            <td class="text-end">
+                                <span class="amount-value">{{ number_format($branch->total_premium, 2) }} ₺</span>
+                            </td>
+                            <td class="text-end">
+                                <span class="text-success fw-bold">{{ number_format($branch->total_commission, 2) }} ₺</span>
+                            </td>
+                            <td class="text-end">{{ number_format($branch->avg_premium, 2) }} ₺</td>
+                            <td class="text-end">
+                                <span class="badge bg-info">%{{ number_format($branch->avg_commission_rate, 2) }}</span>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Toplam</th>
+                            <th class="text-end">{{ number_format($branchAnalysis->sum('policy_count')) }}</th>
+                            <th class="text-end">{{ number_format($branchAnalysis->sum('total_premium'), 2) }} ₺</th>
+                            <th class="text-end">{{ number_format($branchAnalysis->sum('total_commission'), 2) }} ₺</th>
+                            <th colspan="2"></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- YENİ: Satış Temsilcisi Performans Tablosu -->
+    <div class="table-card card mb-4">
+        <div class="card-header">
+            <h5 class="chart-title">
+                <i class="bi bi-person-badge"></i>
+                <span>Satış Temsilcisi Performansı (Top 10)</span>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">Sıra</th>
+                            <th>Temsilci</th>
+                            <th class="text-end">Poliçe Sayısı</th>
+                            <th class="text-end">Toplam Prim</th>
+                            <th class="text-end">Toplam Komisyon</th>
+                            <th class="text-end">Ort. Poliçe Değeri</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($salesRepPerformance as $index => $rep)
+                        <tr>
+                            <td>
+                                @if($index === 0)
+                                    <span class="rank-badge gold">1</span>
+                                @elseif($index === 1)
+                                    <span class="rank-badge silver">2</span>
+                                @elseif($index === 2)
+                                    <span class="rank-badge bronze">3</span>
+                                @else
+                                    <span class="text-muted fw-semibold">{{ $index + 1 }}</span>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="rep-name">{{ $rep->creator->name ?? 'Sistem' }}</span>
+                            </td>
+                            <td class="text-end">
+                                <span class="badge bg-primary">{{ number_format($rep->policy_count) }}</span>
+                            </td>
+                            <td class="text-end">
+                                <span class="amount-value">{{ number_format($rep->total_premium, 2) }} ₺</span>
+                            </td>
+                            <td class="text-end">
+                                <span class="text-success fw-bold">{{ number_format($rep->total_commission, 2) }} ₺</span>
+                            </td>
+                            <td class="text-end">
+                                <span class="text-muted">{{ number_format($rep->avg_premium, 2) }} ₺</span>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                Veri bulunmuyor
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                    @if($salesRepPerformance->isNotEmpty())
+                    <tfoot>
+                        <tr>
+                            <th colspan="2">Toplam</th>
+                            <th class="text-end">{{ number_format($salesRepPerformance->sum('policy_count')) }}</th>
+                            <th class="text-end">{{ number_format($salesRepPerformance->sum('total_premium'), 2) }} ₺</th>
+                            <th class="text-end">{{ number_format($salesRepPerformance->sum('total_commission'), 2) }} ₺</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                    @endif
+                </table>
             </div>
         </div>
     </div>
@@ -540,41 +676,6 @@
         </div>
     </div>
 </div>
-
-<!-- Export Modal -->
-<div class="modal fade modal-modern" id="exportModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title">
-                    <i class="bi bi-file-earmark-excel me-2"></i>Excel'e Aktar
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="POST" action="{{ route('reports.export') }}" id="exportForm">
-                @csrf
-                <input type="hidden" name="type" value="sales">
-                <input type="hidden" name="start_date" value="{{ $startDate }}">
-                <input type="hidden" name="end_date" value="{{ $endDate }}">
-                <div class="modal-body">
-                    <p class="mb-3">Satış raporunu Excel formatında indirmek istediğinizden emin misiniz?</p>
-                    <div class="info-alert">
-                        <i class="bi bi-info-circle"></i>
-                        <span>Rapor {{ \Carbon\Carbon::parse($startDate)->format('d.m.Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d.m.Y') }} tarihleri arasındaki verileri içerecektir.</span>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light action-btn" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle me-2"></i>İptal
-                    </button>
-                    <button type="submit" class="btn btn-success action-btn">
-                        <i class="bi bi-download me-2"></i>İndir
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 @endsection
 
 @push('scripts')
@@ -585,6 +686,139 @@ Chart.defaults.font.family = 'Inter, system-ui, -apple-system, sans-serif';
 Chart.defaults.font.size = 13;
 Chart.defaults.color = '#495057';
 
+// YENİ: Satış Trendi Line Chart
+const trendCtx = document.getElementById('salesTrendChart').getContext('2d');
+new Chart(trendCtx, {
+    type: 'line',
+    data: {
+        labels: {!! json_encode($timeSeriesData->pluck('period')) !!},
+        datasets: [{
+            label: 'Toplam Prim (₺)',
+            data: {!! json_encode($timeSeriesData->pluck('total_premium')) !!},
+            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+            borderColor: 'rgb(13, 110, 253)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: 'rgb(13, 110, 253)',
+            pointBorderWidth: 2,
+            yAxisID: 'y',
+        }, {
+            label: 'Poliçe Sayısı',
+            data: {!! json_encode($timeSeriesData->pluck('policy_count')) !!},
+            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+            borderColor: 'rgb(40, 167, 69)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: 'rgb(40, 167, 69)',
+            pointBorderWidth: 2,
+            yAxisID: 'y1',
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index',
+            intersect: false,
+        },
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    padding: 15,
+                    font: {
+                        size: 13,
+                        weight: '500'
+                    },
+                    usePointStyle: true,
+                    pointStyle: 'circle'
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 12,
+                borderRadius: 8,
+                titleFont: {
+                    size: 13,
+                    weight: '600'
+                },
+                bodyFont: {
+                    size: 13
+                },
+                callbacks: {
+                    label: function(context) {
+                        let label = context.dataset.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        if (context.datasetIndex === 0) {
+                            label += context.parsed.y.toLocaleString('tr-TR', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }) + ' ₺';
+                        } else {
+                            label += context.parsed.y + ' adet';
+                        }
+                        return label;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    display: false
+                },
+                border: {
+                    display: false
+                }
+            },
+            y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.05)',
+                    drawBorder: false
+                },
+                border: {
+                    display: false
+                },
+                ticks: {
+                    callback: function(value) {
+                        return value.toLocaleString('tr-TR') + ' ₺';
+                    }
+                }
+            },
+            y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                beginAtZero: true,
+                grid: {
+                    drawOnChartArea: false,
+                },
+                border: {
+                    display: false
+                },
+                ticks: {
+                    callback: function(value) {
+                        return value + ' adet';
+                    }
+                }
+            },
+        }
+    }
+});
 
 // Poliçe Türü Grafiği
 const policyTypeCtx = document.getElementById('policyTypeChart').getContext('2d');
@@ -656,13 +890,6 @@ new Chart(policyTypeCtx, {
         },
         cutout: '65%'
     }
-});
-
-// Export form submit animasyonu
-$('#exportForm').on('submit', function() {
-    const submitBtn = $(this).find('button[type="submit"]');
-    submitBtn.prop('disabled', true)
-             .html('<span class="spinner-border spinner-border-sm me-2"></span>İndiriliyor...');
 });
 </script>
 @endpush
