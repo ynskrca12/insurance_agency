@@ -237,121 +237,234 @@ private function getBranchAnalysis($startDate, $endDate)
         return $data;
     }
 
-    /**
-     * Komisyon raporları
-     */
-    public function commission(Request $request)
-    {
-        // Varsayılan olarak TÜM VERİLER (filtresiz)
-        $startDate = $request->get('start_date', null);
-        $endDate = $request->get('end_date', null);
+/**
+ * Komisyon raporları (CARİ ENTEGRASYONLU)
+ */
+public function commission(Request $request)
+{
+    $startDate = $request->get('start_date', null);
+    $endDate = $request->get('end_date', null);
 
-        // Ana sorgu
-        $query = Policy::query();
+    // Ana sorgu
+    $query = Policy::query();
+
+    if ($startDate && $endDate) {
+        $query->whereBetween('created_at', [$startDate, $endDate]);
+    } elseif ($startDate) {
+        $query->where('created_at', '>=', $startDate);
+    } elseif ($endDate) {
+        $query->where('created_at', '<=', $endDate);
+    }
+
+    // Display için tarih formatı
+    if (!$startDate || !$endDate) {
+        $firstPolicy = Policy::orderBy('created_at', 'asc')->first();
+        $lastPolicy = Policy::orderBy('created_at', 'desc')->first();
+
+        $displayStartDate = $firstPolicy ? $firstPolicy->created_at->format('Y-m-d') : now()->subYear()->format('Y-m-d');
+        $displayEndDate = $lastPolicy ? $lastPolicy->created_at->format('Y-m-d') : now()->format('Y-m-d');
+    } else {
+        $displayStartDate = $startDate;
+        $displayEndDate = $endDate;
+    }
+
+    // Genel İstatistikler
+    $statsQuery = clone $query;
+    $totalCommission = $statsQuery->sum('commission_amount') ?? 0;
+    $totalPolicies = $statsQuery->count();
+    $averageCommission = $statsQuery->avg('commission_amount') ?? 0;
+
+    // Tahsil edilen komisyon
+    $collectedCommission = $this->getCollectedCommission($startDate, $endDate);
+    $pendingCommission = max(0, $totalCommission - $collectedCommission);
+    $collectionRate = $totalCommission > 0 ? ($collectedCommission / $totalCommission) * 100 : 0;
+
+    // Komisyon oranı hesapla
+    $totalPremiumQuery = clone $query;
+    $totalPremium = $totalPremiumQuery->sum('premium_amount') ?? 0;
+    $commissionRate = $totalPremium > 0 ? ($totalCommission / $totalPremium) * 100 : 0;
+
+    $stats = [
+        'total_commission' => $totalCommission,
+        'collected_commission' => $collectedCommission,
+        'pending_commission' => $pendingCommission,
+        'collection_rate' => $collectionRate,
+        'total_policies' => $totalPolicies,
+        'average_commission' => $averageCommission,
+        'commission_rate' => $commissionRate,
+    ];
+
+    // Satış temsilcisi komisyon performansı
+    $salesRepCommission = $this->getSalesRepCommission($startDate, $endDate);
+
+    // Sigorta şirketine göre komisyon
+    $commissionByCompany = $this->getCommissionByCompany($startDate, $endDate);
+
+    // Poliçe türüne göre komisyon
+    $typeQuery = clone $query;
+    $commissionByType = $typeQuery
+        ->select(
+            'policy_type',
+            DB::raw('COUNT(*) as policy_count'),
+            DB::raw('SUM(premium_amount) as total_premium'),
+            DB::raw('SUM(commission_amount) as total_commission')
+        )
+        ->groupBy('policy_type')
+        ->orderByDesc('total_commission')
+        ->get();
+
+    // Aylık komisyon trendi
+    $monthlyQuery = clone $query;
+    $monthlyCommission = $monthlyQuery
+        ->select(
+            DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
+            DB::raw('SUM(commission_amount) as total_commission'),
+            DB::raw('COUNT(*) as policy_count')
+        )
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get()
+        ->map(function($item) {
+            $months = [
+                '01' => 'Oca', '02' => 'Şub', '03' => 'Mar', '04' => 'Nis',
+                '05' => 'May', '06' => 'Haz', '07' => 'Tem', '08' => 'Ağu',
+                '09' => 'Eyl', '10' => 'Eki', '11' => 'Kas', '12' => 'Ara'
+            ];
+            $parts = explode('-', $item->month);
+            $item->month = $months[$parts[1]] . ' ' . $parts[0];
+            return $item;
+        });
+
+    return view('reports.commission', compact(
+        'stats',
+        'salesRepCommission',
+        'commissionByCompany',
+        'commissionByType',
+        'monthlyCommission',
+        'startDate',
+        'endDate'
+    ))->with([
+        'displayStartDate' => $displayStartDate,
+        'displayEndDate' => $displayEndDate,
+    ]);
+}
+
+/**
+ * Tahsil edilen komisyon hesapla
+ */
+private function getCollectedCommission($startDate, $endDate)
+{
+    $query = \App\Models\Tahsilat::query();
+
+    if ($startDate && $endDate) {
+        $query->whereBetween('tahsilat_tarihi', [$startDate, $endDate]);
+    } elseif ($startDate) {
+        $query->where('tahsilat_tarihi', '>=', $startDate);
+    } elseif ($endDate) {
+        $query->where('tahsilat_tarihi', '<=', $endDate);
+    }
+
+    // Poliçelere yapılan tahsilatları topla
+    return $query->whereNotNull('policy_id')
+                 ->with('policy')
+                 ->get()
+                 ->sum(function($tahsilat) {
+                     if (!$tahsilat->policy) return 0;
+
+                     // Tahsilat oranına göre komisyon hesapla
+                     $policyPremium = $tahsilat->policy->premium_amount;
+                     $policyCommission = $tahsilat->policy->commission_amount;
+
+                     if ($policyPremium > 0) {
+                         $tahsilatOrani = $tahsilat->tutar / $policyPremium;
+                         return $policyCommission * $tahsilatOrani;
+                     }
+
+                     return 0;
+                 });
+}
+
+
+
+/**
+ * Satış temsilcisi komisyon performansı
+ */
+private function getSalesRepCommission($startDate, $endDate)
+{
+    $query = Policy::with('creator');
+
+    if ($startDate && $endDate) {
+        $query->whereBetween('created_at', [$startDate, $endDate]);
+    } elseif ($startDate) {
+        $query->where('created_at', '>=', $startDate);
+    } elseif ($endDate) {
+        $query->where('created_at', '<=', $endDate);
+    }
+
+    $salesReps = $query->select(
+            'created_by',
+            DB::raw('COUNT(*) as policy_count'),
+            DB::raw('SUM(commission_amount) as total_commission'),
+            DB::raw('AVG(commission_rate) as avg_commission_rate')
+        )
+        ->groupBy('created_by')
+        ->orderByDesc('total_commission')
+        ->limit(10)
+        ->get();
+
+    // Her temsilci için tahsilat oranını hesapla
+    foreach ($salesReps as $rep) {
+        $repPolicies = Policy::where('created_by', $rep->created_by);
 
         if ($startDate && $endDate) {
-            $query->whereBetween('created_at', [$startDate, $endDate]);
-        } elseif ($startDate) {
-            $query->where('created_at', '>=', $startDate);
-        } elseif ($endDate) {
-            $query->where('created_at', '<=', $endDate);
+            $repPolicies->whereBetween('created_at', [$startDate, $endDate]);
         }
 
-        // Display için tarih formatı
-        if (!$startDate || !$endDate) {
-            // İlk ve son poliçe tarihlerini al
-            $firstPolicy = Policy::orderBy('created_at', 'asc')->first();
-            $lastPolicy = Policy::orderBy('created_at', 'desc')->first();
+        $policyIds = $repPolicies->pluck('id');
 
-            $displayStartDate = $firstPolicy ? $firstPolicy->created_at->format('Y-m-d') : now()->subYear()->format('Y-m-d');
-            $displayEndDate = $lastPolicy ? $lastPolicy->created_at->format('Y-m-d') : now()->format('Y-m-d');
-        } else {
-            $displayStartDate = $startDate;
-            $displayEndDate = $endDate;
-        }
+        $collectedAmount = \App\Models\Tahsilat::whereIn('policy_id', $policyIds)
+            ->sum('tutar');
 
-        // Genel İstatistikler
-        $statsQuery = clone $query;
-        $stats = [
-            'total_commission' => $statsQuery->sum('commission_amount') ?? 0,
-            'total_policies' => $statsQuery->count(),
-            'average_commission' => $statsQuery->avg('commission_amount') ?? 0,
-            'commission_rate' => 0,
-        ];
+        $totalPremium = $repPolicies->sum('premium_amount');
 
-        // Komisyon oranı hesapla
-        $totalPremiumQuery = clone $query;
-        $totalPremium = $totalPremiumQuery->sum('premium_amount') ?? 0;
-        if ($totalPremium > 0) {
-            $stats['commission_rate'] = ($stats['total_commission'] / $totalPremium) * 100;
-        }
-
-        // Sigorta şirketine göre komisyon
-        $companyQuery = clone $query;
-        $commissionByCompany = $companyQuery
-            ->with('insuranceCompany')
-            ->select(
-                'insurance_company_id',
-                DB::raw('COUNT(*) as policy_count'),
-                DB::raw('SUM(premium_amount) as total_premium'),
-                DB::raw('SUM(commission_amount) as total_commission'),
-                DB::raw('CASE
-                    WHEN SUM(premium_amount) > 0
-                    THEN (SUM(commission_amount) / SUM(premium_amount)) * 100
-                    ELSE 0
-                END as avg_commission_rate')
-            )
-            ->groupBy('insurance_company_id')
-            ->orderByDesc('total_commission')
-            ->get();
-
-        // Poliçe türüne göre komisyon
-        $typeQuery = clone $query;
-        $commissionByType = $typeQuery
-            ->select(
-                'policy_type',
-                DB::raw('COUNT(*) as policy_count'),
-                DB::raw('SUM(premium_amount) as total_premium'),
-                DB::raw('SUM(commission_amount) as total_commission')
-            )
-            ->groupBy('policy_type')
-            ->orderByDesc('total_commission')
-            ->get();
-
-        // Aylık komisyon trendi
-        $monthlyQuery = clone $query;
-        $monthlyCommission = $monthlyQuery
-            ->select(
-                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
-                DB::raw('SUM(commission_amount) as total_commission'),
-                DB::raw('COUNT(*) as policy_count')
-            )
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get()
-            ->map(function($item) {
-                $months = [
-                    '01' => 'Oca', '02' => 'Şub', '03' => 'Mar', '04' => 'Nis',
-                    '05' => 'May', '06' => 'Haz', '07' => 'Tem', '08' => 'Ağu',
-                    '09' => 'Eyl', '10' => 'Eki', '11' => 'Kas', '12' => 'Ara'
-                ];
-                $parts = explode('-', $item->month);
-                $item->month_label = $months[$parts[1]] . ' ' . $parts[0];
-                return $item;
-            });
-
-        return view('reports.commission', compact(
-            'stats',
-            'commissionByCompany',
-            'commissionByType',
-            'monthlyCommission',
-            'startDate',
-            'endDate'
-        ))->with([
-            'displayStartDate' => $displayStartDate,
-            'displayEndDate' => $displayEndDate,
-        ]);
+        $rep->collection_rate = $totalPremium > 0
+            ? ($collectedAmount / $totalPremium) * 100
+            : 0;
     }
+
+    return $salesReps;
+}
+
+/**
+ *  Şirket bazlı genişletilmiş komisyon analizi
+ */
+private function getCommissionByCompany($startDate, $endDate)
+{
+    $query = Policy::with('insuranceCompany');
+
+    if ($startDate && $endDate) {
+        $query->whereBetween('created_at', [$startDate, $endDate]);
+    } elseif ($startDate) {
+        $query->where('created_at', '>=', $startDate);
+    } elseif ($endDate) {
+        $query->where('created_at', '<=', $endDate);
+    }
+
+    return $query->select(
+            'insurance_company_id',
+            DB::raw('COUNT(*) as policy_count'),
+            DB::raw('SUM(premium_amount) as total_premium'),
+            DB::raw('SUM(commission_amount) as total_commission'),
+            DB::raw('CASE
+                WHEN SUM(premium_amount) > 0
+                THEN (SUM(commission_amount) / SUM(premium_amount)) * 100
+                ELSE 0
+            END as avg_commission_rate')
+        )
+        ->groupBy('insurance_company_id')
+        ->orderByDesc('total_commission')
+        ->get();
+}
 
     /**
      * Müşteri analizleri

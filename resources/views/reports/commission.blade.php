@@ -80,6 +80,18 @@
         color: #ffffff;
     }
 
+    .stat-card.success {
+        background: linear-gradient(135deg, #28a745 0%, #34ce57 100%);
+        border-color: #28a745;
+        color: #ffffff;
+    }
+
+    .stat-card.warning {
+        background: linear-gradient(135deg, #ffc107 0%, #ffca2c 100%);
+        border-color: #ffc107;
+        color: #000000;
+    }
+
     .stat-value {
         font-size: 2rem;
         font-weight: 700;
@@ -95,8 +107,14 @@
         opacity: 0.9;
     }
 
-    .stat-card:not(.primary) .stat-label {
+    .stat-card:not(.primary):not(.success):not(.warning) .stat-label {
         color: #6c757d;
+    }
+
+    .stat-meta {
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+        opacity: 0.8;
     }
 
     .chart-card {
@@ -226,9 +244,105 @@
         font-size: 0.9375rem;
     }
 
+    /* ✅ YENİ: Vade kartları */
+    .vade-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .vade-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .vade-card.green {
+        border-left: 4px solid #28a745;
+        background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);
+    }
+
+    .vade-card.yellow {
+        border-left: 4px solid #ffc107;
+        background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%);
+    }
+
+    .vade-card.red {
+        border-left: 4px solid #dc3545;
+        background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+    }
+
+    .vade-card.blue {
+        border-left: 4px solid #0dcaf0;
+        background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+    }
+
+    .vade-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.75rem;
+    }
+
+    .vade-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .vade-card.green .vade-value {
+        color: #28a745;
+    }
+
+    .vade-card.yellow .vade-value {
+        color: #ffc107;
+    }
+
+    .vade-card.red .vade-value {
+        color: #dc3545;
+    }
+
+    .vade-card.blue .vade-value {
+        color: #0dcaf0;
+    }
+
+    .rank-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2rem;
+        height: 2rem;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.875rem;
+    }
+
+    .rank-badge.gold {
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        color: #000000;
+    }
+
+    .rank-badge.silver {
+        background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+        color: #000000;
+    }
+
+    .rank-badge.bronze {
+        background: linear-gradient(135deg, #cd7f32 0%, #e59866 100%);
+        color: #ffffff;
+    }
+
     @media (max-width: 768px) {
         .stat-value {
             font-size: 1.5rem;
+        }
+
+        .vade-value {
+            font-size: 1.25rem;
         }
 
         .chart-container {
@@ -249,7 +363,7 @@
                 </h1>
                 <div class="period-info">
                     <i class="bi bi-calendar-range"></i>
-                    <span>{{ \Carbon\Carbon::parse($startDate)->format('d.m.Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d.m.Y') }}</span>
+                    <span>{{ \Carbon\Carbon::parse($displayStartDate)->format('d.m.Y') }} - {{ \Carbon\Carbon::parse($displayEndDate)->format('d.m.Y') }}</span>
                 </div>
             </div>
             <a href="{{ route('reports.index') }}" class="btn btn-light action-btn">
@@ -287,7 +401,7 @@
         </div>
     </div>
 
-    <!-- İstatistik Kartları -->
+    <!-- ✅ YENİ: CARİ ENTEGRASYONLU İstatistik Kartları -->
     <div class="row g-3 mb-4">
         <div class="col-lg-3 col-md-6">
             <div class="stat-card primary">
@@ -296,64 +410,178 @@
             </div>
         </div>
         <div class="col-lg-3 col-md-6">
+            <div class="stat-card success">
+                <div class="stat-value">{{ number_format($stats['collected_commission'], 2) }} ₺</div>
+                <div class="stat-label">Tahsil Edilen</div>
+                <div class="stat-meta">
+                    <i class="bi bi-check-circle me-1"></i>
+                    %{{ number_format($stats['collection_rate'], 1) }} tahsilat oranı
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card warning">
+                <div class="stat-value">{{ number_format($stats['pending_commission'], 2) }} ₺</div>
+                <div class="stat-label">Bekleyen Komisyon</div>
+                <div class="stat-meta">
+                    <i class="bi bi-clock me-1"></i>
+                    %{{ number_format(100 - $stats['collection_rate'], 1) }} henüz tahsil edilmedi
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
             <div class="stat-card">
-                <div class="stat-value text-primary">{{ number_format($stats['total_policies']) }}</div>
+                <div class="stat-value text-info">{{ number_format($stats['total_policies']) }}</div>
                 <div class="stat-label">Poliçe Sayısı</div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-info">{{ number_format($stats['average_commission'], 2) }} ₺</div>
-                <div class="stat-label">Ortalama Komisyon</div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-value text-warning">%{{ number_format($stats['commission_rate'], 2) }}</div>
-                <div class="stat-label">Ortalama Kom. Oranı</div>
+                <div class="stat-meta">
+                    Ort: {{ number_format($stats['average_commission'], 2) }} ₺
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Grafikler -->
-    <div class="row g-4 mb-4">
-        <!-- Aylık Komisyon Trendi -->
-        <div class="col-lg-8">
-            <div class="chart-card card">
-                <div class="card-header">
-                    <h5 class="chart-title">
-                        <i class="bi bi-graph-up"></i>
-                        <span>Aylık Komisyon Trendi</span>
-                    </h5>
+    <!-- ✅ YENİ: Vade Durumu Kartları -->
+    {{-- <div class="chart-card card mb-4">
+        <div class="card-header">
+            <h5 class="chart-title">
+                <i class="bi bi-calendar-check"></i>
+                <span>Komisyon Vade Durumu</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-lg-3 col-md-6">
+                    <div class="vade-card green">
+                        <div class="vade-title">
+                            <i class="bi bi-check-circle me-1"></i>
+                            Vadesinde Tahsil Edilen
+                        </div>
+                        <div class="vade-value">
+                            {{ number_format($vadeDurumu['vadesinde'], 2) }} ₺
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="commissionTrendChart"></canvas>
+                <div class="col-lg-3 col-md-6">
+                    <div class="vade-card yellow">
+                        <div class="vade-title">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Vadesi Yaklaşan (30 gün)
+                        </div>
+                        <div class="vade-value">
+                            {{ number_format($vadeDurumu['vadesi_yaklasan'], 2) }} ₺
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="vade-card red">
+                        <div class="vade-title">
+                            <i class="bi bi-x-circle me-1"></i>
+                            Vade Aşımı
+                        </div>
+                        <div class="vade-value">
+                            {{ number_format($vadeDurumu['vade_asimi'], 2) }} ₺
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="vade-card blue">
+                        <div class="vade-title">
+                            <i class="bi bi-calendar-plus me-1"></i>
+                            İleri Tarihli (30+ gün)
+                        </div>
+                        <div class="vade-value">
+                            {{ number_format($vadeDurumu['ileri_tarihli'], 2) }} ₺
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div> --}}
 
-        <!-- Poliçe Türüne Göre Komisyon -->
-        <div class="col-lg-4">
-            <div class="chart-card card">
-                <div class="card-header">
-                    <h5 class="chart-title">
-                        <i class="bi bi-pie-chart"></i>
-                        <span>Ürün Bazlı Dağılım</span>
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="commissionByTypeChart"></canvas>
-                    </div>
-                </div>
+
+
+    <!-- ✅ YENİ: Satış Temsilcisi Komisyon Performansı -->
+    <div class="table-card card mb-4">
+        <div class="card-header">
+            <h5 class="chart-title">
+                <i class="bi bi-person-badge"></i>
+                <span>Satış Temsilcisi Komisyon Performansı (Top 10)</span>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">Sıra</th>
+                            <th>Temsilci</th>
+                            <th class="text-end">Poliçe Sayısı</th>
+                            <th class="text-end">Toplam Komisyon</th>
+                            <th class="text-end">Ort. Kom. Oranı</th>
+                            <th class="text-end">Tahsilat Oranı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($salesRepCommission as $index => $rep)
+                        <tr>
+                            <td>
+                                @if($index === 0)
+                                    <span class="rank-badge gold">1</span>
+                                @elseif($index === 1)
+                                    <span class="rank-badge silver">2</span>
+                                @elseif($index === 2)
+                                    <span class="rank-badge bronze">3</span>
+                                @else
+                                    <span class="text-muted fw-semibold">{{ $index + 1 }}</span>
+                                @endif
+                            </td>
+                            <td>
+                                <strong>{{ $rep->creator->name ?? 'Sistem' }}</strong>
+                            </td>
+                            <td class="text-end">
+                                <span class="badge bg-primary">{{ number_format($rep->policy_count) }}</span>
+                            </td>
+                            <td class="text-end">
+                                <span class="commission-value">{{ number_format($rep->total_commission, 2) }} ₺</span>
+                            </td>
+                            <td class="text-end">
+                                <span class="badge rate-badge bg-info">%{{ number_format($rep->avg_commission_rate, 2) }}</span>
+                            </td>
+                            <td class="text-end">
+                                @php
+                                    $rateColor = $rep->collection_rate >= 70 ? 'success' : ($rep->collection_rate >= 40 ? 'warning' : 'danger');
+                                @endphp
+                                <span class="badge bg-{{ $rateColor }}">
+                                    %{{ number_format($rep->collection_rate, 1) }}
+                                </span>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                Veri bulunmuyor
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                    @if($salesRepCommission->isNotEmpty())
+                    <tfoot>
+                        <tr>
+                            <th colspan="2">Toplam</th>
+                            <th class="text-end">{{ number_format($salesRepCommission->sum('policy_count')) }}</th>
+                            <th class="text-end">{{ number_format($salesRepCommission->sum('total_commission'), 2) }} ₺</th>
+                            <th colspan="2"></th>
+                        </tr>
+                    </tfoot>
+                    @endif
+                </table>
             </div>
         </div>
     </div>
 
     <!-- Sigorta Şirketine Göre Komisyon Tablosu -->
-    <div class="table-card card">
+    <div class="table-card card mt-3">
         <div class="card-header">
             <h5 class="chart-title">
                 <i class="bi bi-building"></i>
@@ -406,6 +634,8 @@
             </div>
         </div>
     </div>
+
+
 </div>
 @endsection
 
