@@ -308,61 +308,42 @@
             </div>
         </div>
 
-        <!-- Ödeme Raporları -->
         <div class="col-lg-4 col-md-6">
             <div class="report-card card">
                 <div class="card-body">
-                    <div class="report-icon-wrapper danger">
-                        <i class="bi bi-cash-coin text-danger"></i>
+                    <div class="report-icon-wrapper secondary">
+                        <i class="bi bi-file-earmark-bar-graph text-secondary"></i>
                     </div>
-                    <h5 class="report-title">Ödeme Raporları</h5>
+                    <h5 class="report-title">Satış Performans</h5>
                     <p class="report-description">
-                        Tahsilat takibi, ödeme yöntemleri ve nakit akışı
+                        Temsilci performansı, hedefler, leaderboard ve kişisel metrikler
                     </p>
-                    <a href="{{ route('reports.payments') }}" class="btn btn-danger report-btn">
-                        Raporları Görüntüle
+                    <a href="{{ route('reports.salesPerformance') }}" class="btn btn-secondary report-btn">
+                        Performans Takibi
                         <i class="bi bi-arrow-right ms-2"></i>
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Özel Raporlar (Yakında) -->
-        {{-- <div class="col-lg-4 col-md-6">
+        <!-- Cari İşlemler Raporları -->
+        <div class="col-lg-4 col-md-6">
             <div class="report-card card">
                 <div class="card-body">
                     <div class="report-icon-wrapper secondary">
                         <i class="bi bi-file-earmark-bar-graph text-secondary"></i>
                     </div>
-                    <h5 class="report-title">Özel Raporlar</h5>
+                    <h5 class="report-title">Cari İşlemler Raporları</h5>
                     <p class="report-description">
-                        Özelleştirilebilir raporlar ve gelişmiş filtreler
+                        Alacak/borç durumu, yaşlandırma raporu ve tahsilat analizi
                     </p>
-                    <button class="btn btn-secondary report-btn" disabled>
-                        Yakında Gelecek
-                        <i class="bi bi-clock ms-2"></i>
-                    </button>
+                    <a href="{{ route('reports.cari') }}" class="btn btn-secondary report-btn">
+                        Raporları Görüntüle
+                        <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
                 </div>
             </div>
-        </div> --}}
-<!-- Cari İşlemler Raporları -->
-<div class="col-lg-4 col-md-6">
-    <div class="report-card card">
-        <div class="card-body">
-            <div class="report-icon-wrapper secondary">
-                <i class="bi bi-file-earmark-bar-graph text-secondary"></i>
-            </div>
-            <h5 class="report-title">Cari İşlemler Raporları</h5>
-            <p class="report-description">
-                Alacak/borç durumu, yaşlandırma raporu ve tahsilat analizi
-            </p>
-            <a href="{{ route('reports.cari') }}" class="btn btn-secondary report-btn">
-                Raporları Görüntüle
-                <i class="bi bi-arrow-right ms-2"></i>
-            </a>
         </div>
-    </div>
-</div>
     </div>
 
 

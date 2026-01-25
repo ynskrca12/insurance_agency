@@ -241,6 +241,8 @@ Route::prefix('panel')->group(function () {
         Route::get('reports/renewals', [ReportController::class, 'renewals'])->name('reports.renewals');
         Route::get('reports/payments', [ReportController::class, 'payments'])->name('reports.payments');
         Route::post('reports/export', [ReportController::class, 'export'])->name('reports.export');
+        Route::get('/reports/sales-performance', [ReportController::class, 'salesPerformance'])->name('reports.salesPerformance');
+
 
         // Campaigns
         Route::get('campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
