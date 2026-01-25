@@ -10,6 +10,7 @@ use App\Models\CariHareket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 
 class TahsilatController extends Controller
@@ -20,7 +21,8 @@ class TahsilatController extends Controller
     public function index(Request $request)
     {
         $query = Tahsilat::with(['musteriCari.customer', 'kasaBanka', 'policy', 'createdBy'])
-                         ->where('tenant_id', auth()->id());
+                         ->where('tenant_id', Auth::user()->tenant_id);
+
 
         // Tarih filtresi
         if ($request->filled('baslangic') && $request->filled('bitis')) {
@@ -56,26 +58,25 @@ class TahsilatController extends Controller
      */
     public function create(Request $request)
     {
-        $customers = Customer::where('tenant_id', auth()->id())
-                            ->whereHas('cariHesap', function($q) {
-                                $q->where('bakiye', '>', 0); // Borcu olanlar
-                            })
-                            ->with('cariHesap')
-                            ->orderBy('name')
-                            ->get();
+        // Müşteriler (normal scope - agent sadece kendi müşterilerini görsün)
+        $customers = Customer::whereHas('cariHesap', function($q) {
+                            $q->where('bakiye', '>', 0); // Borcu olanlar
+                        })
+                        ->with('cariHesap')
+                        ->orderBy('name')
+                        ->get();
 
-        $kasaBankaHesaplari = CariHesap::where('tenant_id', auth()->id())
-                                      ->whereIn('tip', ['kasa', 'banka'])
-                                      ->aktif()
-                                      ->orderBy('tip')
-                                      ->orderBy('ad')
-                                      ->get();
+        //  Kasa/Banka (özel scope - tüm tenant kullanıcıları görsün)
+        $kasaBankaHesaplari = CariHesap::kasaBankaForTenant()
+                                    ->orderBy('tip')
+                                    ->orderBy('ad')
+                                    ->get();
 
-        // Müşteri seçiliyse bilgilerini al
+
         $selectedCustomer = null;
         if ($request->filled('customer_id')) {
             $selectedCustomer = Customer::with('cariHesap.hareketler')
-                                       ->find($request->customer_id);
+                                    ->find($request->customer_id);
         }
 
         return view('tahsilatlar.create', compact('customers', 'kasaBankaHesaplari', 'selectedCustomer'));
@@ -105,7 +106,7 @@ class TahsilatController extends Controller
 
             // Tahsilat oluştur (Observer otomatik cari kayıtları yapacak)
             $tahsilat = Tahsilat::create([
-                'tenant_id' => auth()->id(),
+                'tenant_id' => Auth::user()->tenant_id,
                 'musteri_cari_id' => $musteriCari->id,
                 'tutar' => $validated['tutar'],
                 'tahsilat_tarihi' => $validated['tahsilat_tarihi'],
@@ -147,15 +148,13 @@ class TahsilatController extends Controller
         return view('tahsilatlar.show', compact('tahsilat'));
     }
 
-    /**
-     * Tahsilat düzenle
-     */
     public function edit(Tahsilat $tahsilat)
     {
-        $kasaBankaHesaplari = CariHesap::where('tenant_id', auth()->id())
-                                      ->whereIn('tip', ['kasa', 'banka'])
-                                      ->aktif()
-                                      ->get();
+        // Kasa/Banka scope kullan
+        $kasaBankaHesaplari = CariHesap::kasaBankaForTenant()
+                                    ->orderBy('tip')
+                                    ->orderBy('ad')
+                                    ->get();
 
         $tahsilat->load('musteriCari.customer');
 
@@ -182,7 +181,6 @@ class TahsilatController extends Controller
             // Eski cari kayıtları sil
             $tahsilat->cariHareketler()->delete();
 
-            // Tahsilat güncelle
             $tahsilat->update($validated);
 
             // Yeni cari kayıtları oluşturulacak (Observer boot)

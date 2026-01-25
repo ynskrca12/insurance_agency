@@ -1171,18 +1171,22 @@
                             </a>
                             <div class="collapse {{ $isCariOpen ? 'show' : '' }}" id="cariMenu">
                                 <ul class="nav flex-column ms-3">
-                                    <li class="nav-item">
-                                        <a class="nav-link {{ request()->routeIs(
-                                                'cari-hesaplar.index',
-                                                'cari-hesaplar.create',
-                                                'cari-hesaplar.show',
-                                                'cari-hesaplar.edit'
-                                            ) ? 'active' : '' }}"
-                                        href="{{ route('cari-hesaplar.index') }}">
-                                            <i class="bi bi-journal-text me-2"></i>
-                                            Cari Hesaplar
-                                        </a>
-                                    </li>
+
+                                    @if (Auth::user()->role == 'owner' || Auth::user()->role == 'manager')
+                                        <li class="nav-item">
+                                            <a class="nav-link {{ request()->routeIs(
+                                                    'cari-hesaplar.index',
+                                                    'cari-hesaplar.create',
+                                                    'cari-hesaplar.show',
+                                                    'cari-hesaplar.edit'
+                                                ) ? 'active' : '' }}"
+                                            href="{{ route('cari-hesaplar.index') }}">
+                                                <i class="bi bi-journal-text me-2"></i>
+                                                Cari Hesaplar
+                                            </a>
+                                        </li>
+                                    @endif
+
 
                                     <li class="nav-item">
                                         <a class="nav-link {{ request()->routeIs('tahsilatlar.*') ? 'active' : '' }}"
@@ -1192,26 +1196,29 @@
                                         </a>
                                     </li>
 
-                                    <li class="nav-item">
-                                        <a class="nav-link {{ request()->routeIs('sirket-odemeleri*') ? 'active' : '' }}"
-                                        href="{{ route('sirket-odemeleri.index') }}">
-                                            <i class="bi bi-bank me-2"></i>
-                                            Şirket Ödemeleri
-                                        </a>
-                                    </li>
+                                    @if (Auth::user()->role == 'owner' || Auth::user()->role == 'manager')
 
-                                    <li class="nav-item">
-                                        <a class="nav-link {{ request()->routeIs('cari-hesaplar.yasilandirma') ? 'active' : '' }}"
-                                        href="{{ route('cari-hesaplar.yasilandirma') }}">
-                                            <i class="bi bi-file-earmark-bar-graph me-2"></i>Yaşlandırma Raporu
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link {{ request()->routeIs('cari-hesaplar.kasa-banka') ? 'active' : '' }}"
-                                        href="{{ route('cari-hesaplar.kasa-banka') }}">
-                                            <i class="bi bi-file-earmark-bar-graph me-2"></i>Kasa/Banka Raporu
-                                        </a>
-                                    </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link {{ request()->routeIs('sirket-odemeleri*') ? 'active' : '' }}"
+                                            href="{{ route('sirket-odemeleri.index') }}">
+                                                <i class="bi bi-bank me-2"></i>
+                                                Şirket Ödemeleri
+                                            </a>
+                                        </li>
+
+                                        <li class="nav-item">
+                                            <a class="nav-link {{ request()->routeIs('cari-hesaplar.yasilandirma') ? 'active' : '' }}"
+                                            href="{{ route('cari-hesaplar.yasilandirma') }}">
+                                                <i class="bi bi-file-earmark-bar-graph me-2"></i>Yaşlandırma Raporu
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link {{ request()->routeIs('cari-hesaplar.kasa-banka') ? 'active' : '' }}"
+                                            href="{{ route('cari-hesaplar.kasa-banka') }}">
+                                                <i class="bi bi-file-earmark-bar-graph me-2"></i>Kasa/Banka Raporu
+                                            </a>
+                                        </li>
+                                    @endif
                                 </ul>
                             </div>
                         </li>
@@ -1254,13 +1261,16 @@
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}"
-                            href="{{ route('reports.index') }}">
-                                <i class="bi bi-graph-up"></i>
-                                Raporlar
-                            </a>
-                        </li>
+                        @if (Auth::user()->role == 'owner' || Auth::user()->role == 'manager')
+
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}"
+                                href="{{ route('reports.index') }}">
+                                    <i class="bi bi-graph-up"></i>
+                                    Raporlar
+                                </a>
+                            </li>
+                        @endif
 
                         <!-- Settings Dropdown -->
                         <li class="nav-item dropdown">

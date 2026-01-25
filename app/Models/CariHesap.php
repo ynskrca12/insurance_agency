@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\BelongsToTenant;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CariHesap extends Model
 {
@@ -30,13 +32,11 @@ class CariHesap extends Model
         return $this->hasMany(CariHareket::class, 'cari_hesap_id');
     }
 
-    // ✅ DÜZELT: where() kaldırıldı
     public function customer()
     {
         return $this->belongsTo(Customer::class, 'referans_id');
     }
 
-    // ✅ DÜZELT: where() kaldırıldı
     public function insuranceCompany()
     {
         return $this->belongsTo(InsuranceCompany::class, 'referans_id');
@@ -88,6 +88,26 @@ class CariHesap extends Model
     public function scopeAlacakli($query)
     {
         return $query->where('bakiye', '<', 0);
+    }
+
+    /**
+     * Scope: Kasa/Banka hesaplarını tenant bazında getir
+     *
+     * Kasa/Banka ortak kaynak olduğu için created_by kontrolü YOK
+     * Tenant'taki TÜM kullanıcılar erişebilir
+     */
+    public function scopeKasaBankaForTenant($query, $tenantId = null)
+    {
+        $tenantId = $tenantId ?? (auth()->check() ? auth()->user()->tenant_id : null);
+
+        if (!$tenantId) {
+            return $query->whereNull('id'); // Tenant yoksa hiçbir şey gösterme
+        }
+
+        return $query->withoutGlobalScope('tenantScope') // Global scope'u bypass et
+                    ->whereIn('tip', ['kasa', 'banka'])
+                    ->where('tenant_id', $tenantId)
+                    ->where('aktif', true);
     }
 
     /**
@@ -181,10 +201,15 @@ class CariHesap extends Model
     }
 
     /**
-     * Otomatik kod oluştur
+     * Otomatik kod oluştur (Global scope'suz - RAW query)
      */
     public static function otomatikKodOlustur($tip, $tenantId)
     {
+        Log::info(' otomatikKodOlustur BAŞLADI', [
+            'tip' => $tip,
+            'tenant_id' => $tenantId,
+        ]);
+
         $prefix = [
             'musteri' => 'MCR',
             'sirket' => 'SCR',
@@ -192,14 +217,48 @@ class CariHesap extends Model
             'banka' => 'BNK',
         ];
 
-        $sonKayit = self::where('tenant_id', $tenantId)
-                        ->where('tip', $tip)
-                        ->orderBy('id', 'desc')
-                        ->first();
+        //  GLOBAL SCOPE OLMADAN DOĞRUDAN DB QUERY
+        $count = DB::table('cari_hesaplar')
+                    ->where('tenant_id', $tenantId)
+                    ->where('tip', $tip)
+                    ->whereNull('deleted_at') // Soft delete kontrolü
+                    ->count();
 
-        $sonNumara = $sonKayit ? intval(substr($sonKayit->kod, -4)) : 0;
-        $yeniNumara = str_pad($sonNumara + 1, 4, '0', STR_PAD_LEFT);
+        Log::info('📊Mevcut kayıt sayısı (RAW)', [
+            'count' => $count,
+            'next_number' => $count + 1,
+        ]);
 
-        return $prefix[$tip] . '-' . $yeniNumara;
+        // İlk 20 deneme yap
+        for ($i = 0; $i < 20; $i++) {
+            $numara = $count + 1 + $i;
+            $yeniNumara = str_pad($numara, 4, '0', STR_PAD_LEFT);
+            $yeniKod = $prefix[$tip] . '-' . $yeniNumara;
+
+            Log::info(' Kod kontrol ediliyor', [
+                'kod' => $yeniKod,
+                'attempt' => $i + 1,
+            ]);
+
+            // GLOBAL SCOPE OLMADAN KONTROL
+            $exists = DB::table('cari_hesaplar')
+                        ->where('tenant_id', $tenantId)
+                        ->where('kod', $yeniKod)
+                        ->whereNull('deleted_at')
+                        ->exists();
+
+            if (!$exists) {
+                Log::info(' UYGUN KOD BULUNDU', ['kod' => $yeniKod]);
+                return $yeniKod;
+            }
+
+            Log::warning('⚠️ Kod zaten var, bir sonraki deneniyor', ['kod' => $yeniKod]);
+        }
+
+        // Fallback
+        $fallbackKod = $prefix[$tip] . '-T' . time();
+        Log::error('FALLBACK KODU KULLANILDI', ['kod' => $fallbackKod]);
+
+        return $fallbackKod;
     }
 }

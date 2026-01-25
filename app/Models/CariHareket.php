@@ -130,22 +130,30 @@ class CariHareket extends Model
         $gun = now()->diffInDays($this->vade_tarihi);
         return "{$gun} gün kaldı";
     }
-
-    /**
-     * Boot
-     */
     protected static function boot()
     {
         parent::boot();
 
         // Hareket eklendiğinde bakiye güncelle
         static::created(function ($hareket) {
-            $hareket->cariHesap->hesaplaBakiye();
+            // Global scope olmadan cari hesabı bul
+            $cariHesap = CariHesap::withoutGlobalScope('tenantScope')
+                                ->find($hareket->cari_hesap_id);
+
+            if ($cariHesap) {
+                $cariHesap->hesaplaBakiye();
+            }
         });
 
         // Hareket silindiğinde bakiye güncelle
         static::deleted(function ($hareket) {
-            $hareket->cariHesap->hesaplaBakiye();
+            // Global scope olmadan cari hesabı bul
+            $cariHesap = CariHesap::withoutGlobalScope('tenantScope')
+                                ->find($hareket->cari_hesap_id);
+
+            if ($cariHesap) {
+                $cariHesap->hesaplaBakiye();
+            }
         });
     }
 }

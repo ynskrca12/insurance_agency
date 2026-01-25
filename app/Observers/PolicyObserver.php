@@ -82,14 +82,17 @@ class PolicyObserver
             return $insuranceCompany->cariHesap;
         }
 
+        $tenantId = $insuranceCompany->tenant_id;
+
         return CariHesap::create([
             'tenant_id' => $insuranceCompany->tenant_id ?? auth()->id(),
             'tip' => 'sirket',
             'referans_id' => $insuranceCompany->id,
-            'kod' => CariHesap::otomatikKodOlustur('sirket', auth()->id()),
+            'kod' => CariHesap::otomatikKodOlustur('sirket', $tenantId),
             'ad' => $insuranceCompany->name,
             'vade_gun' => 30,
             'aktif' => true,
+            'created_by' => auth()->id(),
         ]);
     }
 }
