@@ -23,159 +23,159 @@ class ReportController extends Controller
     }
 
    /**
- * Satış raporları
- */
-public function sales(Request $request)
-{
-    // Varsayılan olarak TÜM VERİLER (filtresiz)
-    $startDate = $request->get('start_date', null);
-    $endDate = $request->get('end_date', null);
-    $groupBy = $request->get('group_by', 'month'); // Varsayılan aylık
+     * Satış raporları
+     */
+    public function sales(Request $request)
+    {
+        // Varsayılan olarak TÜM VERİLER (filtresiz)
+        $startDate = $request->get('start_date', null);
+        $endDate = $request->get('end_date', null);
+        $groupBy = $request->get('group_by', 'month'); // Varsayılan aylık
 
-    // Eğer tarih belirtilmemişse, tüm zamanlar
-    $query = Policy::query();
+        // Eğer tarih belirtilmemişse, tüm zamanlar
+        $query = Policy::query();
 
-    if ($startDate && $endDate) {
-        $query->whereBetween('created_at', [$startDate, $endDate]);
-    } elseif ($startDate) {
-        $query->where('created_at', '>=', $startDate);
-    } elseif ($endDate) {
-        $query->where('created_at', '<=', $endDate);
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $query->where('created_at', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->where('created_at', '<=', $endDate);
+        }
+
+        // Display için tarih formatı
+        if (!$startDate || !$endDate) {
+            // İlk ve son poliçe tarihlerini al
+            $firstPolicy = Policy::orderBy('created_at', 'asc')->first();
+            $lastPolicy = Policy::orderBy('created_at', 'desc')->first();
+
+            $displayStartDate = $firstPolicy ? $firstPolicy->created_at->format('Y-m-d') : now()->subYear()->format('Y-m-d');
+            $displayEndDate = $lastPolicy ? $lastPolicy->created_at->format('Y-m-d') : now()->format('Y-m-d');
+        } else {
+            $displayStartDate = $startDate;
+            $displayEndDate = $endDate;
+        }
+
+        // Genel İstatistikler
+        $statsQuery = clone $query;
+        $stats = [
+            'total_policies' => $statsQuery->count(),
+            'total_premium' => $statsQuery->sum('premium_amount') ?? 0,
+            'total_commission' => $statsQuery->sum('commission_amount') ?? 0,
+            'average_premium' => $statsQuery->avg('premium_amount') ?? 0,
+        ];
+
+        // Poliçe türüne göre dağılım
+        $policyTypeQuery = clone $query;
+        $policyTypeDistribution = $policyTypeQuery
+            ->select('policy_type', DB::raw('COUNT(*) as count'), DB::raw('SUM(premium_amount) as total_premium'))
+            ->groupBy('policy_type')
+            ->orderByDesc('count')
+            ->get();
+
+        // Sigorta şirketine göre dağılım
+        $companyQuery = clone $query;
+        $companyDistribution = $companyQuery
+            ->with('insuranceCompany')
+            ->select('insurance_company_id', DB::raw('COUNT(*) as count'), DB::raw('SUM(premium_amount) as total_premium'))
+            ->groupBy('insurance_company_id')
+            ->orderByDesc('total_premium')
+            ->get();
+
+        // Zaman serisi verileri (Grafik için)
+        $timeSeriesData = $this->getTimeSeriesData(
+            $startDate ?? $displayStartDate,
+            $endDate ?? $displayEndDate,
+            $groupBy
+        );
+
+        // En iyi performans gösteren poliçe türleri
+        $topPolicyTypesQuery = clone $query;
+        $topPolicyTypes = $topPolicyTypesQuery
+            ->select('policy_type', DB::raw('COUNT(*) as count'), DB::raw('SUM(premium_amount) as total_premium'))
+            ->groupBy('policy_type')
+            ->orderByDesc('total_premium')
+            ->limit(6)
+            ->get();
+
+        //  Satış temsilcisi performansı
+        $salesRepPerformance = $this->getSalesRepPerformance($startDate, $endDate);
+
+        //  Branş bazlı detaylı analiz
+        $branchAnalysis = $this->getBranchAnalysis($startDate, $endDate);
+
+        return view('reports.sales', compact(
+            'stats',
+            'policyTypeDistribution',
+            'companyDistribution',
+            'timeSeriesData',
+            'topPolicyTypes',
+            'salesRepPerformance',
+            'branchAnalysis',
+            'startDate',
+            'endDate',
+            'groupBy'
+        ))->with([
+            'displayStartDate' => $displayStartDate,
+            'displayEndDate' => $displayEndDate,
+        ]);
     }
 
-    // Display için tarih formatı
-    if (!$startDate || !$endDate) {
-        // İlk ve son poliçe tarihlerini al
-        $firstPolicy = Policy::orderBy('created_at', 'asc')->first();
-        $lastPolicy = Policy::orderBy('created_at', 'desc')->first();
+    /**
+     * Satış temsilcisi performans analizi
+     */
+    private function getSalesRepPerformance($startDate, $endDate)
+    {
+        $query = Policy::with('creator');
 
-        $displayStartDate = $firstPolicy ? $firstPolicy->created_at->format('Y-m-d') : now()->subYear()->format('Y-m-d');
-        $displayEndDate = $lastPolicy ? $lastPolicy->created_at->format('Y-m-d') : now()->format('Y-m-d');
-    } else {
-        $displayStartDate = $startDate;
-        $displayEndDate = $endDate;
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $query->where('created_at', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->where('created_at', '<=', $endDate);
+        }
+
+        return $query->select(
+                'created_by',
+                DB::raw('COUNT(*) as policy_count'),
+                DB::raw('SUM(premium_amount) as total_premium'),
+                DB::raw('SUM(commission_amount) as total_commission'),
+                DB::raw('AVG(premium_amount) as avg_premium')
+            )
+            ->groupBy('created_by')
+            ->orderByDesc('total_premium')
+            ->limit(10)
+            ->get();
     }
 
-    // Genel İstatistikler
-    $statsQuery = clone $query;
-    $stats = [
-        'total_policies' => $statsQuery->count(),
-        'total_premium' => $statsQuery->sum('premium_amount') ?? 0,
-        'total_commission' => $statsQuery->sum('commission_amount') ?? 0,
-        'average_premium' => $statsQuery->avg('premium_amount') ?? 0,
-    ];
+    /**
+     * Branş bazlı detaylı analiz
+     */
+    private function getBranchAnalysis($startDate, $endDate)
+    {
+        $query = Policy::query();
 
-    // Poliçe türüne göre dağılım
-    $policyTypeQuery = clone $query;
-    $policyTypeDistribution = $policyTypeQuery
-        ->select('policy_type', DB::raw('COUNT(*) as count'), DB::raw('SUM(premium_amount) as total_premium'))
-        ->groupBy('policy_type')
-        ->orderByDesc('count')
-        ->get();
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $query->where('created_at', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->where('created_at', '<=', $endDate);
+        }
 
-    // Sigorta şirketine göre dağılım
-    $companyQuery = clone $query;
-    $companyDistribution = $companyQuery
-        ->with('insuranceCompany')
-        ->select('insurance_company_id', DB::raw('COUNT(*) as count'), DB::raw('SUM(premium_amount) as total_premium'))
-        ->groupBy('insurance_company_id')
-        ->orderByDesc('total_premium')
-        ->get();
-
-    // Zaman serisi verileri (Grafik için)
-    $timeSeriesData = $this->getTimeSeriesData(
-        $startDate ?? $displayStartDate,
-        $endDate ?? $displayEndDate,
-        $groupBy
-    );
-
-    // En iyi performans gösteren poliçe türleri
-    $topPolicyTypesQuery = clone $query;
-    $topPolicyTypes = $topPolicyTypesQuery
-        ->select('policy_type', DB::raw('COUNT(*) as count'), DB::raw('SUM(premium_amount) as total_premium'))
-        ->groupBy('policy_type')
-        ->orderByDesc('total_premium')
-        ->limit(6)
-        ->get();
-
-    //  Satış temsilcisi performansı
-    $salesRepPerformance = $this->getSalesRepPerformance($startDate, $endDate);
-
-    //  Branş bazlı detaylı analiz
-    $branchAnalysis = $this->getBranchAnalysis($startDate, $endDate);
-
-    return view('reports.sales', compact(
-        'stats',
-        'policyTypeDistribution',
-        'companyDistribution',
-        'timeSeriesData',
-        'topPolicyTypes',
-        'salesRepPerformance',
-        'branchAnalysis',
-        'startDate',
-        'endDate',
-        'groupBy'
-    ))->with([
-        'displayStartDate' => $displayStartDate,
-        'displayEndDate' => $displayEndDate,
-    ]);
-}
-
-/**
- * Satış temsilcisi performans analizi
- */
-private function getSalesRepPerformance($startDate, $endDate)
-{
-    $query = Policy::with('creator');
-
-    if ($startDate && $endDate) {
-        $query->whereBetween('created_at', [$startDate, $endDate]);
-    } elseif ($startDate) {
-        $query->where('created_at', '>=', $startDate);
-    } elseif ($endDate) {
-        $query->where('created_at', '<=', $endDate);
+        return $query->select(
+                'policy_type',
+                DB::raw('COUNT(*) as policy_count'),
+                DB::raw('SUM(premium_amount) as total_premium'),
+                DB::raw('SUM(commission_amount) as total_commission'),
+                DB::raw('AVG(premium_amount) as avg_premium'),
+                DB::raw('AVG(commission_rate) as avg_commission_rate')
+            )
+            ->groupBy('policy_type')
+            ->orderByDesc('total_premium')
+            ->get();
     }
-
-    return $query->select(
-            'created_by',
-            DB::raw('COUNT(*) as policy_count'),
-            DB::raw('SUM(premium_amount) as total_premium'),
-            DB::raw('SUM(commission_amount) as total_commission'),
-            DB::raw('AVG(premium_amount) as avg_premium')
-        )
-        ->groupBy('created_by')
-        ->orderByDesc('total_premium')
-        ->limit(10)
-        ->get();
-}
-
-/**
- * Branş bazlı detaylı analiz
- */
-private function getBranchAnalysis($startDate, $endDate)
-{
-    $query = Policy::query();
-
-    if ($startDate && $endDate) {
-        $query->whereBetween('created_at', [$startDate, $endDate]);
-    } elseif ($startDate) {
-        $query->where('created_at', '>=', $startDate);
-    } elseif ($endDate) {
-        $query->where('created_at', '<=', $endDate);
-    }
-
-    return $query->select(
-            'policy_type',
-            DB::raw('COUNT(*) as policy_count'),
-            DB::raw('SUM(premium_amount) as total_premium'),
-            DB::raw('SUM(commission_amount) as total_commission'),
-            DB::raw('AVG(premium_amount) as avg_premium'),
-            DB::raw('AVG(commission_rate) as avg_commission_rate')
-        )
-        ->groupBy('policy_type')
-        ->orderByDesc('total_premium')
-        ->get();
-}
 
     /**
      * Zaman serisi verilerini hazırla
@@ -238,281 +238,557 @@ private function getBranchAnalysis($startDate, $endDate)
         return $data;
     }
 
+    /**
+     * Komisyon raporları (CARİ ENTEGRASYONLU)
+     */
+    public function commission(Request $request)
+    {
+        $startDate = $request->get('start_date', null);
+        $endDate = $request->get('end_date', null);
+
+        // Ana sorgu
+        $query = Policy::query();
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $query->where('created_at', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->where('created_at', '<=', $endDate);
+        }
+
+        // Display için tarih formatı
+        if (!$startDate || !$endDate) {
+            $firstPolicy = Policy::orderBy('created_at', 'asc')->first();
+            $lastPolicy = Policy::orderBy('created_at', 'desc')->first();
+
+            $displayStartDate = $firstPolicy ? $firstPolicy->created_at->format('Y-m-d') : now()->subYear()->format('Y-m-d');
+            $displayEndDate = $lastPolicy ? $lastPolicy->created_at->format('Y-m-d') : now()->format('Y-m-d');
+        } else {
+            $displayStartDate = $startDate;
+            $displayEndDate = $endDate;
+        }
+
+        // Genel İstatistikler
+        $statsQuery = clone $query;
+        $totalCommission = $statsQuery->sum('commission_amount') ?? 0;
+        $totalPolicies = $statsQuery->count();
+        $averageCommission = $statsQuery->avg('commission_amount') ?? 0;
+
+        //Tahsil edilen komisyon
+        $collectedCommission = $this->getCollectedCommission($startDate, $endDate);
+        $pendingCommission = max(0, $totalCommission - $collectedCommission);
+        $collectionRate = $totalCommission > 0 ? ($collectedCommission / $totalCommission) * 100 : 0;
+
+        // Komisyon oranı hesapla
+        $totalPremiumQuery = clone $query;
+        $totalPremium = $totalPremiumQuery->sum('premium_amount') ?? 0;
+        $commissionRate = $totalPremium > 0 ? ($totalCommission / $totalPremium) * 100 : 0;
+
+        $stats = [
+            'total_commission' => $totalCommission,
+            'collected_commission' => $collectedCommission,
+            'pending_commission' => $pendingCommission,
+            'collection_rate' => $collectionRate,
+            'total_policies' => $totalPolicies,
+            'average_commission' => $averageCommission,
+            'commission_rate' => $commissionRate,
+        ];
+
+        // Satış temsilcisi komisyon performansı
+        $salesRepCommission = $this->getSalesRepCommission($startDate, $endDate);
+
+        // Sigorta şirketine göre komisyon
+        $commissionByCompany = $this->getCommissionByCompany($startDate, $endDate);
+
+        // Poliçe türüne göre komisyon
+        $typeQuery = clone $query;
+        $commissionByType = $typeQuery
+            ->select(
+                'policy_type',
+                DB::raw('COUNT(*) as policy_count'),
+                DB::raw('SUM(premium_amount) as total_premium'),
+                DB::raw('SUM(commission_amount) as total_commission')
+            )
+            ->groupBy('policy_type')
+            ->orderByDesc('total_commission')
+            ->get();
+
+        // Aylık komisyon trendi
+        $monthlyQuery = clone $query;
+        $monthlyCommission = $monthlyQuery
+            ->select(
+                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
+                DB::raw('SUM(commission_amount) as total_commission'),
+                DB::raw('COUNT(*) as policy_count')
+            )
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->map(function($item) {
+                $months = [
+                    '01' => 'Oca', '02' => 'Şub', '03' => 'Mar', '04' => 'Nis',
+                    '05' => 'May', '06' => 'Haz', '07' => 'Tem', '08' => 'Ağu',
+                    '09' => 'Eyl', '10' => 'Eki', '11' => 'Kas', '12' => 'Ara'
+                ];
+                $parts = explode('-', $item->month);
+                $item->month = $months[$parts[1]] . ' ' . $parts[0];
+                return $item;
+            });
+
+        return view('reports.commission', compact(
+            'stats',
+            'salesRepCommission',
+            'commissionByCompany',
+            'commissionByType',
+            'monthlyCommission',
+            'startDate',
+            'endDate'
+        ))->with([
+            'displayStartDate' => $displayStartDate,
+            'displayEndDate' => $displayEndDate,
+        ]);
+    }
+
+    /**
+     * Tahsil edilen komisyon hesapla
+     */
+    private function getCollectedCommission($startDate, $endDate)
+    {
+        $query = \App\Models\Tahsilat::query();
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('tahsilat_tarihi', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $query->where('tahsilat_tarihi', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->where('tahsilat_tarihi', '<=', $endDate);
+        }
+
+        // Poliçelere yapılan tahsilatları topla
+        return $query->whereNotNull('policy_id')
+                    ->with('policy')
+                    ->get()
+                    ->sum(function($tahsilat) {
+                        if (!$tahsilat->policy) return 0;
+
+                        // Tahsilat oranına göre komisyon hesapla
+                        $policyPremium = $tahsilat->policy->premium_amount;
+                        $policyCommission = $tahsilat->policy->commission_amount;
+
+                        if ($policyPremium > 0) {
+                            $tahsilatOrani = $tahsilat->tutar / $policyPremium;
+                            return $policyCommission * $tahsilatOrani;
+                        }
+
+                        return 0;
+                    });
+    }
+
+    /**
+     *  Satış temsilcisi komisyon performansı
+     */
+    private function getSalesRepCommission($startDate, $endDate)
+    {
+        $query = Policy::with('creator');
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $query->where('created_at', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->where('created_at', '<=', $endDate);
+        }
+
+        $salesReps = $query->select(
+                'created_by',
+                DB::raw('COUNT(*) as policy_count'),
+                DB::raw('SUM(commission_amount) as total_commission'),
+                DB::raw('AVG(commission_rate) as avg_commission_rate')
+            )
+            ->groupBy('created_by')
+            ->orderByDesc('total_commission')
+            ->limit(10)
+            ->get();
+
+        // Her temsilci için tahsilat oranını hesapla
+        foreach ($salesReps as $rep) {
+            $repPolicies = Policy::where('created_by', $rep->created_by);
+
+            if ($startDate && $endDate) {
+                $repPolicies->whereBetween('created_at', [$startDate, $endDate]);
+            }
+
+            $policyIds = $repPolicies->pluck('id');
+
+            $collectedAmount = \App\Models\Tahsilat::whereIn('policy_id', $policyIds)
+                ->sum('tutar');
+
+            $totalPremium = $repPolicies->sum('premium_amount');
+
+            $rep->collection_rate = $totalPremium > 0
+                ? ($collectedAmount / $totalPremium) * 100
+                : 0;
+        }
+
+        return $salesReps;
+    }
+
+    /**
+     * Şirket bazlı genişletilmiş komisyon analizi
+     */
+    private function getCommissionByCompany($startDate, $endDate)
+    {
+        $query = Policy::with('insuranceCompany');
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $query->where('created_at', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->where('created_at', '<=', $endDate);
+        }
+
+        return $query->select(
+                'insurance_company_id',
+                DB::raw('COUNT(*) as policy_count'),
+                DB::raw('SUM(premium_amount) as total_premium'),
+                DB::raw('SUM(commission_amount) as total_commission'),
+                DB::raw('CASE
+                    WHEN SUM(premium_amount) > 0
+                    THEN (SUM(commission_amount) / SUM(premium_amount)) * 100
+                    ELSE 0
+                END as avg_commission_rate')
+            )
+            ->groupBy('insurance_company_id')
+            ->orderByDesc('total_commission')
+            ->get();
+    }
+
 /**
- * Komisyon raporları (CARİ ENTEGRASYONLU)
+ *  MÜŞTERİ ANALİZİ RAPORU (İYİLEŞTİRİLMİŞ)
  */
-public function commission(Request $request)
+public function customers(Request $request)
 {
-    $startDate = $request->get('start_date', null);
-    $endDate = $request->get('end_date', null);
+    $startDate = $request->get('start_date', now()->subMonths(6)->format('Y-m-d'));
+    $endDate = $request->get('end_date', now()->format('Y-m-d'));
 
-    // Ana sorgu
-    $query = Policy::query();
+    // 1. GENEL İSTATİSTİKLER
+    $stats = $this->getCustomerStats();
 
-    if ($startDate && $endDate) {
-        $query->whereBetween('created_at', [$startDate, $endDate]);
-    } elseif ($startDate) {
-        $query->where('created_at', '>=', $startDate);
-    } elseif ($endDate) {
-        $query->where('created_at', '<=', $endDate);
-    }
+    // 2. SEGMENT ANALİZİ (VIP, Risk, Potansiyel, Aktif/Pasif)
+    $segments = $this->getCustomerSegments();
 
-    // Display için tarih formatı
-    if (!$startDate || !$endDate) {
-        $firstPolicy = Policy::orderBy('created_at', 'asc')->first();
-        $lastPolicy = Policy::orderBy('created_at', 'desc')->first();
+    // 3. MÜŞTERİ BÜYÜME TRENDİ (Aylık)
+    $growthTrend = $this->getCustomerGrowthTrend();
 
-        $displayStartDate = $firstPolicy ? $firstPolicy->created_at->format('Y-m-d') : now()->subYear()->format('Y-m-d');
-        $displayEndDate = $lastPolicy ? $lastPolicy->created_at->format('Y-m-d') : now()->format('Y-m-d');
-    } else {
-        $displayStartDate = $startDate;
-        $displayEndDate = $endDate;
-    }
+    // 4. CHURN ANALİZİ (Kaybedilen müşteriler)
+    $churnAnalysis = $this->getChurnAnalysis($startDate, $endDate);
 
-    // Genel İstatistikler
-    $statsQuery = clone $query;
-    $totalCommission = $statsQuery->sum('commission_amount') ?? 0;
-    $totalPolicies = $statsQuery->count();
-    $averageCommission = $statsQuery->avg('commission_amount') ?? 0;
+    // 5. DEMOGRAFİK DAĞILIM
+    $demographics = $this->getCustomerDemographics();
 
-    // Tahsil edilen komisyon
-    $collectedCommission = $this->getCollectedCommission($startDate, $endDate);
-    $pendingCommission = max(0, $totalCommission - $collectedCommission);
-    $collectionRate = $totalCommission > 0 ? ($collectedCommission / $totalCommission) * 100 : 0;
+    // 6. LTV ANALİZİ (En değerli müşteriler)
+    $ltvAnalysis = $this->getLTVAnalysis();
 
-    // Komisyon oranı hesapla
-    $totalPremiumQuery = clone $query;
-    $totalPremium = $totalPremiumQuery->sum('premium_amount') ?? 0;
-    $commissionRate = $totalPremium > 0 ? ($totalCommission / $totalPremium) * 100 : 0;
+    // 7. TOP SPENDERS (En yüksek prim ödeyenler)
+    $topSpenders = $this->getTopSpenders(10);
 
-    $stats = [
-        'total_commission' => $totalCommission,
-        'collected_commission' => $collectedCommission,
-        'pending_commission' => $pendingCommission,
-        'collection_rate' => $collectionRate,
-        'total_policies' => $totalPolicies,
-        'average_commission' => $averageCommission,
-        'commission_rate' => $commissionRate,
-    ];
+    // 8. ŞEHİR BAZLI DAĞILIM (Top 10)
+    $cityDistribution = $this->getCityDistribution(10);
 
-    // Satış temsilcisi komisyon performansı
-    $salesRepCommission = $this->getSalesRepCommission($startDate, $endDate);
-
-    // Sigorta şirketine göre komisyon
-    $commissionByCompany = $this->getCommissionByCompany($startDate, $endDate);
-
-    // Poliçe türüne göre komisyon
-    $typeQuery = clone $query;
-    $commissionByType = $typeQuery
-        ->select(
-            'policy_type',
-            DB::raw('COUNT(*) as policy_count'),
-            DB::raw('SUM(premium_amount) as total_premium'),
-            DB::raw('SUM(commission_amount) as total_commission')
-        )
-        ->groupBy('policy_type')
-        ->orderByDesc('total_commission')
-        ->get();
-
-    // Aylık komisyon trendi
-    $monthlyQuery = clone $query;
-    $monthlyCommission = $monthlyQuery
-        ->select(
-            DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
-            DB::raw('SUM(commission_amount) as total_commission'),
-            DB::raw('COUNT(*) as policy_count')
-        )
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get()
-        ->map(function($item) {
-            $months = [
-                '01' => 'Oca', '02' => 'Şub', '03' => 'Mar', '04' => 'Nis',
-                '05' => 'May', '06' => 'Haz', '07' => 'Tem', '08' => 'Ağu',
-                '09' => 'Eyl', '10' => 'Eki', '11' => 'Kas', '12' => 'Ara'
-            ];
-            $parts = explode('-', $item->month);
-            $item->month = $months[$parts[1]] . ' ' . $parts[0];
-            return $item;
-        });
-
-    return view('reports.commission', compact(
+    return view('reports.customers', compact(
         'stats',
-        'salesRepCommission',
-        'commissionByCompany',
-        'commissionByType',
-        'monthlyCommission',
+        'segments',
+        'growthTrend',
+        'churnAnalysis',
+        'demographics',
+        'ltvAnalysis',
+        'topSpenders',
+        'cityDistribution',
         'startDate',
         'endDate'
-    ))->with([
-        'displayStartDate' => $displayStartDate,
-        'displayEndDate' => $displayEndDate,
-    ]);
+    ));
 }
 
 /**
- *  Tahsil edilen komisyon hesapla
+ * Genel müşteri istatistikleri
  */
-private function getCollectedCommission($startDate, $endDate)
+private function getCustomerStats()
 {
-    $query = \App\Models\Tahsilat::query();
+    $totalCustomers = Customer::count();
+    $activeCustomers = Customer::where('status', 'active')->count();
+    $potentialCustomers = Customer::where('status', 'potential')->count();
+    $customersWithPolicies = Customer::has('policies')->count();
 
-    if ($startDate && $endDate) {
-        $query->whereBetween('tahsilat_tarihi', [$startDate, $endDate]);
-    } elseif ($startDate) {
-        $query->where('tahsilat_tarihi', '>=', $startDate);
-    } elseif ($endDate) {
-        $query->where('tahsilat_tarihi', '<=', $endDate);
-    }
+    // Ortalama poliçe sayısı
+    $avgPoliciesPerCustomer = $totalCustomers > 0
+        ? Policy::count() / $totalCustomers
+        : 0;
 
-    // Poliçelere yapılan tahsilatları topla
-    return $query->whereNotNull('policy_id')
-                 ->with('policy')
-                 ->get()
-                 ->sum(function($tahsilat) {
-                     if (!$tahsilat->policy) return 0;
+    // Son 30 gün yeni müşteriler
+    $newCustomersLast30Days = Customer::where('created_at', '>=', now()->subDays(30))
+        ->count();
 
-                     // Tahsilat oranına göre komisyon hesapla
-                     $policyPremium = $tahsilat->policy->premium_amount;
-                     $policyCommission = $tahsilat->policy->commission_amount;
+    // Email/telefon varlığı
+    $withEmail = Customer::whereNotNull('email')->where('email', '!=', '')->count();
+    $withPhone = Customer::whereNotNull('phone')->where('phone', '!=', '')->count();
 
-                     if ($policyPremium > 0) {
-                         $tahsilatOrani = $tahsilat->tutar / $policyPremium;
-                         return $policyCommission * $tahsilatOrani;
-                     }
-
-                     return 0;
-                 });
+    return [
+        'total_customers' => $totalCustomers,
+        'active_customers' => $activeCustomers,
+        'potential_customers' => $potentialCustomers,
+        'customers_with_policies' => $customersWithPolicies,
+        'avg_policies_per_customer' => $avgPoliciesPerCustomer,
+        'new_customers_30d' => $newCustomersLast30Days,
+        'with_email' => $withEmail,
+        'with_phone' => $withPhone,
+        'contact_quality' => $totalCustomers > 0
+            ? (($withEmail + $withPhone) / (2 * $totalCustomers)) * 100
+            : 0,
+    ];
 }
 
-
-
 /**
- *  Satış temsilcisi komisyon performansı
+ * Müşteri segmentleri (VIP, Risk, Potansiyel, Aktif/Pasif)
  */
-private function getSalesRepCommission($startDate, $endDate)
+private function getCustomerSegments()
 {
-    $query = Policy::with('creator');
+    $customers = Customer::with('policies')->get();
 
-    if ($startDate && $endDate) {
-        $query->whereBetween('created_at', [$startDate, $endDate]);
-    } elseif ($startDate) {
-        $query->where('created_at', '>=', $startDate);
-    } elseif ($endDate) {
-        $query->where('created_at', '<=', $endDate);
+    $vip = 0;      // 5+ poliçe veya 50.000₺+ prim
+    $risk = 0;     // Aktif ama son 6 ayda poliçe yok
+    $potential = 0; // Potansiyel statüsünde
+    $active = 0;   // Aktif ve son 6 ayda poliçe var
+    $passive = 0;  // Poliçesi hiç olmamış
+
+    foreach ($customers as $customer) {
+        $policyCount = $customer->policies->count();
+        $totalPremium = $customer->policies->sum('premium_amount');
+        $lastPolicyDate = $customer->policies->max('created_at');
+
+        // VIP: 5+ poliçe VEYA 50.000₺+ toplam prim
+        if ($policyCount >= 5 || $totalPremium >= 50000) {
+            $vip++;
+        }
+        // Potansiyel
+        elseif ($customer->status === 'potential') {
+            $potential++;
+        }
+        // Risk: Aktif ama son 6 ayda poliçe yok
+        elseif ($customer->status === 'active' && $policyCount > 0 &&
+                $lastPolicyDate && \Carbon\Carbon::parse($lastPolicyDate)->lt(now()->subMonths(6))) {
+            $risk++;
+        }
+        // Aktif: Son 6 ayda poliçe var
+        elseif ($customer->status === 'active' && $policyCount > 0 &&
+                $lastPolicyDate && \Carbon\Carbon::parse($lastPolicyDate)->gte(now()->subMonths(6))) {
+            $active++;
+        }
+        // Pasif: Hiç poliçesi yok
+        elseif ($policyCount === 0) {
+            $passive++;
+        }
     }
 
-    $salesReps = $query->select(
-            'created_by',
-            DB::raw('COUNT(*) as policy_count'),
-            DB::raw('SUM(commission_amount) as total_commission'),
-            DB::raw('AVG(commission_rate) as avg_commission_rate')
-        )
-        ->groupBy('created_by')
-        ->orderByDesc('total_commission')
+    return [
+        'vip' => $vip,
+        'risk' => $risk,
+        'potential' => $potential,
+        'active' => $active,
+        'passive' => $passive,
+    ];
+}
+
+/**
+ * Müşteri büyüme trendi (Son 12 ay)
+ */
+private function getCustomerGrowthTrend()
+{
+    $months = [];
+    for ($i = 11; $i >= 0; $i--) {
+        $months[] = now()->subMonths($i)->format('Y-m');
+    }
+
+    $trend = collect($months)->map(function($month) {
+        $startOfMonth = \Carbon\Carbon::parse($month)->startOfMonth();
+        $endOfMonth = \Carbon\Carbon::parse($month)->endOfMonth();
+
+        $newCustomers = Customer::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        $monthNames = [
+            '01' => 'Oca', '02' => 'Şub', '03' => 'Mar', '04' => 'Nis',
+            '05' => 'May', '06' => 'Haz', '07' => 'Tem', '08' => 'Ağu',
+            '09' => 'Eyl', '10' => 'Eki', '11' => 'Kas', '12' => 'Ara'
+        ];
+
+        $parts = explode('-', $month);
+        $monthLabel = $monthNames[$parts[1]] . ' ' . substr($parts[0], 2);
+
+        return [
+            'month' => $monthLabel,
+            'new_customers' => $newCustomers,
+        ];
+    });
+
+    return $trend;
+}
+
+/**
+ * Churn analizi (Kaybedilen müşteriler)
+ */
+private function getChurnAnalysis($startDate, $endDate)
+{
+    // Pasif hale geçenler
+    $inactiveCustomers = Customer::where('status', 'inactive')
+        ->whereBetween('updated_at', [$startDate, $endDate])
+        ->count();
+
+    // Poliçesi iptal olanlar
+    $cancelledPolicies = Policy::whereIn('status', ['cancelled', 'lost'])
+        ->whereBetween('updated_at', [$startDate, $endDate])
+        ->with('customer')
+        ->get();
+
+    $churnedCustomers = $cancelledPolicies->pluck('customer_id')->unique()->count();
+
+    // Toplam müşteri
+    $totalCustomers = Customer::count();
+
+    // Churn rate
+    $churnRate = $totalCustomers > 0
+        ? (($inactiveCustomers + $churnedCustomers) / $totalCustomers) * 100
+        : 0;
+
+    // Kayıp neden analizi (PolicyRenewal'dan)
+    $lostReasons = \App\Models\PolicyRenewal::whereBetween('updated_at', [$startDate, $endDate])
+        ->where('status', 'lost')
+        ->whereNotNull('lost_reason')
+        ->select('lost_reason', DB::raw('COUNT(*) as count'))
+        ->groupBy('lost_reason')
+        ->orderByDesc('count')
+        ->limit(5)
+        ->get();
+
+    return [
+        'churned_count' => $inactiveCustomers + $churnedCustomers,
+        'churn_rate' => $churnRate,
+        'lost_reasons' => $lostReasons,
+    ];
+}
+
+/**
+ * Demografik dağılım
+ */
+private function getCustomerDemographics()
+{
+    // Yaş dağılımı (eğer birthdate varsa)
+    $ageGroups = [
+        '18-30' => 0,
+        '31-45' => 0,
+        '46-60' => 0,
+        '60+' => 0,
+        'Bilinmiyor' => 0,
+    ];
+
+    $customers = Customer::whereNotNull('birth_date')->get();
+
+    foreach ($customers as $customer) {
+        $age = \Carbon\Carbon::parse($customer->birth_date)->age;
+
+        if ($age >= 18 && $age <= 30) {
+            $ageGroups['18-30']++;
+        } elseif ($age >= 31 && $age <= 45) {
+            $ageGroups['31-45']++;
+        } elseif ($age >= 46 && $age <= 60) {
+            $ageGroups['46-60']++;
+        } elseif ($age > 60) {
+            $ageGroups['60+']++;
+        }
+    }
+
+    $ageGroups['Bilinmiyor'] = Customer::whereNull('birth_date')
+        ->orWhere('birth_date', '')
+        ->count();
+
+    // Meslek dağılımı (eğer occupation varsa)
+    $occupations = Customer::whereNotNull('occupation')
+        ->where('occupation', '!=', '')
+        ->select('occupation', DB::raw('COUNT(*) as count'))
+        ->groupBy('occupation')
+        ->orderByDesc('count')
         ->limit(10)
         ->get();
 
-    // Her temsilci için tahsilat oranını hesapla
-    foreach ($salesReps as $rep) {
-        $repPolicies = Policy::where('created_by', $rep->created_by);
-
-        if ($startDate && $endDate) {
-            $repPolicies->whereBetween('created_at', [$startDate, $endDate]);
-        }
-
-        $policyIds = $repPolicies->pluck('id');
-
-        $collectedAmount = \App\Models\Tahsilat::whereIn('policy_id', $policyIds)
-            ->sum('tutar');
-
-        $totalPremium = $repPolicies->sum('premium_amount');
-
-        $rep->collection_rate = $totalPremium > 0
-            ? ($collectedAmount / $totalPremium) * 100
-            : 0;
-    }
-
-    return $salesReps;
+    return [
+        'age_groups' => $ageGroups,
+        'occupations' => $occupations,
+    ];
 }
 
 /**
- * Şirket bazlı genişletilmiş komisyon analizi
+ * LTV (Lifetime Value) analizi
  */
-private function getCommissionByCompany($startDate, $endDate)
+private function getLTVAnalysis()
 {
-    $query = Policy::with('insuranceCompany');
+    $customers = Customer::has('policies')
+        ->with('policies')
+        ->get();
 
-    if ($startDate && $endDate) {
-        $query->whereBetween('created_at', [$startDate, $endDate]);
-    } elseif ($startDate) {
-        $query->where('created_at', '>=', $startDate);
-    } elseif ($endDate) {
-        $query->where('created_at', '<=', $endDate);
-    }
+    $ltvData = $customers->map(function($customer) {
+        $totalPremium = $customer->policies->sum('premium_amount');
+        $policyCount = $customer->policies->count();
+        $avgPremium = $policyCount > 0 ? $totalPremium / $policyCount : 0;
 
-    return $query->select(
-            'insurance_company_id',
-            DB::raw('COUNT(*) as policy_count'),
-            DB::raw('SUM(premium_amount) as total_premium'),
-            DB::raw('SUM(commission_amount) as total_commission'),
-            DB::raw('CASE
-                WHEN SUM(premium_amount) > 0
-                THEN (SUM(commission_amount) / SUM(premium_amount)) * 100
-                ELSE 0
-            END as avg_commission_rate')
-        )
-        ->groupBy('insurance_company_id')
-        ->orderByDesc('total_commission')
+        return [
+            'customer' => $customer,
+            'total_premium' => $totalPremium,
+            'policy_count' => $policyCount,
+            'avg_premium' => $avgPremium,
+            'ltv' => $totalPremium, // Basit LTV = Toplam harcama
+        ];
+    })->sortByDesc('ltv');
+
+    $avgLTV = $ltvData->avg('ltv') ?? 0;
+    $totalLTV = $ltvData->sum('ltv') ?? 0;
+
+    return [
+        'avg_ltv' => $avgLTV,
+        'total_ltv' => $totalLTV,
+        'top_customers' => $ltvData->take(10),
+    ];
+}
+
+/**
+ * En yüksek prim ödeyenler (Top spenders)
+ */
+private function getTopSpenders($limit = 10)
+{
+    return Customer::select('customers.id', 'customers.name', 'customers.phone', 'customers.city')
+        ->join('policies', 'customers.id', '=', 'policies.customer_id')
+        ->selectRaw('SUM(policies.premium_amount) as total_premium')
+        ->selectRaw('COUNT(policies.id) as policy_count')
+        ->selectRaw('AVG(policies.premium_amount) as avg_premium')
+        ->groupBy('customers.id', 'customers.name', 'customers.phone', 'customers.city')
+        ->orderByDesc('total_premium')
+        ->limit($limit)
         ->get();
 }
 
-    /**
-     * Müşteri analizleri
-     */
-    public function customers()
-    {
-        $stats = [
-            'total_customers' => Customer::count(),
-            'active_customers' => Customer::where('status', 'active')->count(),
-            'potential_customers' => Customer::where('status', 'potential')->count(),
-            'customers_with_policies' => Customer::has('policies')->count(),
-        ];
-
-        $customersByCity = Customer::select('city', DB::raw('COUNT(*) as count'))
-            ->whereNotNull('city')
-            ->where('city', '!=', '')
-            ->groupBy('city')
-            ->orderByDesc('count')
-            ->limit(10)
-            ->get();
-
-        $totalCustomers = Customer::count();
-        $totalPolicies = Policy::count();
-        $avgPoliciesPerCustomer = $totalCustomers > 0 ? $totalPolicies / $totalCustomers : 0;
-
-        $topCustomers = Customer::select(
-                'customers.id',
-                'customers.name',
-                'customers.phone',
-                'customers.email',
-                'customers.city'
-            )
-            ->join('policies', 'customers.id', '=', 'policies.customer_id')
-            ->selectRaw('SUM(policies.premium_amount) as total_premium')
-            ->selectRaw('COUNT(policies.id) as policy_count')
-            ->groupBy('customers.id', 'customers.name', 'customers.phone', 'customers.email', 'customers.city')
-            ->orderByDesc('total_premium')
-            ->limit(10)
-            ->get();
-
-        return view('reports.customers', compact(
-            'stats',
-            'customersByCity',
-            'avgPoliciesPerCustomer',
-            'topCustomers'
-        ));
-    }
+/**
+ * Şehir bazlı dağılım
+ */
+private function getCityDistribution($limit = 10)
+{
+    return Customer::select('city', DB::raw('COUNT(*) as count'))
+        ->whereNotNull('city')
+        ->where('city', '!=', '')
+        ->groupBy('city')
+        ->orderByDesc('count')
+        ->limit($limit)
+        ->get();
+}
 
     /**
      * Yenileme raporları
@@ -923,7 +1199,7 @@ private function getCommissionByCompany($startDate, $endDate)
     }
 
     /**
-     * 🏆 SATIŞ TEMSİLCİSİ PERFORMANS RAPORU
+     *  SATIŞ TEMSİLCİSİ PERFORMANS RAPORU
      */
     public function salesPerformance(Request $request)
     {
@@ -1040,45 +1316,45 @@ private function getCommissionByCompany($startDate, $endDate)
         ];
     }
 
-/**
- * Müşteri portföy analizi
- */
-private function getCustomerPortfolio($userId)
-{
-    $totalCustomers = Customer::where('created_by', $userId)->count();
-    $activeCustomers = Customer::where('created_by', $userId)
-        ->where('status', 'active')
-        ->count();
+    /**
+     * Müşteri portföy analizi
+     */
+    private function getCustomerPortfolio($userId)
+    {
+        $totalCustomers = Customer::where('created_by', $userId)->count();
+        $activeCustomers = Customer::where('created_by', $userId)
+            ->where('status', 'active')
+            ->count();
 
-    // Poliçesi olan müşteriler
-    $customersWithPolicies = Customer::where('created_by', $userId)
-        ->has('policies')
-        ->count();
+        // Poliçesi olan müşteriler
+        $customersWithPolicies = Customer::where('created_by', $userId)
+            ->has('policies')
+            ->count();
 
-    // ✅ DÜZELTME: Tablo adını belirt
-    $avgLTV = Customer::where('customers.created_by', $userId) // ✅ customers. eklendi
-        ->join('policies', 'customers.id', '=', 'policies.customer_id')
-        ->groupBy('customers.id')
-        ->selectRaw('AVG(policies.premium_amount) as avg_premium')
-        ->get()
-        ->avg('avg_premium') ?? 0;
+        // ✅ DÜZELTME: Tablo adını belirt
+        $avgLTV = Customer::where('customers.created_by', $userId) // ✅ customers. eklendi
+            ->join('policies', 'customers.id', '=', 'policies.customer_id')
+            ->groupBy('customers.id')
+            ->selectRaw('AVG(policies.premium_amount) as avg_premium')
+            ->get()
+            ->avg('avg_premium') ?? 0;
 
-    // Yeni müşteriler (son 30 gün)
-    $newCustomers = Customer::where('created_by', $userId)
-        ->where('created_at', '>=', now()->subDays(30))
-        ->count();
+        // Yeni müşteriler (son 30 gün)
+        $newCustomers = Customer::where('created_by', $userId)
+            ->where('created_at', '>=', now()->subDays(30))
+            ->count();
 
-    return [
-        'total_customers' => $totalCustomers,
-        'active_customers' => $activeCustomers,
-        'customers_with_policies' => $customersWithPolicies,
-        'avg_ltv' => $avgLTV,
-        'new_customers_30d' => $newCustomers,
-        'retention_rate' => $totalCustomers > 0
-            ? ($activeCustomers / $totalCustomers) * 100
-            : 0,
-    ];
-}
+        return [
+            'total_customers' => $totalCustomers,
+            'active_customers' => $activeCustomers,
+            'customers_with_policies' => $customersWithPolicies,
+            'avg_ltv' => $avgLTV,
+            'new_customers_30d' => $newCustomers,
+            'retention_rate' => $totalCustomers > 0
+                ? ($activeCustomers / $totalCustomers) * 100
+                : 0,
+        ];
+    }
 
     /**
      * Aylık performans trendi (Son 6 ay)
