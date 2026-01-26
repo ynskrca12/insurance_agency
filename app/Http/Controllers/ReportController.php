@@ -1697,4 +1697,341 @@ private function getPriorityCallList($startDate, $endDate)
             'remaining' => max(0, $monthlyTarget - $actual),
         ];
     }
+
+    /**
+     *  FİNANSAL ÖZET RAPORU
+     */
+    public function financial(Request $request)
+    {
+        $startDate = $request->get('start_date', now()->startOfMonth()->format('Y-m-d'));
+        $endDate = $request->get('end_date', now()->format('Y-m-d'));
+
+        // 1. GENEL FİNANSAL DURUM
+        $financialSummary = $this->getFinancialSummary($startDate, $endDate);
+
+        // 2. KASA/BANKA DURUMU
+        $cashBankStatus = $this->getCashBankStatus();
+
+        // 3. NAKİT AKIŞ ANALİZİ (Aylık trend)
+        $cashFlowTrend = $this->getCashFlowTrend();
+
+        // 4. ŞİRKET BORÇ/ALACAK DURUMU
+        $companyDebts = $this->getCompanyDebtsCredits();
+
+        // 5. MÜŞTERİ ALACAK DURUMU
+        $customerCredits = $this->getCustomerCredits();
+
+        // 6. KARLILIK ANALİZİ
+        $profitability = $this->getProfitabilityAnalysis($startDate, $endDate);
+
+        // 7. AYLIK KARŞILAŞTIRMA
+        $monthlyComparison = $this->getMonthlyComparison();
+
+        // 8. GÜNLÜK NAKİT HAREKETLERİ (Son 7 gün)
+        $dailyCashFlow = $this->getDailyCashFlow();
+
+        return view('reports.financial', compact(
+            'financialSummary',
+            'cashBankStatus',
+            'cashFlowTrend',
+            'companyDebts',
+            'customerCredits',
+            'profitability',
+            'monthlyComparison',
+            'dailyCashFlow',
+            'startDate',
+            'endDate'
+        ));
+    }
+
+    /**
+     * Genel finansal özet
+     */
+    private function getFinancialSummary($startDate, $endDate)
+    {
+        // Komisyon geliri (dönem)
+        $commissionIncome = Policy::whereBetween('created_at', [$startDate, $endDate])
+            ->sum('commission_amount');
+
+        // Tahsilat (dönem)
+        $collections = \App\Models\Tahsilat::whereBetween('tahsilat_tarihi', [$startDate, $endDate])
+            ->sum('tutar');
+
+        // Ödemeler (dönem) - Şirketlere yapılan ödemeler
+        $payments = \App\Models\CariHareket::where('referans_tip', 'sirket_odeme')
+            ->whereBetween('islem_tarihi', [$startDate, $endDate])
+            ->where('islem_tipi', 'alacak')
+            ->sum('tutar');
+
+        // Toplam kasa/banka bakiyesi
+        $totalCash = \App\Models\CariHesap::whereIn('tip', ['kasa', 'banka'])
+            ->where('aktif', true)
+            ->sum('bakiye');
+
+        // Müşteri alacakları
+        $customerReceivables = \App\Models\CariHesap::where('tip', 'musteri')
+            ->where('bakiye', '>', 0)
+            ->sum('bakiye');
+
+        // Şirket borçları
+        $companyPayables = \App\Models\CariHesap::where('tip', 'sirket')
+            ->where('bakiye', '<', 0)
+            ->sum('bakiye');
+
+        return [
+            'commission_income' => $commissionIncome,
+            'collections' => $collections,
+            'payments' => $payments,
+            'total_cash' => $totalCash,
+            'customer_receivables' => $customerReceivables,
+            'company_payables' => abs($companyPayables),
+            'net_income' => $commissionIncome - $payments,
+        ];
+    }
+
+    /**
+     * Kasa/Banka durum raporu
+     */
+    private function getCashBankStatus()
+    {
+        return \App\Models\CariHesap::whereIn('tip', ['kasa', 'banka'])
+            ->where('aktif', true)
+            ->orderBy('tip')
+            ->orderBy('ad')
+            ->get()
+            ->map(function($hesap) {
+                // Son 7 gün hareketler
+                $son7GunHareketler = $hesap->hareketler()
+                    ->where('islem_tarihi', '>=', now()->subDays(7))
+                    ->get();
+
+                return [
+                    'hesap' => $hesap,
+                    'girisler_7gun' => $son7GunHareketler->where('islem_tipi', 'borc')->sum('tutar'),
+                    'cikislar_7gun' => $son7GunHareketler->where('islem_tipi', 'alacak')->sum('tutar'),
+                    'net_7gun' => $son7GunHareketler->where('islem_tipi', 'borc')->sum('tutar') -
+                                $son7GunHareketler->where('islem_tipi', 'alacak')->sum('tutar'),
+                ];
+            });
+    }
+
+    /**
+     * Nakit akış trendi (Son 6 ay)
+     */
+    private function getCashFlowTrend()
+    {
+        $months = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $months[] = now()->subMonths($i)->format('Y-m');
+        }
+
+        return collect($months)->map(function($month) {
+            $startOfMonth = \Carbon\Carbon::parse($month)->startOfMonth();
+            $endOfMonth = \Carbon\Carbon::parse($month)->endOfMonth();
+
+            // Gelirler (komisyonlar + tahsilatlar)
+            $commissions = Policy::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->sum('commission_amount');
+
+            $collections = \App\Models\Tahsilat::whereBetween('tahsilat_tarihi', [$startOfMonth, $endOfMonth])
+                ->sum('tutar');
+
+            // Giderler (şirket ödemeleri)
+            $payments = \App\Models\CariHareket::where('referans_tip', 'sirket_odeme')
+                ->whereBetween('islem_tarihi', [$startOfMonth, $endOfMonth])
+                ->where('islem_tipi', 'alacak')
+                ->sum('tutar');
+
+            $monthNames = [
+                '01' => 'Oca', '02' => 'Şub', '03' => 'Mar', '04' => 'Nis',
+                '05' => 'May', '06' => 'Haz', '07' => 'Tem', '08' => 'Ağu',
+                '09' => 'Eyl', '10' => 'Eki', '11' => 'Kas', '12' => 'Ara'
+            ];
+
+            $parts = explode('-', $month);
+            $monthLabel = $monthNames[$parts[1]] . ' ' . substr($parts[0], 2);
+
+            return [
+                'month' => $monthLabel,
+                'income' => $commissions + $collections,
+                'expense' => $payments,
+                'net' => ($commissions + $collections) - $payments,
+            ];
+        });
+    }
+
+    /**
+     * Şirket borç/alacak durumu
+     */
+    private function getCompanyDebtsCredits()
+    {
+        return \App\Models\CariHesap::where('tip', 'sirket')
+            ->with('insuranceCompany')
+            ->get()
+            ->map(function($cari) {
+                $borcHareketler = $cari->hareketler()
+                    ->where('islem_tipi', 'borc')
+                    ->sum('tutar');
+
+                $alacakHareketler = $cari->hareketler()
+                    ->where('islem_tipi', 'alacak')
+                    ->sum('tutar');
+
+                return [
+                    'cari' => $cari,
+                    'borc' => $borcHareketler,
+                    'alacak' => $alacakHareketler,
+                    'bakiye' => $cari->bakiye,
+                    'durum' => $cari->bakiye < 0 ? 'Borcumuz Var' : ($cari->bakiye > 0 ? 'Alacağımız Var' : 'Dengede'),
+                ];
+            })
+            ->where('bakiye', '!=', 0)
+            ->sortByDesc(function($item) {
+                return abs($item['bakiye']);
+            })
+            ->take(10);
+    }
+
+    /**
+     * Müşteri alacak durumu (En yüksek borçlular)
+     */
+    private function getCustomerCredits()
+    {
+        return \App\Models\CariHesap::where('tip', 'musteri')
+            ->where('bakiye', '>', 0)
+            ->with('customer')
+            ->orderByDesc('bakiye')
+            ->limit(10)
+            ->get()
+            ->map(function($cari) {
+                // Vade geçmiş borçlar
+                $vadeGecmis = $cari->hareketler()
+                    ->where('islem_tipi', 'borc')
+                    ->where('vade_tarihi', '<', now())
+                    ->whereNull('karsi_cari_hesap_id')
+                    ->sum('tutar');
+
+                return [
+                    'cari' => $cari,
+                    'toplam_borc' => $cari->bakiye,
+                    'vade_gecmis' => $vadeGecmis,
+                    'vade_icerisinde' => $cari->bakiye - $vadeGecmis,
+                ];
+            });
+    }
+
+    /**
+     * Karlılık analizi
+     */
+    private function getProfitabilityAnalysis($startDate, $endDate)
+    {
+        // Toplam prim
+        $totalPremium = Policy::whereBetween('created_at', [$startDate, $endDate])
+            ->sum('premium_amount');
+
+        // Toplam komisyon
+        $totalCommission = Policy::whereBetween('created_at', [$startDate, $endDate])
+            ->sum('commission_amount');
+
+        // Ortalama komisyon oranı
+        $avgCommissionRate = $totalPremium > 0
+            ? ($totalCommission / $totalPremium) * 100
+            : 0;
+
+        // Branş bazlı karlılık
+        $branchProfitability = Policy::whereBetween('created_at', [$startDate, $endDate])
+            ->select(
+                'policy_type',
+                DB::raw('COUNT(*) as count'),
+                DB::raw('SUM(premium_amount) as total_premium'),
+                DB::raw('SUM(commission_amount) as total_commission'),
+                DB::raw('AVG(commission_rate) as avg_rate')
+            )
+            ->groupBy('policy_type')
+            ->orderByDesc('total_commission')
+            ->get();
+
+        return [
+            'total_premium' => $totalPremium,
+            'total_commission' => $totalCommission,
+            'avg_commission_rate' => $avgCommissionRate,
+            'branch_profitability' => $branchProfitability,
+        ];
+    }
+
+    /**
+     * Aylık karşılaştırma (Bu ay vs Geçen ay)
+     */
+    private function getMonthlyComparison()
+    {
+        // Bu ay
+        $thisMonthStart = now()->startOfMonth();
+        $thisMonthEnd = now();
+
+        // Geçen ay
+        $lastMonthStart = now()->subMonth()->startOfMonth();
+        $lastMonthEnd = now()->subMonth()->endOfMonth();
+
+        $thisMonth = [
+            'commission' => Policy::whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])
+                ->sum('commission_amount'),
+            'collections' => \App\Models\Tahsilat::whereBetween('tahsilat_tarihi', [$thisMonthStart, $thisMonthEnd])
+                ->sum('tutar'),
+            'policies' => Policy::whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])
+                ->count(),
+        ];
+
+        $lastMonth = [
+            'commission' => Policy::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+                ->sum('commission_amount'),
+            'collections' => \App\Models\Tahsilat::whereBetween('tahsilat_tarihi', [$lastMonthStart, $lastMonthEnd])
+                ->sum('tutar'),
+            'policies' => Policy::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+                ->count(),
+        ];
+
+        return [
+            'this_month' => $thisMonth,
+            'last_month' => $lastMonth,
+            'commission_change' => $lastMonth['commission'] > 0
+                ? (($thisMonth['commission'] - $lastMonth['commission']) / $lastMonth['commission']) * 100
+                : 0,
+            'collections_change' => $lastMonth['collections'] > 0
+                ? (($thisMonth['collections'] - $lastMonth['collections']) / $lastMonth['collections']) * 100
+                : 0,
+            'policies_change' => $lastMonth['policies'] > 0
+                ? (($thisMonth['policies'] - $lastMonth['policies']) / $lastMonth['policies']) * 100
+                : 0,
+        ];
+    }
+
+    /**
+     * Günlük nakit akışı (Son 7 gün)
+     */
+    private function getDailyCashFlow()
+    {
+        $days = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $days[] = now()->subDays($i)->format('Y-m-d');
+        }
+
+        return collect($days)->map(function($day) {
+            $date = \Carbon\Carbon::parse($day);
+
+            $income = \App\Models\Tahsilat::whereDate('tahsilat_tarihi', $day)
+                ->sum('tutar');
+
+            $expense = \App\Models\CariHareket::where('referans_tip', 'sirket_odeme')
+                ->whereDate('islem_tarihi', $day)
+                ->where('islem_tipi', 'alacak')
+                ->sum('tutar');
+
+            return [
+                'date' => $date->format('d M'),
+                'income' => $income,
+                'expense' => $expense,
+                'net' => $income - $expense,
+            ];
+        });
+    }
 }
