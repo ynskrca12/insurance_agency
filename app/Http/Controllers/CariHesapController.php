@@ -11,12 +11,13 @@ use Carbon\Carbon;
 
 class CariHesapController extends Controller
 {
-    /**
+     /**
      * Cari hesaplar listesi
      */
     public function index(Request $request)
     {
-        $query = CariHesap::where('tenant_id', auth()->id());
+        // Trait zaten tenant kontrolü yapıyor, manual filtre KALDIRILDI
+        $query = CariHesap::query();
 
         // Tip filtresi
         $tip = $request->get('tip', 'musteri');
@@ -43,19 +44,15 @@ class CariHesapController extends Controller
                              ->orderBy('bakiye', 'desc')
                              ->paginate(20);
 
-        // İstatistikler
+        //  İstatistikler için de trait kullan
         $istatistikler = [
-            'toplam_borc' => CariHesap::where('tenant_id', auth()->id())
-                                     ->where('tip', $tip)
+            'toplam_borc' => CariHesap::where('tip', $tip)
                                      ->where('bakiye', '>', 0)
                                      ->sum('bakiye'),
-            'toplam_alacak' => abs(CariHesap::where('tenant_id', auth()->id())
-                                           ->where('tip', $tip)
+            'toplam_alacak' => abs(CariHesap::where('tip', $tip)
                                            ->where('bakiye', '<', 0)
                                            ->sum('bakiye')),
-            'toplam_sayisi' => CariHesap::where('tenant_id', auth()->id())
-                                       ->where('tip', $tip)
-                                       ->count(),
+            'toplam_sayisi' => CariHesap::where('tip', $tip)->count(),
         ];
 
         return view('cari-hesaplar.index', compact('cariHesaplar', 'istatistikler', 'tip'));
@@ -73,7 +70,6 @@ class CariHesapController extends Controller
         // Hareketler
         $hareketler = $cariHesap->hareketler()
                                 ->with(['karsiCariHesap', 'createdBy'])
-                                // ->whereBetween('islem_tarihi', [$baslangic, $bitis])
                                 ->orderBy('islem_tarihi', 'desc')
                                 ->orderBy('created_at', 'desc')
                                 ->get();
@@ -116,8 +112,8 @@ class CariHesapController extends Controller
     {
         $tip = $request->get('tip', 'musteri');
 
-        $cariHesaplar = CariHesap::where('tenant_id', auth()->id())
-                                ->where('tip', $tip)
+        //  Trait kullan
+        $cariHesaplar = CariHesap::where('tip', $tip)
                                 ->where('bakiye', '>', 0) // Sadece borçlular
                                 ->with(['customer', 'insuranceCompany'])
                                 ->get()
@@ -149,14 +145,12 @@ class CariHesapController extends Controller
         $baslangic = $request->get('baslangic', now()->startOfMonth()->format('Y-m-d'));
         $bitis = $request->get('bitis', now()->format('Y-m-d'));
 
-        $kasaBankaHesaplari = CariHesap::where('tenant_id', auth()->id())
-                                      ->whereIn('tip', ['kasa', 'banka'])
+        // Trait kullan
+        $kasaBankaHesaplari = CariHesap::whereIn('tip', ['kasa', 'banka'])
                                       ->aktif()
                                       ->get()
                                       ->map(function($hesap) use ($baslangic, $bitis) {
-                                          $hareketler = $hesap->hareketler()
-                                                            //  ->whereBetween('islem_tarihi', [$baslangic, $bitis])
-                                                             ->get();
+                                          $hareketler = $hesap->hareketler()->get();
 
                                           return [
                                               'hesap' => $hesap,
@@ -186,8 +180,8 @@ class CariHesapController extends Controller
         ]);
 
         try {
+            //  tenant_id otomatik (trait)
             $cariHesap->hareketEkle([
-                'tenant_id' => auth()->id(),
                 'islem_tipi' => $validated['islem_tipi'],
                 'tutar' => $validated['tutar'],
                 'aciklama' => $validated['aciklama'],
@@ -229,10 +223,10 @@ class CariHesapController extends Controller
         ]);
 
         try {
+            //  tenant_id otomatik (trait)
             $cariHesap = CariHesap::create([
-                'tenant_id' => auth()->id(),
                 'tip' => $validated['tip'],
-                'kod' => CariHesap::otomatikKodOlustur($validated['tip'], auth()->id()),
+                'kod' => CariHesap::otomatikKodOlustur($validated['tip'], auth()->user()->tenant_id),
                 'ad' => $validated['ad'],
                 'aciklama' => $validated['aciklama'],
                 'bakiye' => $validated['bakiye'] ?? 0,
