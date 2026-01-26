@@ -791,72 +791,300 @@ private function getCityDistribution($limit = 10)
 }
 
     /**
-     * Yenileme raporları
-     */
-    public function renewals(Request $request)
-    {
-        $startDate = $request->get('start_date', now()->format('Y-m-d'));
-        $endDate = $request->get('end_date', now()->addDays(90)->format('Y-m-d'));
+ *  YENİLEME RAPORLARI (İYİLEŞTİRİLMİŞ)
+ */
+public function renewals(Request $request)
+{
+    $startDate = $request->get('start_date', now()->format('Y-m-d'));
+    $endDate = $request->get('end_date', now()->addDays(90)->format('Y-m-d'));
 
-        // Genel İstatistikler
-        $stats = [
-            'total_renewals' => PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])->count(),
-            'pending_renewals' => PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])
-                ->whereIn('status', ['pending', 'contacted'])->count(),
-            'renewed' => PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])
-                ->where('status', 'renewed')->count(),
-            'lost' => PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])
-                ->where('status', 'lost')->count(),
+    // 1. GENEL İSTATİSTİKLER
+    $stats = $this->getRenewalStats($startDate, $endDate);
+
+    // 2. ŞİRKET BAZLI YENİLEME BAŞARISI
+    $companyRenewalSuccess = $this->getCompanyRenewalSuccess($startDate, $endDate);
+
+    // 3. BRANŞ BAZLI RETENTION
+    $branchRetention = $this->getBranchRetention($startDate, $endDate);
+
+    // 4. PARASAL ETKİ ANALİZİ
+    $financialImpact = $this->getFinancialImpact($startDate, $endDate);
+
+    // 5. GELECEK PROJEKSIYONU (3 Ay)
+    $futureProjection = $this->getFutureProjection();
+
+    // 6. RİSK ANALİZİ (Kritik poliçeler)
+    $riskAnalysis = $this->getRenewalRiskAnalysis($startDate, $endDate);
+
+    // 7. KAYIP NEDENLERİ
+    $lostReasons = $this->getRenewalLostReasons($startDate, $endDate);
+
+    // 8. HAFTALIK TREND
+    $weeklyTrend = $this->getWeeklyRenewalTrend($startDate, $endDate);
+
+    // 9. ÖNCELİKLİ ARAMA LİSTESİ
+    $priorityCallList = $this->getPriorityCallList($startDate, $endDate);
+
+    return view('reports.renewals', compact(
+        'stats',
+        'companyRenewalSuccess',
+        'branchRetention',
+        'financialImpact',
+        'futureProjection',
+        'riskAnalysis',
+        'lostReasons',
+        'weeklyTrend',
+        'priorityCallList',
+        'startDate',
+        'endDate'
+    ));
+}
+
+/**
+ * Genel yenileme istatistikleri
+ */
+private function getRenewalStats($startDate, $endDate)
+{
+    $renewals = \App\Models\PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate]);
+
+    $totalRenewals = $renewals->count();
+    $renewed = $renewals->where('status', 'renewed')->count();
+    $lost = $renewals->where('status', 'lost')->count();
+    $pending = $renewals->whereIn('status', ['pending', 'contacted'])->count();
+
+    $totalCompleted = $renewed + $lost;
+    $successRate = $totalCompleted > 0 ? ($renewed / $totalCompleted) * 100 : 0;
+
+    // Ortalama yenileme süresi (gün)
+    $avgRenewalTime = \App\Models\PolicyRenewal::where('status', 'renewed')
+        ->whereBetween('renewal_date', [$startDate, $endDate])
+        ->whereNotNull('renewed_at')
+        ->get()
+        ->avg(function($renewal) {
+            return \Carbon\Carbon::parse($renewal->renewal_date)
+                ->diffInDays(\Carbon\Carbon::parse($renewal->renewed_at));
+        }) ?? 0;
+
+    return [
+        'total_renewals' => $totalRenewals,
+        'renewed' => $renewed,
+        'lost' => $lost,
+        'pending' => $pending,
+        'success_rate' => $successRate,
+        'avg_renewal_time' => $avgRenewalTime,
+    ];
+}
+
+/**
+ * Şirket bazlı yenileme başarısı
+ */
+private function getCompanyRenewalSuccess($startDate, $endDate)
+{
+    return \App\Models\PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])
+        ->with('policy.insuranceCompany')
+        ->get()
+        ->groupBy('policy.insurance_company_id')
+        ->map(function($renewals, $companyId) {
+            $total = $renewals->count();
+            $renewed = $renewals->where('status', 'renewed')->count();
+            $lost = $renewals->where('status', 'lost')->count();
+            $completed = $renewed + $lost;
+
+            $company = $renewals->first()->policy->insuranceCompany ?? null;
+
+            return [
+                'company' => $company,
+                'total' => $total,
+                'renewed' => $renewed,
+                'lost' => $lost,
+                'success_rate' => $completed > 0 ? ($renewed / $completed) * 100 : 0,
+            ];
+        })
+        ->sortByDesc('success_rate')
+        ->take(10);
+}
+
+/**
+ * Branş bazlı retention
+ */
+private function getBranchRetention($startDate, $endDate)
+{
+    return \App\Models\PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])
+        ->with('policy')
+        ->get()
+        ->groupBy('policy.policy_type')
+        ->map(function($renewals, $policyType) {
+            $total = $renewals->count();
+            $renewed = $renewals->where('status', 'renewed')->count();
+            $lost = $renewals->where('status', 'lost')->count();
+            $completed = $renewed + $lost;
+
+            $labels = [
+                'kasko' => 'Kasko',
+                'trafik' => 'Trafik',
+                'konut' => 'Konut',
+                'dask' => 'DASK',
+                'saglik' => 'Sağlık',
+                'hayat' => 'Hayat',
+                'tss' => 'TSS'
+            ];
+
+            return [
+                'type' => $labels[$policyType] ?? $policyType,
+                'total' => $total,
+                'renewed' => $renewed,
+                'lost' => $lost,
+                'retention_rate' => $completed > 0 ? ($renewed / $completed) * 100 : 0,
+            ];
+        })
+        ->sortByDesc('retention_rate');
+}
+
+/**
+ * Parasal etki analizi
+ */
+private function getFinancialImpact($startDate, $endDate)
+{
+    $renewals = \App\Models\PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])
+        ->with('policy')
+        ->get();
+
+    $renewedRevenue = $renewals->where('status', 'renewed')
+        ->sum(function($renewal) {
+            return $renewal->policy->premium_amount ?? 0;
+        });
+
+    $lostRevenue = $renewals->where('status', 'lost')
+        ->sum(function($renewal) {
+            return $renewal->policy->premium_amount ?? 0;
+        });
+
+    $netImpact = $renewedRevenue - $lostRevenue;
+
+    // Komisyon etkisi
+    $renewedCommission = $renewals->where('status', 'renewed')
+        ->sum(function($renewal) {
+            return $renewal->policy->commission_amount ?? 0;
+        });
+
+    $lostCommission = $renewals->where('status', 'lost')
+        ->sum(function($renewal) {
+            return $renewal->policy->commission_amount ?? 0;
+        });
+
+    return [
+        'renewed_revenue' => $renewedRevenue,
+        'lost_revenue' => $lostRevenue,
+        'net_impact' => $netImpact,
+        'renewed_commission' => $renewedCommission,
+        'lost_commission' => $lostCommission,
+        'net_commission_impact' => $renewedCommission - $lostCommission,
+    ];
+}
+
+/**
+ * Gelecek 3 ay projeksiyonu
+ */
+private function getFutureProjection()
+{
+    $months = [];
+    for ($i = 0; $i < 3; $i++) {
+        $startOfMonth = now()->addMonths($i)->startOfMonth();
+        $endOfMonth = now()->addMonths($i)->endOfMonth();
+
+        $renewals = \App\Models\PolicyRenewal::whereBetween('renewal_date', [$startOfMonth, $endOfMonth])
+            ->with('policy')
+            ->get();
+
+        $expectedRevenue = $renewals->sum(function($renewal) {
+            return $renewal->policy->premium_amount ?? 0;
+        });
+
+        $monthNames = [
+            '01' => 'Ocak', '02' => 'Şubat', '03' => 'Mart', '04' => 'Nisan',
+            '05' => 'Mayıs', '06' => 'Haziran', '07' => 'Temmuz', '08' => 'Ağustos',
+            '09' => 'Eylül', '10' => 'Ekim', '11' => 'Kasım', '12' => 'Aralık'
         ];
 
-        // Başarı oranı hesapla
-        $totalCompleted = $stats['renewed'] + $stats['lost'];
-        $stats['success_rate'] = $totalCompleted > 0 ? ($stats['renewed'] / $totalCompleted) * 100 : 0;
-
-        // Önceliğe göre dağılım
-        $renewalsByPriority = PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])
-            ->select('priority', DB::raw('COUNT(*) as count'))
-            ->groupBy('priority')
-            ->get();
-
-        // Duruma göre dağılım
-        $renewalsByStatus = PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])
-            ->select('status', DB::raw('COUNT(*) as count'))
-            ->groupBy('status')
-            ->get();
-
-        // Kayıp nedenleri
-        $lostReasons = PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])
-            ->where('status', 'lost')
-            ->whereNotNull('lost_reason')
-            ->select('lost_reason', DB::raw('COUNT(*) as count'))
-            ->groupBy('lost_reason')
-            ->orderByDesc('count')
-            ->get();
-
-        // Haftalık yenileme trendi
-        $weeklyRenewals = PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])
-            ->select(
-                DB::raw('YEARWEEK(renewal_date) as week'),
-                DB::raw('COUNT(*) as total'),
-                DB::raw('SUM(CASE WHEN status = "renewed" THEN 1 ELSE 0 END) as renewed'),
-                DB::raw('SUM(CASE WHEN status = "lost" THEN 1 ELSE 0 END) as lost')
-            )
-            ->groupBy('week')
-            ->orderBy('week')
-            ->get();
-
-        return view('reports.renewals', compact(
-            'stats',
-            'renewalsByPriority',
-            'renewalsByStatus',
-            'lostReasons',
-            'weeklyRenewals',
-            'startDate',
-            'endDate'
-        ));
+        $months[] = [
+            'month' => $monthNames[$startOfMonth->format('m')] . ' ' . $startOfMonth->format('Y'),
+            'count' => $renewals->count(),
+            'expected_revenue' => $expectedRevenue,
+        ];
     }
 
+    return collect($months);
+}
+
+/**
+ * Risk analizi (Yenileme ihtimali düşük)
+ */
+private function getRenewalRiskAnalysis($startDate, $endDate)
+{
+    // Kritik durumda olan yenilemeler
+    $criticalRenewals = \App\Models\PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])
+        ->where('priority', 'high')
+        ->whereIn('status', ['pending', 'contacted'])
+        ->with('policy.customer')
+        ->orderBy('renewal_date')
+        ->limit(20)
+        ->get();
+
+    // 7 gün içinde bitecek ve henüz yenilenmemiş
+    $expiringSoon = \App\Models\PolicyRenewal::whereBetween('renewal_date', [now(), now()->addDays(7)])
+        ->whereIn('status', ['pending', 'contacted'])
+        ->count();
+
+    return [
+        'critical_renewals' => $criticalRenewals,
+        'expiring_soon_count' => $expiringSoon,
+    ];
+}
+
+/**
+ * Kayıp nedenleri
+ */
+private function getRenewalLostReasons($startDate, $endDate)
+{
+    return \App\Models\PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])
+        ->where('status', 'lost')
+        ->whereNotNull('lost_reason')
+        ->select('lost_reason', DB::raw('COUNT(*) as count'))
+        ->groupBy('lost_reason')
+        ->orderByDesc('count')
+        ->get();
+}
+
+/**
+ * Haftalık yenileme trendi
+ */
+private function getWeeklyRenewalTrend($startDate, $endDate)
+{
+    return \App\Models\PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])
+        ->select(
+            DB::raw('YEARWEEK(renewal_date) as week'),
+            DB::raw('COUNT(*) as total'),
+            DB::raw('SUM(CASE WHEN status = "renewed" THEN 1 ELSE 0 END) as renewed'),
+            DB::raw('SUM(CASE WHEN status = "lost" THEN 1 ELSE 0 END) as lost')
+        )
+        ->groupBy('week')
+        ->orderBy('week')
+        ->get();
+}
+
+/**
+ * Öncelikli arama listesi
+ */
+private function getPriorityCallList($startDate, $endDate)
+{
+    return \App\Models\PolicyRenewal::whereBetween('renewal_date', [$startDate, $endDate])
+        ->whereIn('status', ['pending', 'contacted'])
+        ->with('policy.customer', 'policy.insuranceCompany')
+        ->orderBy('priority', 'desc')
+        ->orderBy('renewal_date')
+        ->limit(15)
+        ->get();
+}
     /**
      * Ödeme raporları
      */
