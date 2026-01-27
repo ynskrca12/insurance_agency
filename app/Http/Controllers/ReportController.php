@@ -1785,7 +1785,7 @@ private function getPriorityCallList($startDate, $endDate)
             'total_cash' => $totalCash,
             'customer_receivables' => $customerReceivables,
             'company_payables' => abs($companyPayables),
-            'net_income' => $commissionIncome - $payments,
+            'net_income' => $collections - $payments,
         ];
     }
 
