@@ -1758,7 +1758,7 @@ private function getPriorityCallList($startDate, $endDate)
             ->sum('tutar');
 
         // Ödemeler (dönem) - Şirketlere yapılan ödemeler
-        $payments = \App\Models\CariHareket::where('referans_tip', 'sirket_odeme')
+        $payments = \App\Models\CariHareket::where('referans_tip', 'odeme')
             ->whereBetween('islem_tarihi', [$startDate, $endDate])
             ->where('islem_tipi', 'alacak')
             ->sum('tutar');
