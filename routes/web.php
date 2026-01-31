@@ -187,8 +187,25 @@ Route::prefix('panel')->group(function () {
 
         // Quotations (Teklifler)
         Route::resource('quotations', QuotationController::class);
-        Route::post('quotations/{quotation}/send', [QuotationController::class, 'send'])->name('quotations.send');
-        Route::post('quotations/{quotation}/convert', [QuotationController::class, 'convert'])->name('quotations.convert');
+        // Route::post('quotations/{quotation}/send', [QuotationController::class, 'send'])->name('quotations.send');
+        // Route::post('quotations/{quotation}/convert', [QuotationController::class, 'convert'])->name('quotations.convert');
+
+            // Quotations - Ek İşlemler
+        Route::prefix('quotations')->name('quotations.')->group(function () {
+            // PDF İşlemleri
+            Route::get('{quotation}/print', [QuotationController::class, 'print'])->name('print');
+            Route::post('{quotation}/mark-pdf-generated', [QuotationController::class, 'markPdfGenerated'])->name('mark-pdf-generated');
+
+            // Email İşlemleri
+            Route::post('{quotation}/send-email', [QuotationController::class, 'sendEmail'])->name('send-email');
+
+            // Poliçeye Dönüştür
+            Route::post('{quotation}/convert', [QuotationController::class, 'convert'])->name('convert');
+
+            // Dosya İşlemleri
+            Route::post('{quotation}/upload-document', [QuotationController::class, 'uploadDocument'])->name('upload-document');
+            Route::delete('{quotation}/documents/{document}', [QuotationController::class, 'deleteDocument'])->name('delete-document');
+        });
 
         // Renewals (Yenilemeler)
         Route::get('renewals', [RenewalController::class, 'index'])->name('renewals.index');
@@ -333,6 +350,19 @@ Route::prefix('panel')->group(function () {
             Route::get('/company/{companyId}/details', [SirketOdemeController::class, 'companyDetails'])->name('company-details');
         });
 
+    });
+
+    // Public Routes (Auth olmadan)
+    Route::prefix('quotation')->name('quotations.')->group(function () {
+        // Müşteri Görünümü
+        Route::get('view/{token}', [QuotationController::class, 'view'])->name('view');
+
+        // Müşteri Onayı
+        Route::post('view/{token}/approve', [QuotationController::class, 'customerApprove'])->name('customer-approve');
+
+        // Email Tracking
+        Route::get('email/open/{trackingToken}', [QuotationController::class, 'trackEmailOpen'])->name('email-open');
+        Route::get('email/click/{trackingToken}', [QuotationController::class, 'trackEmailClick'])->name('email-click');
     });
 });
 

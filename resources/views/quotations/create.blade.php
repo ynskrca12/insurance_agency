@@ -360,7 +360,7 @@
                                 <input type="number"
                                        class="form-control"
                                        name="vehicle_info[year]"
-                                       value="{{ old('vehicle_info.year', date('Y')) }}"
+                                       {{-- value="{{ old('vehicle_info.year', date('Y')) }}" --}}
                                        min="1900"
                                        max="{{ date('Y') + 1 }}">
                             </div>

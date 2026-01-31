@@ -596,6 +596,99 @@
                         </div>
                     </div>
                 </div>
+                {{-- Mevcut form içeriğinden SONRA, </form> tag'ından ÖNCE ekle --}}
+
+                    {{-- Revizyon Sistemi --}}
+                    <div class="form-section">
+                        <h5 class="section-title">
+                            <i class="bi bi-clock-history"></i>
+                            Revizyon Ayarları
+                        </h5>
+
+                        <div class="alert alert-info" role="alert">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Revizyon Oluştur:</strong> Bu seçeneği işaretlerseniz, mevcut teklif korunur ve yeni bir revizyon oluşturulur.
+                        </div>
+
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="create_revision"
+                                   name="create_revision"
+                                   value="1">
+                            <label class="form-check-label fw-semibold" for="create_revision">
+                                Revizyon Oluştur (Önerilen)
+                            </label>
+                        </div>
+
+                        <div id="revision_notes_div" style="display: none;">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Revizyon Notları</label>
+                                <textarea class="form-control"
+                                          name="revision_notes"
+                                          rows="3"
+                                          placeholder="Bu revizyonla ilgili notlarınızı yazın..."></textarea>
+                                <small class="form-text text-muted">
+                                    Örn: "Müşteri talebi üzerine kasko tutarı güncellendi"
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Mevcut Revizyonlar --}}
+                    @if($quotation->revisions->count() > 0)
+                    <div class="form-section">
+                        <h5 class="section-title">
+                            <i class="bi bi-list-ul"></i>
+                            Revizyon Geçmişi ({{ $quotation->revisions->count() }})
+                        </h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Revizyon</th>
+                                        <th>Tarih</th>
+                                        <th>Oluşturan</th>
+                                        <th>Şirket Sayısı</th>
+                                        <th>Notlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($quotation->revisions as $revision)
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-info">#{{ $revision->revision_number }}</span>
+                                        </td>
+                                        <td>
+                                            <small>{{ $revision->created_at->format('d.m.Y H:i') }}</small>
+                                        </td>
+                                        <td>{{ $revision->createdBy->name }}</td>
+                                        <td>
+                                            <span class="badge bg-primary">
+                                                {{ count($revision->items_data) }} firma
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <small>{{ $revision->notes ?? '-' }}</small>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @endif
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a href="{{ route('quotations.show', $quotation) }}" class="btn btn-light">
+                            <i class="bi bi-x-circle me-2"></i>İptal
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-2"></i>Güncelle
+                        </button>
+                    </div>
+
             </form>
 
             <!-- Delete Form -->
@@ -822,5 +915,21 @@ $(window).on('beforeunload', function(e) {
 $('#quotationForm').on('submit', function() {
     formChanged = false;
 });
+</script>
+
+<script>
+// Mevcut scripts...
+
+// Revizyon checkbox
+$('#create_revision').on('change', function() {
+    if ($(this).is(':checked')) {
+        $('#revision_notes_div').slideDown(300);
+    } else {
+        $('#revision_notes_div').slideUp(300);
+    }
+});
+
+// Varsayılan olarak revizyon oluştur işaretli
+$('#create_revision').prop('checked', true).trigger('change');
 </script>
 @endpush
